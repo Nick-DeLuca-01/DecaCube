@@ -18,8 +18,8 @@ Scene_Menu::Scene_Menu(GameEngine* gameEngine)
 
 void Scene_Menu::init()
 {
-	MusicPlayer::getInstance().play("menuTheme");
-	MusicPlayer::getInstance().setVolume(5);
+	//MusicPlayer::getInstance().play("menuTheme");
+	//MusicPlayer::getInstance().setVolume(5);
 
 	registerAction(sf::Keyboard::W, "UP");
 	registerAction(sf::Keyboard::Up, "UP");
@@ -28,10 +28,10 @@ void Scene_Menu::init()
 	registerAction(sf::Keyboard::D, "PLAY");
 	registerAction(sf::Keyboard::Escape, "QUIT");
 
-	m_title = "Gex Planes";
-	m_menuStrings.push_back("Level 1");
-	m_menuStrings.push_back("Level 2");
-	m_menuStrings.push_back("Level 3");
+	m_title = "Deca-Cube";
+	m_menuStrings.push_back("Play Game");
+	m_menuStrings.push_back("Scoreboard");
+	m_menuStrings.push_back("Exit Game");
 
 	m_levelPaths.push_back("../level1.txt");
 	m_levelPaths.push_back("../level1.txt");
