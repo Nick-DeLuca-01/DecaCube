@@ -2,6 +2,7 @@
 
 #include "Components.h"
 #include "Scene.h"
+#include "Vec2.h"
 #include <queue>
 
 
@@ -17,11 +18,7 @@ struct LevelConfig {
     float       scrollSpeed{ 100.f };
     float       playerSpeed{ 200.f };
     float       enemySpeed{ 200.f };
-    float       bulletSpeed{ 400.f };
-    float       missileSpeed{ 150.f };
-    sf::Time    fireInterval{ sf::seconds(5) };
-    sf::Time    shieldUpTime{ sf::milliseconds(300) };
-    sf::Time    shieldCooldownTime{ sf::milliseconds(4000) };
+    const Vec2  gridSize{ 64, 64 };
 };
 
 class Scene_DecaCube : public Scene
@@ -37,9 +34,19 @@ class Scene_DecaCube : public Scene
 
     //systems
 
+    void sMovement();
+    void sAnimation();
+    void sCollision();
+
 
     // helper functions
     void	                onEnd() override;
+    void registerActions();
+    void spawnPlayer(sf::Vector2f pos);
+    void playerMovement();
+    void adjustPlayerPosition();
+    void init(const std::string& path);
+    void loadLevel(const std::string& path);
 
 
 public:

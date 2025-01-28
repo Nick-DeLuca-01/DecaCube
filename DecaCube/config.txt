@@ -3,3 +3,21 @@
 Window  1024 760
 
 Font    main       	../assets/fonts/Sansation.ttf
+
+# Textures
+Texture DownEnd ../assets/textures/tiles/DownEnd.png
+Texture DownLeftCorner ../assets/textures/tiles/DownLeftCorner.png
+Texture DownRightCorner ../assets/textures/tiles/DownRightCorner.png
+Texture DownWall ../assets/textures/tiles/DownWall.png
+Texture LeftEnd ../assets/textures/tiles/LeftEnd.png
+Texture LeftRightHall ../assets/textures/tiles/LeftRightHall.png
+Texture LeftWall ../assets/textures/tiles/LeftWall.png
+Texture NoAccess ../assets/textures/tiles/NoAccess.png
+Texture NoWall ../assets/textures/tiles/NoWall.png
+Texture RightEnd ../assets/textures/tiles/RightEnd.png
+Texture RightWall ../assets/textures/tiles/RightWall.png
+Texture UpDownHall ../assets/textures/tiles/UpDownHall.png
+Texture UpEnd ../assets/textures/tiles/UpEnd.png
+Texture UpLeftCorner ../assets/textures/tiles/UpLeftCorner.png
+Texture UpRightCorner ../assets/textures/tiles/UpRightCorner.png
+Texture UpWall ../assets/textures/tiles/UpWall.png

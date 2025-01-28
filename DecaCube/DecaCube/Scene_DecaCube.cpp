@@ -7,9 +7,45 @@
 #include "SoundPlayer.h"
 #include "GameEngine.h"
 
+void Scene_DecaCube::sMovement()
+{
+}
+
+void Scene_DecaCube::sAnimation()
+{
+}
+
+void Scene_DecaCube::sCollision()
+{
+}
+
 void Scene_DecaCube::onEnd()
 {
     _game->changeScene("MENU", nullptr, false);
+}
+
+void Scene_DecaCube::registerActions()
+{
+}
+
+void Scene_DecaCube::spawnPlayer(sf::Vector2f pos)
+{
+}
+
+void Scene_DecaCube::playerMovement()
+{
+}
+
+void Scene_DecaCube::adjustPlayerPosition()
+{
+}
+
+void Scene_DecaCube::init(const std::string& path)
+{
+}
+
+void Scene_DecaCube::loadLevel(const std::string& path)
+{
 }
 
 Scene_DecaCube::Scene_DecaCube(GameEngine* gameEngine, const std::string& levelPath)

@@ -34,6 +34,7 @@
     <ClInclude Include="Scene_Menu.h" />
     <ClInclude Include="SoundPlayer.h" />
     <ClInclude Include="Utilities.h" />
+    <ClInclude Include="Vec2.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Animation.cpp" />
@@ -50,6 +51,7 @@
     <ClCompile Include="Scene_Menu.cpp" />
     <ClCompile Include="SoundPlayer.cpp" />
     <ClCompile Include="Utilities.cpp" />
+    <ClCompile Include="Vec2.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
