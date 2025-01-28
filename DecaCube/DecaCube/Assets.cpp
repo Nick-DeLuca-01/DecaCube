@@ -224,15 +224,11 @@ void Assets::loadAnimations(const std::string& path) {
     {
         if (token == "Animation")
         {
-            std::string name, texture, repeat;
-            float speed;
-            confFile >> name >> texture >> speed >> repeat;
+            std::string name, texture;
+            float frames, speed;
+            confFile >> name >> texture >> frames >> speed;
 
-            Animation a(name,
-                getTexture(texture),
-                _frameSets[name],
-                sf::seconds(1 / speed),
-                (repeat == "yes"));
+            Animation a(name, getTexture(texture), frames, speed);
 
             _animationMap[name] = a;
         }

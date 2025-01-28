@@ -18,7 +18,7 @@ struct LevelConfig {
     float       scrollSpeed{ 100.f };
     float       playerSpeed{ 200.f };
     float       enemySpeed{ 200.f };
-    const Vec2  gridSize{ 64, 64 };
+    
 };
 
 class Scene_DecaCube : public Scene
@@ -30,6 +30,7 @@ class Scene_DecaCube : public Scene
     std::priority_queue<SpawnPoint>     _spawnPoints;
     bool                                _drawTextures{ true };
     bool                                _drawAABB{ false };
+    const Vec2                          gridSize{ 64, 64 };
     bool                                _drawCam{ false };
 
     //systems
@@ -47,6 +48,7 @@ class Scene_DecaCube : public Scene
     void adjustPlayerPosition();
     void init(const std::string& path);
     void loadLevel(const std::string& path);
+    Vec2 gridToMidPixel(float gridX, float gridY, std::shared_ptr<Entity> entity);
 
 
 public:

@@ -21,3 +21,22 @@ Texture UpEnd ../assets/textures/tiles/UpEnd.png
 Texture UpLeftCorner ../assets/textures/tiles/UpLeftCorner.png
 Texture UpRightCorner ../assets/textures/tiles/UpRightCorner.png
 Texture UpWall ../assets/textures/tiles/UpWall.png
+
+# Animation Name Texture Frames Speed
+
+Animation DownEnd DownEnd 1 0
+Animation DownLeftCorner DownLeftCorner 1 0
+Animation DownRightCorner DownRightCorner 1 0
+Animation DownWall DownWall 1 0
+Animation LeftEnd LeftEnd 1 0
+Animation LeftRightHall LeftRightHall 1 0
+Animation LeftWall LeftWall 1 0
+Animation NoAccess NoAccess 1 0
+Animation NoWall NoWall 1 0
+Animation RightEnd RightEnd 1 0
+Animation RightWall RightWall 1 0
+Animation UpDownHall UpDownHall 1 0
+Animation UpEnd UpEnd 1 0
+Animation UpLeftCorner UpLeftCorner 1 0
+Animation UpRightCorner UpRightCorner 1 0
+Animation UpWall UpWall 1 0

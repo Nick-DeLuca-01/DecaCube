@@ -53,8 +53,6 @@ private:
     void loadSounds(const std::string& path);
     void loadJson(const std::string& path);
     void loadAnimations(const std::string& path);
-    void loadSpriteRecs(const std::string& path);
-    void loadAnimationRecs(const std::string& path);
 
 public:
     void loadFromFile(const std::string path);
@@ -63,19 +61,12 @@ public:
     void addSound(const std::string& soundEffectName, const std::string& path);
     void addTexture(const std::string& textureName, const std::string& path, bool smooth = true);
 
-    void addSpriteRec(const std::string& name, SpriteRec sr);
-    void addAnimationRec(const std::string& name, AnimationRec ar);
-
-
-
     const sf::Font& getFont(const std::string& fontName) const;
     const sf::SoundBuffer& getSound(const std::string& fontName) const;
     const sf::Texture& getTexture(const std::string& textureName) const;
 
     const Animation& getAnimation(const std::string& name) const;
 
-    const SpriteRec& getSpriteRec(const std::string& name) const;
-    const AnimationRec& getAnimationRec(const std::string name) const;
 };
 
 

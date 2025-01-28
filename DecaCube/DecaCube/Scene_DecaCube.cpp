@@ -48,6 +48,16 @@ void Scene_DecaCube::loadLevel(const std::string& path)
 {
 }
 
+Vec2 Scene_DecaCube::gridToMidPixel(float gridX, float gridY, std::shared_ptr<Entity> entity)
+{
+    float x = 0.f + gridX * gridSize.x;
+    float y = 0.f - gridY * gridSize.y;
+
+    sf::Vector2f spriteSize = entity->getComponent<CAnimation>().animation.getBB();
+
+    return Vec2(x + spriteSize.x / 2.f, y - spriteSize.y / 2.f);
+}
+
 Scene_DecaCube::Scene_DecaCube(GameEngine* gameEngine, const std::string& levelPath)
     : Scene(gameEngine), _worldView(gameEngine->window().getDefaultView()) {
 

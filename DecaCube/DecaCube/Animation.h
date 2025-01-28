@@ -4,6 +4,10 @@
 
 #ifndef ANIMATION_H
 #define ANIMATION_H
+
+#include "Vec2.h"
+
+
 #include <SFML/Graphics.hpp>
 #include <vector>
 
@@ -18,12 +22,14 @@ public:
     bool                        _isRepeating{ true };
     bool                        _hasEnded{ false };
     sf::Sprite                  _sprite;
-
+    size_t                      _speed{ 0 };
+    Vec2                        _size{ 1, 1 };
 
 public:
     Animation() = default;
     Animation(const std::string& name, const sf::Texture& t,
         std::vector<sf::IntRect> frames, sf::Time tpf, bool repeats = true);
+    Animation(const std::string& name, const sf::Texture& t, size_t frameCount, size_t speed);
 
     void                    update(sf::Time dt);
     bool                    hasEnded() const;

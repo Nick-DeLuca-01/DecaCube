@@ -22,6 +22,18 @@ Animation::Animation(const std::string& name,
     std::cout << name << " tpf: " << _timePerFrame.asMilliseconds() << "ms\n";
 }
 
+Animation::Animation(const std::string& name, const sf::Texture& t, size_t frameCount, size_t speed)
+    : _name(name)
+    , _sprite(t)
+    , _frames(frameCount)
+    , _currentFrame(0)
+    , _speed(speed)
+{
+    _size = Vec2(static_cast<float>(t.getSize().x) / frameCount, static_cast<float>(t.getSize().y));
+    _sprite.setOrigin(_size.x / 2.f, _size.y / 2.f);
+    _sprite.setTextureRect(sf::IntRect(std::floor(_currentFrame * _size.x), 0, _size.x, _size.y));
+}
+
 
 void Animation::update(sf::Time dt) {
 
