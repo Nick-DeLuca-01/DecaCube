@@ -42,9 +42,17 @@ void Scene_DecaCube::adjustPlayerPosition()
 
 void Scene_DecaCube::init(const std::string& path)
 {
+    loadLevel(path);
 }
 
 void Scene_DecaCube::loadLevel(const std::string& path)
+{
+    _entityManager = EntityManager();
+    loadFromFile(path);
+
+}
+
+void Scene_DecaCube::loadFromFile(const std::string& path)
 {
 }
 

@@ -5,38 +5,38 @@ Window  440 440
 Font    main       	../assets/fonts/Sansation.ttf
 
 # Textures
-Texture DownEnd ../assets/textures/tiles/DownEnd.png
-Texture DownLeftCorner ../assets/textures/tiles/DownLeftCorner.png
-Texture DownRightCorner ../assets/textures/tiles/DownRightCorner.png
-Texture DownWall ../assets/textures/tiles/DownWall.png
-Texture LeftEnd ../assets/textures/tiles/LeftEnd.png
-Texture LeftRightHall ../assets/textures/tiles/LeftRightHall.png
-Texture LeftWall ../assets/textures/tiles/LeftWall.png
-Texture NoAccess ../assets/textures/tiles/NoAccess.png
-Texture NoWall ../assets/textures/tiles/NoWall.png
-Texture RightEnd ../assets/textures/tiles/RightEnd.png
-Texture RightWall ../assets/textures/tiles/RightWall.png
-Texture UpDownHall ../assets/textures/tiles/UpDownHall.png
-Texture UpEnd ../assets/textures/tiles/UpEnd.png
-Texture UpLeftCorner ../assets/textures/tiles/UpLeftCorner.png
-Texture UpRightCorner ../assets/textures/tiles/UpRightCorner.png
-Texture UpWall ../assets/textures/tiles/UpWall.png
+Texture TexDownEnd ../assets/textures/tiles/DownEnd.png
+Texture TexDownLeftCorner ../assets/textures/tiles/DownLeftCorner.png
+Texture TexDownRightCorner ../assets/textures/tiles/DownRightCorner.png
+Texture TexDownWall ../assets/textures/tiles/DownWall.png
+Texture TexLeftEnd ../assets/textures/tiles/LeftEnd.png
+Texture TexLeftRightHall ../assets/textures/tiles/LeftRightHall.png
+Texture TexLeftWall ../assets/textures/tiles/LeftWall.png
+Texture TexNoAccess ../assets/textures/tiles/NoAccess.png
+Texture TexNoWall ../assets/textures/tiles/NoWall.png
+Texture TexRightEnd ../assets/textures/tiles/RightEnd.png
+Texture TexRightWall ../assets/textures/tiles/RightWall.png
+Texture TexUpDownHall ../assets/textures/tiles/UpDownHall.png
+Texture TexUpEnd ../assets/textures/tiles/UpEnd.png
+Texture TexUpLeftCorner ../assets/textures/tiles/UpLeftCorner.png
+Texture TexUpRightCorner ../assets/textures/tiles/UpRightCorner.png
+Texture TexUpWall ../assets/textures/tiles/UpWall.png
 
 # Animation Name Texture Frames Speed
 
-Animation DownEnd DownEnd 1 0
-Animation DownLeftCorner DownLeftCorner 1 0
-Animation DownRightCorner DownRightCorner 1 0
-Animation DownWall DownWall 1 0
-Animation LeftEnd LeftEnd 1 0
-Animation LeftRightHall LeftRightHall 1 0
-Animation LeftWall LeftWall 1 0
-Animation NoAccess NoAccess 1 0
-Animation NoWall NoWall 1 0
-Animation RightEnd RightEnd 1 0
-Animation RightWall RightWall 1 0
-Animation UpDownHall UpDownHall 1 0
-Animation UpEnd UpEnd 1 0
-Animation UpLeftCorner UpLeftCorner 1 0
-Animation UpRightCorner UpRightCorner 1 0
-Animation UpWall UpWall 1 0
+Animation DownEnd TexDownEnd 1 0
+Animation DownLeftCorner TexDownLeftCorner 1 0
+Animation DownRightCorner TexDownRightCorner 1 0
+Animation DownWall TexDownWall 1 0
+Animation LeftEnd TexLeftEnd 1 0
+Animation LeftRightHall TexLeftRightHall 1 0
+Animation LeftWall TexLeftWall 1 0
+Animation NoAccess TexNoAccess 1 0
+Animation NoWall TexNoWall 1 0
+Animation RightEnd TexRightEnd 1 0
+Animation RightWall TexRightWall 1 0
+Animation UpDownHall TexUpDownHall 1 0
+Animation UpEnd TexUpEnd 1 0
+Animation UpLeftCorner TexUpLeftCorner 1 0
+Animation UpRightCorner TexUpRightCorner 1 0
+Animation UpWall TexUpWall 1 0
