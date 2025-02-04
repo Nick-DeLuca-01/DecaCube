@@ -68,5 +68,7 @@ sf::Sprite& Animation::getSprite() {
 }
 
 sf::Vector2f Animation::getBB() const {
-    return static_cast<sf::Vector2f>(_frames[_currentFrame].getSize());
+    //std::cout << _size.x << _size.y;
+    //return static_cast<sf::Vector2f>(_frames[_currentFrame].getSize());
+    return sf::Vector2f(_size.x, _size.y);
 }

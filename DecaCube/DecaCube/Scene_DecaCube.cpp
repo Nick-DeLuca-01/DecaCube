@@ -75,13 +75,15 @@ void Scene_DecaCube::loadFromFile(const std::string& path)
 			e->addComponent<CTransform>(gridToMidPixel(gx, gy, e));
 			e->addComponent<CState>(name);
 		}
+		config >> token;
 	}
+	std::cout << "DONE READING";
 }
 
 Vec2 Scene_DecaCube::gridToMidPixel(float gridX, float gridY, std::shared_ptr<Entity> entity)
 {
 	float x = 0.f + gridX * gridSize.x;
-	float y = 0.f - gridY * gridSize.y;
+	float y = 440.f - gridY * gridSize.y;
 
 	sf::Vector2f spriteSize = entity->getComponent<CAnimation>().animation.getBB();
 
@@ -97,6 +99,8 @@ Scene_DecaCube::Scene_DecaCube(GameEngine* gameEngine, const std::string& levelP
 
 void Scene_DecaCube::update(sf::Time dt)
 {
+	_entityManager.update();
+	sRender();
 }
 
 void Scene_DecaCube::sDoAction(const Command& command)
@@ -115,6 +119,21 @@ void Scene_DecaCube::sRender()
 			_game->window().draw(anim.getSprite());
 		}
 	}
+
+	//for (auto e : _entityManager.getEntities()) {
+	//	if (e->hasComponent<CBoundingBox>()) {
+	//		auto& box = e->getComponent<CBoundingBox>();
+	//		auto& transform = e->getComponent<CTransform>();
+	//		sf::RectangleShape rect;
+	//		rect.setSize(sf::Vector2f(box.size.x, box.size.y));
+	//		rect.setOrigin(sf::Vector2f(box.halfSize.x, box.halfSize.y));
+	//		rect.setPosition(transform.pos.x, transform.pos.y);
+	//		rect.setFillColor(sf::Color(0, 0, 0, 0));
+	//		rect.setOutlineColor(sf::Color(0, 255, 0));
+	//		rect.setOutlineThickness(1.f);
+	//		_game->window().draw(rect);
+	//	}
+	//}
 
 	_game->window().display();
 }

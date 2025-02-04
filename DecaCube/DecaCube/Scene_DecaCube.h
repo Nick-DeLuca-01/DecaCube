@@ -30,7 +30,7 @@ class Scene_DecaCube : public Scene
     std::priority_queue<SpawnPoint>     _spawnPoints;
     bool                                _drawTextures{ true };
     bool                                _drawAABB{ false };
-    const Vec2                          gridSize{ 64, 64 };
+    const Vec2                          gridSize{ 40, 40 };
     bool                                _drawCam{ false };
 
     std::string                         _levelPath;

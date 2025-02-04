@@ -33,7 +33,7 @@ void Scene_Menu::init()
 	m_menuStrings.push_back("Scoreboard");
 	m_menuStrings.push_back("Exit Game");
 
-	m_levelPaths.push_back("../level1.txt");
+	m_levelPaths.push_back("../assets/cubetop.txt");
 	m_levelPaths.push_back("../level1.txt");
 	m_levelPaths.push_back("../level1.txt");
 
