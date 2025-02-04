@@ -33,6 +33,9 @@ class Scene_DecaCube : public Scene
     const Vec2                          gridSize{ 64, 64 };
     bool                                _drawCam{ false };
 
+    std::string                         _levelPath;
+
+
     //systems
 
     void sMovement();

@@ -20,6 +20,7 @@ public:
 	size_t				        _simulationSpeed{ 1 };
 	bool				        _running{ true };
 
+
 	// stats
 	sf::Text					_statisticsText;
 	sf::Time					_statisticsUpdateTime{ sf::Time::Zero };

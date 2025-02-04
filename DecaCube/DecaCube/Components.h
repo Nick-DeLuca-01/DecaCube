@@ -72,19 +72,18 @@ struct CSprite : public Component {
 struct CTransform : public Component
 {
 
-    sf::Transformable  tfm;
-    sf::Vector2f	pos{ 0.f, 0.f };
-    sf::Vector2f	prevPos{ 0.f, 0.f };
-    sf::Vector2f	vel{ 0.f, 0.f };
-    sf::Vector2f	scale{ 1.f, 1.f };
+    Vec2	pos{ 0.f, 0.f };
+    Vec2	prevPos{ 0.f, 0.f };
+    Vec2	scale{ 1.f, 1.f };
+    Vec2	vel{ 0.f, 0.f };
 
     float   angVel{ 0 };
     float	angle{ 0.f };
 
     CTransform() = default;
-    CTransform(const sf::Vector2f& p) : pos(p) {}
-    CTransform(const sf::Vector2f& p, const sf::Vector2f& v)
-        : pos(p), prevPos(p), vel(v) {}
+    CTransform(const Vec2& p) : pos(p) {}
+    CTransform(const Vec2& p, const Vec2& v, const Vec2& sc, float a)
+        : pos(p), prevPos(p), vel(v), scale(sc), angle(a) {}
 
 };
 
