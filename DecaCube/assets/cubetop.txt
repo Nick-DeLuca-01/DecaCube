@@ -21,7 +21,7 @@ Tile LeftWall 5 1
 Tile RightWall 6 1
 Tile UpDownHall 7 1
 Tile UpDownHall 8 1
-Tile DownRightCorner 9 1
+Tile DownLeftCorner 9 1
 Tile RightWall 10 1
 
 Tile UpDownHall 0 2
@@ -55,14 +55,14 @@ Tile DownRightCorner 3 4
 Tile LeftWall 4 4
 Tile LeftRightHall 5 4
 Tile RightWall 6 4
-Tile DownRightCorner 7 4
+Tile DownLeftCorner 7 4
 Tile UpWall 8 4
 Tile DownRightCorner 9 4
 Tile UpDownHall 10 4
 
 Tile UpWall 0 5
 Tile RightWall 1 5
-Tile DownRightCorner 2 5
+Tile DownLeftCorner 2 5
 Tile UpWall 3 5
 Tile RightWall 4 5
 Tile DownEnd 5 5
