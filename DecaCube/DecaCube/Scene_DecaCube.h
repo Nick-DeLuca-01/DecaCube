@@ -35,6 +35,7 @@ class Scene_DecaCube : public Scene
     int                                 _lives;
 
     std::string                         _levelPath;
+    std::string                         _nextControl;
 
 
     //systems

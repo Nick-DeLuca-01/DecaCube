@@ -188,37 +188,44 @@ void Scene_DecaCube::update(sf::Time dt)
 
 	playerMovement();
 	sMovement(dt);
-
+	if (_nextControl != "") {
+		sDoAction(Command{ _nextControl, "START" });
+	}
 	sRender();
 }
 
 void Scene_DecaCube::sDoAction(const Command& command)
 {
+
+	if (command.type() == "START") {
+		_nextControl = command.name();
+	}
+
 	//code template from Dave Burchill, NBCC
 	if (!_player->getComponent<CInput>().left && !_player->getComponent<CInput>().right && !_player->getComponent<CInput>().up && !_player->getComponent<CInput>().down) {
-		if (command.type() == "START") {
-			if (command.name() == "LEFT") {
-				_player->getComponent<CInput>().left = true;
-				_player->getComponent<CInput>().distanceRemainingNeg.x = -40;
-			}
-			else if (command.name() == "RIGHT") {
-				_player->getComponent<CInput>().right = true;
-				_player->getComponent<CInput>().distanceRemainingPos.x = 40;
 
-			}
-			else if (command.name() == "UP") {
-				_player->getComponent<CInput>().up = true;
-				_player->getComponent<CInput>().distanceRemainingNeg.y = -40;
-
-			}
-			else if (command.name() == "DOWN") {
-				_player->getComponent<CInput>().down = true;
-				_player->getComponent<CInput>().distanceRemainingPos.y = 40;
-
-
-			}
-
+		if (_nextControl == "LEFT") {
+			_player->getComponent<CInput>().left = true;
+			_player->getComponent<CInput>().distanceRemainingNeg.x = -40;
+			_nextControl = "";
 		}
+		else if (_nextControl == "RIGHT") {
+			_player->getComponent<CInput>().right = true;
+			_player->getComponent<CInput>().distanceRemainingPos.x = 40;
+			_nextControl = "";
+		}
+		else if (_nextControl == "UP") {
+			_player->getComponent<CInput>().up = true;
+			_player->getComponent<CInput>().distanceRemainingNeg.y = -40;
+			_nextControl = "";
+		}
+		else if (_nextControl == "DOWN") {
+			_player->getComponent<CInput>().down = true;
+			_player->getComponent<CInput>().distanceRemainingPos.y = 40;
+			_nextControl = "";
+		}
+
+
 	}
 }
 
