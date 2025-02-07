@@ -32,13 +32,14 @@ class Scene_DecaCube : public Scene
     bool                                _drawAABB{ false };
     const Vec2                          gridSize{ 40, 40 };
     bool                                _drawCam{ false };
+    int                                 _lives;
 
     std::string                         _levelPath;
 
 
     //systems
 
-    void sMovement();
+    void sMovement(sf::Time dt);
     void sAnimation();
     void sCollision();
 

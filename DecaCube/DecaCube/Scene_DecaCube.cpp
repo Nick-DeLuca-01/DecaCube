@@ -7,8 +7,15 @@
 #include "SoundPlayer.h"
 #include "GameEngine.h"
 
-void Scene_DecaCube::sMovement()
+void Scene_DecaCube::sMovement(sf::Time dt)
 {
+	for (auto e : _entityManager.getEntities("robert")) {
+		auto& tfm = e->getComponent<CTransform>();
+		tfm.pos += tfm.vel * dt.asSeconds();
+	}
+	for (auto e : _entityManager.getEntities("enemy")) {
+
+	}
 }
 
 void Scene_DecaCube::sAnimation()
@@ -26,6 +33,15 @@ void Scene_DecaCube::onEnd()
 
 void Scene_DecaCube::registerActions()
 {
+	registerAction(sf::Keyboard::A, "LEFT");
+	registerAction(sf::Keyboard::Left, "LEFT");
+	registerAction(sf::Keyboard::W, "UP");
+	registerAction(sf::Keyboard::Up, "UP");
+	registerAction(sf::Keyboard::D, "RIGHT");
+	registerAction(sf::Keyboard::Right, "RIGHT");
+	registerAction(sf::Keyboard::S, "DOWN");
+	registerAction(sf::Keyboard::Down, "DOWN");
+
 }
 
 void Scene_DecaCube::spawnPlayer(sf::Vector2f pos)
@@ -34,15 +50,33 @@ void Scene_DecaCube::spawnPlayer(sf::Vector2f pos)
 
 void Scene_DecaCube::playerMovement()
 {
+	if (_player->hasComponent<CState>() && _player->getComponent<CState>().state == "dead") {
+		return;
+	}
+	Vec2 vel{ 0, 0 };
+	auto& input = _player->getComponent<CInput>();
+	if (input.left)
+		vel.x -= 1;
+	if (input.right)
+		vel.x += 1;
+	if (input.down)
+		vel.y += 1;
+	if (input.up)
+		vel.y -= 1;
+	
+	_player->getComponent<CTransform>().vel = vel * _config.playerSpeed;
 }
 
 void Scene_DecaCube::adjustPlayerPosition()
 {
+	/*if (_player->getComponent<CState>().state == "dead")
+		return;*/
 }
 
 void Scene_DecaCube::init(const std::string& path)
 {
 	loadLevel(path);
+	registerActions();
 }
 
 void Scene_DecaCube::loadLevel(const std::string& path)
@@ -81,12 +115,16 @@ void Scene_DecaCube::loadFromFile(const std::string& path)
 
 			config >> name >> speed >> lives >> gx >> gy;
 
-			auto player = _entityManager.addEntity("robert");
-			auto bb = player->addComponent<CAnimation>(Assets::getInstance().getAnimation(name)).animation.getBB();
-			player->addComponent<CBoundingBox>(bb);
-			auto pixelPos = gridToMidPixel(gx, gy, player);
-			player->addComponent<CTransform>(pixelPos);
-			player->addComponent<CState>("alive");
+			_config.playerSpeed = speed;
+			_lives = lives;
+
+			_player = _entityManager.addEntity("robert");
+			auto bb = _player->addComponent<CAnimation>(Assets::getInstance().getAnimation(name)).animation.getBB();
+			_player->addComponent<CBoundingBox>(bb);
+			auto pixelPos = gridToMidPixel(gx, gy, _player);
+			_player->addComponent<CTransform>(pixelPos);
+			_player->addComponent<CState>("alive");
+			_player->addComponent<CInput>();
 
 			
 		}
@@ -120,11 +158,37 @@ Scene_DecaCube::Scene_DecaCube(GameEngine* gameEngine, const std::string& levelP
 void Scene_DecaCube::update(sf::Time dt)
 {
 	_entityManager.update();
+
+	playerMovement();
+	sMovement(dt);
+
 	sRender();
 }
 
 void Scene_DecaCube::sDoAction(const Command& command)
 {
+	//code template from Dave Burchill, NBCC
+	if (command.type() == "START") {
+		if (command.name() == "LEFT")
+			_player->getComponent<CInput>().left = true;
+		else if (command.name() == "RIGHT")
+			_player->getComponent<CInput>().right = true;
+		else if (command.name() == "UP")
+			_player->getComponent<CInput>().up = true;
+		else if (command.name() == "DOWN")
+			_player->getComponent<CInput>().down = true;
+		
+	}
+	else if (command.type() == "END") {
+		if (command.name() == "LEFT")
+			_player->getComponent<CInput>().left = false;
+		else if (command.name() == "RIGHT")
+			_player->getComponent<CInput>().right = false;
+		else if (command.name() == "UP")
+			_player->getComponent<CInput>().up = false;
+		else if (command.name() == "DOWN")
+			_player->getComponent<CInput>().down = false;
+	}
 }
 
 void Scene_DecaCube::sRender()
@@ -146,6 +210,8 @@ void Scene_DecaCube::sRender()
 
 		anim.getSprite().setRotation(tfm.angle);
 		anim.getSprite().setPosition(tfm.pos.x, tfm.pos.y);
+
+		//std::cout << tfm.pos.x << " " << tfm.pos.y << "\n";
 		_game->window().draw(anim.getSprite());
 	}
 
