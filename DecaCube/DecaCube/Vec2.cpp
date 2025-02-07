@@ -90,7 +90,7 @@ Vec2& Vec2::operator-=(const Vec2& rhs)
 
 Vec2 Vec2::operator-(const Vec2& rhs) const
 {
-	return Vec2(*this) += rhs;
+	return Vec2(*this) -= rhs;
 }
 
 

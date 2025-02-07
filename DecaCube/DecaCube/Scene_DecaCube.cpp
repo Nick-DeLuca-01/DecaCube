@@ -9,10 +9,37 @@
 
 void Scene_DecaCube::sMovement(sf::Time dt)
 {
-	for (auto e : _entityManager.getEntities("robert")) {
-		auto& tfm = e->getComponent<CTransform>();
-		tfm.pos += tfm.vel * dt.asSeconds();
+	auto& ptfm = _player->getComponent<CTransform>();
+	auto& pinput = _player->getComponent<CInput>();
+	ptfm.prevPos = ptfm.pos; //set the previous position
+
+	ptfm.pos += ptfm.vel * dt.asSeconds(); //move player
+	auto difference = ptfm.pos - ptfm.prevPos; //get distance moved
+	if (difference.x > 0 || difference.y > 0) { //player moved right or down
+		pinput.distanceRemainingPos -= difference;
 	}
+	else if (difference.x < 0 || difference.y < 0) { //player moved left or up
+		pinput.distanceRemainingNeg -= difference;
+	}
+	if (pinput.right && pinput.distanceRemainingPos.x <= 0) {
+
+		pinput.distanceRemainingPos.x = 0;
+		pinput.right = false;
+
+	}
+	else if (pinput.down && pinput.distanceRemainingPos.y <= 0) {
+		pinput.distanceRemainingPos.y = 0;
+		pinput.down = false;
+	}
+	else if (pinput.left && pinput.distanceRemainingNeg.x >= 0) {
+		pinput.distanceRemainingNeg.x = 0;
+		pinput.left = false;
+	}
+	else if (pinput.up && pinput.distanceRemainingNeg.y >= 0) {
+		pinput.distanceRemainingNeg.y = 0;
+		pinput.up = false;
+	}
+
 	for (auto e : _entityManager.getEntities("enemy")) {
 
 	}
@@ -63,7 +90,7 @@ void Scene_DecaCube::playerMovement()
 		vel.y += 1;
 	if (input.up)
 		vel.y -= 1;
-	
+
 	_player->getComponent<CTransform>().vel = vel * _config.playerSpeed;
 }
 
@@ -126,7 +153,7 @@ void Scene_DecaCube::loadFromFile(const std::string& path)
 			_player->addComponent<CState>("alive");
 			_player->addComponent<CInput>();
 
-			
+
 		}
 		else
 		{
@@ -168,26 +195,30 @@ void Scene_DecaCube::update(sf::Time dt)
 void Scene_DecaCube::sDoAction(const Command& command)
 {
 	//code template from Dave Burchill, NBCC
-	if (command.type() == "START") {
-		if (command.name() == "LEFT")
-			_player->getComponent<CInput>().left = true;
-		else if (command.name() == "RIGHT")
-			_player->getComponent<CInput>().right = true;
-		else if (command.name() == "UP")
-			_player->getComponent<CInput>().up = true;
-		else if (command.name() == "DOWN")
-			_player->getComponent<CInput>().down = true;
-		
-	}
-	else if (command.type() == "END") {
-		if (command.name() == "LEFT")
-			_player->getComponent<CInput>().left = false;
-		else if (command.name() == "RIGHT")
-			_player->getComponent<CInput>().right = false;
-		else if (command.name() == "UP")
-			_player->getComponent<CInput>().up = false;
-		else if (command.name() == "DOWN")
-			_player->getComponent<CInput>().down = false;
+	if (!_player->getComponent<CInput>().left && !_player->getComponent<CInput>().right && !_player->getComponent<CInput>().up && !_player->getComponent<CInput>().down) {
+		if (command.type() == "START") {
+			if (command.name() == "LEFT") {
+				_player->getComponent<CInput>().left = true;
+				_player->getComponent<CInput>().distanceRemainingNeg.x = -40;
+			}
+			else if (command.name() == "RIGHT") {
+				_player->getComponent<CInput>().right = true;
+				_player->getComponent<CInput>().distanceRemainingPos.x = 40;
+
+			}
+			else if (command.name() == "UP") {
+				_player->getComponent<CInput>().up = true;
+				_player->getComponent<CInput>().distanceRemainingNeg.y = -40;
+
+			}
+			else if (command.name() == "DOWN") {
+				_player->getComponent<CInput>().down = true;
+				_player->getComponent<CInput>().distanceRemainingPos.y = 40;
+
+
+			}
+
+		}
 	}
 }
 

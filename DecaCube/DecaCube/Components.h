@@ -122,6 +122,10 @@ struct CInput : public Component
     bool spinr{ false };
     bool spinl{ false };
 
+    Vec2 distanceRemainingPos{ 0, 0 }; //for left and down directions
+    Vec2 distanceRemainingNeg{ 0, 0 }; //for right and up directions
+
+
     CInput() = default;
 };
 
