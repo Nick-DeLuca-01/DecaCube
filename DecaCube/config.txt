@@ -22,6 +22,8 @@ Texture TexUpLeftCorner ../assets/textures/tiles/UpLeftCorner.png
 Texture TexUpRightCorner ../assets/textures/tiles/UpRightCorner.png
 Texture TexUpWall ../assets/textures/tiles/UpWall.png
 
+Texture TexRobert ../assets/textures/characters/Robert.png
+
 # Animation Name Texture Frames Speed
 
 Animation DownEnd TexDownEnd 1 0
@@ -40,3 +42,4 @@ Animation UpEnd TexUpEnd 1 0
 Animation UpLeftCorner TexUpLeftCorner 1 0
 Animation UpRightCorner TexUpRightCorner 1 0
 Animation UpWall TexUpWall 1 0
+Animation Robert TexRobert 1 0

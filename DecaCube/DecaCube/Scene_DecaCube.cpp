@@ -75,6 +75,26 @@ void Scene_DecaCube::loadFromFile(const std::string& path)
 			e->addComponent<CTransform>(gridToMidPixel(gx, gy, e));
 			e->addComponent<CState>(name);
 		}
+		else if (token == "Player") {
+			std::string name;
+			float speed, lives, gx, gy;
+
+			config >> name >> speed >> lives >> gx >> gy;
+
+			auto player = _entityManager.addEntity("robert");
+			auto bb = player->addComponent<CAnimation>(Assets::getInstance().getAnimation(name)).animation.getBB();
+			player->addComponent<CBoundingBox>(bb);
+			auto pixelPos = gridToMidPixel(gx, gy, player);
+			player->addComponent<CTransform>(pixelPos);
+			player->addComponent<CState>("alive");
+
+			
+		}
+		else
+		{
+			std::string buffer;
+			std::getline(config, buffer);
+		}
 		config >> token;
 	}
 	std::cout << "DONE READING";
@@ -109,15 +129,24 @@ void Scene_DecaCube::sDoAction(const Command& command)
 
 void Scene_DecaCube::sRender()
 {
-	for (auto e : _entityManager.getEntities()) {
-		if (e->hasComponent<CAnimation>()) {
-			auto& tfm = e->getComponent<CTransform>();
-			auto& anim = e->getComponent<CAnimation>().animation;
+	for (auto e : _entityManager.getEntities("tile")) {
+		//render all tiles first
+		auto& tfm = e->getComponent<CTransform>();
+		auto& anim = e->getComponent<CAnimation>().animation;
 
-			anim.getSprite().setRotation(tfm.angle);
-			anim.getSprite().setPosition(tfm.pos.x, tfm.pos.y);
-			_game->window().draw(anim.getSprite());
-		}
+		anim.getSprite().setRotation(tfm.angle);
+		anim.getSprite().setPosition(tfm.pos.x, tfm.pos.y);
+		_game->window().draw(anim.getSprite());
+
+	}
+	for (auto e : _entityManager.getEntities("robert")) {
+		//render player
+		auto& tfm = e->getComponent<CTransform>();
+		auto& anim = e->getComponent<CAnimation>().animation;
+
+		anim.getSprite().setRotation(tfm.angle);
+		anim.getSprite().setPosition(tfm.pos.x, tfm.pos.y);
+		_game->window().draw(anim.getSprite());
 	}
 
 	//for (auto e : _entityManager.getEntities()) {
