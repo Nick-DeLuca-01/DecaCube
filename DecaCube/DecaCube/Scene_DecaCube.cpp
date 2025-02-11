@@ -6,6 +6,10 @@
 #include "Assets.h"
 #include "SoundPlayer.h"
 #include "GameEngine.h"
+#include "Scene_CubeBack.h"
+#include "Scene_CubeFront.h"
+#include "Scene_CubeLeft.h"
+#include "Scene_CubeRight.h"
 
 #include <cmath>
 
@@ -337,7 +341,16 @@ void Scene_DecaCube::checkIfPlayerInBounds()
 	//only one exit on each side
 
 	if (pPos.x < 0) {
-		_game->changeScene("PLAY_LEFT", std::make_shared<Scene_CubeLeft>(_game, ))
+		_game->changeScene("PLAY_LEFT", std::make_shared<Scene_CubeLeft>(_game, "../assets/cubeleft.txt"), false);
+	}
+	else if (pPos.x > 440) {
+		_game->changeScene("PLAY_RIGHT", std::make_shared<Scene_CubeRight>(_game, "../assets/cuberight.txt"), false);
+	}
+	else if (pPos.y < 0) {
+		_game->changeScene("PLAY_BACK", std::make_shared<Scene_CubeBack>(_game, "../assets/cubeback.txt"), false);
+	}
+	else if (pPos.y > 440) {
+		_game->changeScene("PLAY_FRONT", std::make_shared<Scene_CubeFront>(_game, "../assets/cubefront.txt"), false);
 	}
 }
 

@@ -5,18 +5,18 @@
 #include "Vec2.h"
 #include <queue>
 
-struct SpawnPoint {
-	std::string type;
-	float y;
-	auto operator<=>(const SpawnPoint& other) const {
-		return y <=> other.y;
-	}
-};
-
-struct LevelConfig {
-	float playerSpeed{ 200.f };
-	float enemySpeed{ 200.f };
-};
+//struct SpawnPoint {
+//	std::string type;
+//	float y;
+//	auto operator<=>(const SpawnPoint& other) const {
+//		return y <=> other.y;
+//	}
+//};
+//
+//struct LevelConfig {
+//	float playerSpeed{ 200.f };
+//	float enemySpeed{ 200.f };
+//};
 
 class Scene_CubeLeft : public Scene
 {
@@ -34,6 +34,9 @@ class Scene_CubeLeft : public Scene
 
     std::string                         _levelPath;
     std::string                         _nextControl;
+
+    // helper functions
+    void	                onEnd() override;
 public:
     Scene_CubeLeft(GameEngine* gameEngine, const std::string& levelPath);
     void		            update(sf::Time dt) override;

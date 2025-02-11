@@ -6,6 +6,20 @@
 #include <map>
 #include <string>
 
+struct SpawnPoint {
+	std::string     type;
+	float           y;
+	auto operator<=>(const SpawnPoint& other) const {
+		return  y <=> other.y;
+	}
+};
+
+struct LevelConfig {
+	float       playerSpeed{ 200.f };
+	float       enemySpeed{ 200.f };
+
+};
+
 
 using CommandMap = std::map<int, std::string>;
 

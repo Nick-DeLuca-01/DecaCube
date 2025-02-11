@@ -1,7 +1,12 @@
 #include "Scene_CubeBack.h"
 
-Scene_CubeBack::Scene_CubeBack(GameEngine* gameEngine, const std::string& levelPath)
+void Scene_CubeBack::onEnd()
 {
+}
+
+Scene_CubeBack::Scene_CubeBack(GameEngine* gameEngine, const std::string& levelPath)
+	: Scene(gameEngine), _worldView(gameEngine->window().getDefaultView()), _levelPath(levelPath) {
+
 }
 
 void Scene_CubeBack::update(sf::Time dt)
