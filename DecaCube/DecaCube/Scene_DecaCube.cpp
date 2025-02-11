@@ -189,6 +189,146 @@ void Scene_DecaCube::snapToGrid(std::shared_ptr<Entity> entity)
 	
 }
 
+bool Scene_DecaCube::canMoveInDirection(std::string direction)
+{
+	auto e = getCurrentTile();
+	if (e->getTag() == "robert") {
+		return true; //in case the player isn't overlapping any tiles
+	}
+	std::string tileType = e->getComponent<CState>().state;
+	if (tileType == "DownEnd") {
+		if (direction == "UP") {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+	if (tileType == "DownLeftCorner") {
+		if (direction == "UP" || direction == "RIGHT") {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+	if (tileType == "DownRightCorner") {
+		if (direction == "UP" || direction == "LEFT") {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+	if (tileType == "DownWall") {
+		if (direction == "DOWN") {
+			return false;
+		}
+		else {
+			return true;
+		}
+	}
+	if (tileType == "LeftEnd") {
+		if (direction == "RIGHT") {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+	if (tileType == "LeftRightHall") {
+		if (direction == "LEFT" || direction == "RIGHT") {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+	if (tileType == "LeftWall") {
+		if (direction == "LEFT") {
+			return false;
+		}
+		else {
+			return true;
+		}
+	}
+	if (tileType == "NoAccess") {
+		return false;
+	}
+	if (tileType == "NoWall") {
+		return true;
+	}
+	if (tileType == "RightEnd") {
+		if (direction == "LEFT") {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+	if (tileType == "RightWall") {
+		if (direction == "RIGHT") {
+			return false;
+		}
+		else {
+			return true;
+		}
+	}
+	if (tileType == "UpDownHall") {
+		if (direction == "UP" || direction == "DOWN") {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+	if (tileType == "UpEnd") {
+		if (direction == "DOWN") {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+	if (tileType == "UpLeftCorner") {
+		if (direction == "DOWN" || direction == "RIGHT") {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+	if (tileType == "UpRightCorner") {
+		if (direction == "DOWN" || direction == "LEFT") {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+	if (tileType == "UpWall") {
+		if (direction == "UP") {
+			return false;
+		}
+		else {
+			return true;
+		}
+	}
+	return true; //if there's a tile i missed somehow
+}
+
+sPtrEntt Scene_DecaCube::getCurrentTile()
+{
+	for (auto e : _entityManager.getEntities()) {
+		auto overlap = Physics::getOverlap(_player, e); 
+		if (overlap.x > 0 && overlap.y > 0) {
+			return e;
+		
+		}
+	}
+	return _player; //if the player somehow is not overlapping a tile, just return the player, will be handled as overlapping nothing
+}
+
 Vec2 Scene_DecaCube::gridToMidPixel(float gridX, float gridY, std::shared_ptr<Entity> entity)
 {
 	float x = 0.f + gridX * gridSize.x;
@@ -227,28 +367,28 @@ void Scene_DecaCube::sDoAction(const Command& command)
 
 	//code template from Dave Burchill, NBCC
 	if (!_player->getComponent<CInput>().left && !_player->getComponent<CInput>().right && !_player->getComponent<CInput>().up && !_player->getComponent<CInput>().down) {
-
-		if (_nextControl == "LEFT") {
+		bool validDirection = canMoveInDirection(_nextControl);
+		if (_nextControl == "LEFT" && validDirection) {
 			_player->getComponent<CInput>().left = true;
 			_player->getComponent<CInput>().distanceRemainingNeg.x = -40;
-			_nextControl = "";
+			
 		}
-		else if (_nextControl == "RIGHT") {
+		else if (_nextControl == "RIGHT" && validDirection) {
 			_player->getComponent<CInput>().right = true;
 			_player->getComponent<CInput>().distanceRemainingPos.x = 40;
-			_nextControl = "";
+			
 		}
-		else if (_nextControl == "UP") {
+		else if (_nextControl == "UP" && validDirection) {
 			_player->getComponent<CInput>().up = true;
 			_player->getComponent<CInput>().distanceRemainingNeg.y = -40;
-			_nextControl = "";
+			
 		}
-		else if (_nextControl == "DOWN") {
+		else if (_nextControl == "DOWN" && validDirection) {
 			_player->getComponent<CInput>().down = true;
 			_player->getComponent<CInput>().distanceRemainingPos.y = 40;
-			_nextControl = "";
+			
 		}
-
+		_nextControl = "";
 
 	}
 }
