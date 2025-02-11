@@ -30,6 +30,11 @@
     <ClInclude Include="MusicPlayer.h" />
     <ClInclude Include="Physics.h" />
     <ClInclude Include="Scene.h" />
+    <ClInclude Include="Scene_CubeBack.h" />
+    <ClInclude Include="Scene_CubeBottom.h" />
+    <ClInclude Include="Scene_CubeFront.h" />
+    <ClInclude Include="Scene_CubeLeft.h" />
+    <ClInclude Include="Scene_CubeRight.h" />
     <ClInclude Include="Scene_DecaCube.h" />
     <ClInclude Include="Scene_Menu.h" />
     <ClInclude Include="SoundPlayer.h" />
@@ -47,6 +52,11 @@
     <ClCompile Include="MusicPlayer.cpp" />
     <ClCompile Include="Physics.cpp" />
     <ClCompile Include="Scene.cpp" />
+    <ClCompile Include="Scene_CubeBack.cpp" />
+    <ClCompile Include="Scene_CubeBottom.cpp" />
+    <ClCompile Include="Scene_CubeFront.cpp" />
+    <ClCompile Include="Scene_CubeLeft.cpp" />
+    <ClCompile Include="Scene_CubeRight.cpp" />
     <ClCompile Include="Scene_DecaCube.cpp" />
     <ClCompile Include="Scene_Menu.cpp" />
     <ClCompile Include="SoundPlayer.cpp" />

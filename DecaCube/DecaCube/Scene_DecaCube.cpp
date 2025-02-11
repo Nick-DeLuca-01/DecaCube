@@ -329,6 +329,18 @@ sPtrEntt Scene_DecaCube::getCurrentTile()
 	return _player; //if the player somehow is not overlapping a tile, just return the player, will be handled as overlapping nothing
 }
 
+void Scene_DecaCube::checkIfPlayerInBounds()
+{
+	auto pPos = _player->getComponent<CTransform>().pos;
+
+	//each side of the square leads to another side of the square
+	//only one exit on each side
+
+	if (pPos.x < 0) {
+		_game->changeScene("PLAY_LEFT", std::make_shared<Scene_CubeLeft>(_game, ))
+	}
+}
+
 Vec2 Scene_DecaCube::gridToMidPixel(float gridX, float gridY, std::shared_ptr<Entity> entity)
 {
 	float x = 0.f + gridX * gridSize.x;
@@ -356,6 +368,7 @@ void Scene_DecaCube::update(sf::Time dt)
 		sDoAction(Command{ _nextControl, "START" });
 	}
 	sRender();
+	checkIfPlayerInBounds();
 }
 
 void Scene_DecaCube::sDoAction(const Command& command)
