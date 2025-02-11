@@ -7,6 +7,8 @@
 #include "SoundPlayer.h"
 #include "GameEngine.h"
 
+#include <cmath>
+
 void Scene_DecaCube::sMovement(sf::Time dt)
 {
 	auto& ptfm = _player->getComponent<CTransform>();
@@ -26,18 +28,28 @@ void Scene_DecaCube::sMovement(sf::Time dt)
 		pinput.distanceRemainingPos.x = 0;
 		pinput.right = false;
 
+		snapToGrid(_player);
+
 	}
 	else if (pinput.down && pinput.distanceRemainingPos.y <= 0) {
 		pinput.distanceRemainingPos.y = 0;
 		pinput.down = false;
+
+		snapToGrid(_player);
 	}
 	else if (pinput.left && pinput.distanceRemainingNeg.x >= 0) {
 		pinput.distanceRemainingNeg.x = 0;
 		pinput.left = false;
+
+		snapToGrid(_player);
+
 	}
 	else if (pinput.up && pinput.distanceRemainingNeg.y >= 0) {
 		pinput.distanceRemainingNeg.y = 0;
 		pinput.up = false;
+
+		snapToGrid(_player);
+
 	}
 
 	for (auto e : _entityManager.getEntities("enemy")) {
@@ -163,6 +175,18 @@ void Scene_DecaCube::loadFromFile(const std::string& path)
 		config >> token;
 	}
 	std::cout << "DONE READING";
+}
+
+void Scene_DecaCube::snapToGrid(std::shared_ptr<Entity> entity)
+{
+	auto& tfm = entity->getComponent<CTransform>();
+
+	auto gridPosX = std::fmod(tfm.pos.x, 40.f);
+	auto gridPosY = std::fmod(tfm.pos.y, 40.f);
+
+	tfm.pos.x -= (gridPosX - 20);
+	tfm.pos.y -= (gridPosY - 20);
+	
 }
 
 Vec2 Scene_DecaCube::gridToMidPixel(float gridX, float gridY, std::shared_ptr<Entity> entity)

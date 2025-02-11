@@ -55,6 +55,7 @@ class Scene_DecaCube : public Scene
     void loadLevel(const std::string& path);
     Vec2 gridToMidPixel(float gridX, float gridY, std::shared_ptr<Entity> entity);
     void loadFromFile(const std::string& path);
+    void snapToGrid(std::shared_ptr<Entity> entity);
 
 
 public:
