@@ -25,18 +25,25 @@ class Scene_CubeLeft : public Scene
     sf::FloatRect                       _worldBounds;
     LevelConfig                         _config;
     std::priority_queue<SpawnPoint>     _spawnPoints;
-    const Vec2                          _playerSpawn{ 5, 5 };
+    Vec2                                _playerSpawn{ 5, 5 };
     bool                                _drawTextures{ true };
     bool                                _drawAABB{ false };
     const Vec2                          gridSize{ 40, 40 };
     bool                                _drawCam{ false };
-    int                                 _lives;
+
 
     std::string                         _levelPath;
     std::string                         _nextControl;
 
     // helper functions
     void	                onEnd() override;
+    void init(const std::string& path);
+    void registerActions();
+    void spawnPlayer(sf::Vector2f pos);
+    void loadLevel(const std::string& path);
+    Vec2 gridToMidPixel(float gridX, float gridY, std::shared_ptr<Entity> entity);
+    void loadFromFile(const std::string& path);
+
 public:
     Scene_CubeLeft(GameEngine* gameEngine, const std::string& levelPath);
     void		            update(sf::Time dt) override;

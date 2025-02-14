@@ -25,7 +25,7 @@ class Scene_CubeBottom : public Scene
     sf::FloatRect                       _worldBounds;
     LevelConfig                         _config;
     std::priority_queue<SpawnPoint>     _spawnPoints;
-    const Vec2                          _playerSpawn{ 5, 5 };
+    Vec2                                _playerSpawn{ 5, 5 };
     bool                                _drawTextures{ true };
     bool                                _drawAABB{ false };
     const Vec2                          gridSize{ 40, 40 };

@@ -341,15 +341,24 @@ void Scene_DecaCube::checkIfPlayerInBounds()
 	//only one exit on each side
 
 	if (pPos.x < 0) {
+		_playerSpawn.x = 10;
+		_playerSpawn.y = 5;
 		_game->changeScene("PLAY_LEFT", std::make_shared<Scene_CubeLeft>(_game, "../assets/cubeleft.txt"), false);
+
 	}
 	else if (pPos.x > 440) {
+		_playerSpawn.x = 0;
+		_playerSpawn.y = 5;
 		_game->changeScene("PLAY_RIGHT", std::make_shared<Scene_CubeRight>(_game, "../assets/cuberight.txt"), false);
 	}
 	else if (pPos.y < 0) {
+		_playerSpawn.x = 5;
+		_playerSpawn.y = 0;
 		_game->changeScene("PLAY_BACK", std::make_shared<Scene_CubeBack>(_game, "../assets/cubeback.txt"), false);
 	}
 	else if (pPos.y > 440) {
+		_playerSpawn.x = 5;
+		_playerSpawn.y = 10;
 		_game->changeScene("PLAY_FRONT", std::make_shared<Scene_CubeFront>(_game, "../assets/cubefront.txt"), false);
 	}
 }

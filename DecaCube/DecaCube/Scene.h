@@ -36,6 +36,7 @@ protected:
 	bool			_isPaused{ false };
 	bool			_hasEnded{ false };
 	size_t			_currentFrame{ 0 };
+	Vec2                          _playerSpawn{ 5, 5 };
 
 	virtual void	onEnd() = 0;
 	void			setPaused(bool paused);
