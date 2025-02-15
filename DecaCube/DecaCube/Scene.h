@@ -7,14 +7,14 @@
 #include <string>
 
 struct PlayerData {
-	int score;
+	int score = 0;
 	Vec2 spawnPos{ 5, 5 };
 	int rotation = 0;
 };
 
 struct LevelConfig {
-	float       playerSpeed{ 200.f };
-	float       enemySpeed{ 200.f };
+	float       playerSpeed{ 80.f };
+	float       enemySpeed{ 80.f };
 
 };
 

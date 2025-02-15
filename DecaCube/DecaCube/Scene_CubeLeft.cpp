@@ -1,4 +1,8 @@
 #include "Scene_CubeLeft.h"
+#include "Scene_DecaCube.h"
+#include "Scene_CubeBack.h"
+#include "Scene_CubeFront.h"
+#include "Scene_CubeBottom.h"
 #include "Components.h"
 #include "Physics.h"
 #include "Utilities.h"
@@ -9,8 +13,65 @@
 
 #include <cmath>
 
+void Scene_CubeLeft::sMovement(sf::Time dt)
+{
+	auto& ptfm = _player->getComponent<CTransform>();
+	auto& pinput = _player->getComponent<CInput>();
+	ptfm.prevPos = ptfm.pos; //set the previous position
+
+	ptfm.pos += ptfm.vel * dt.asSeconds(); //move player
+	auto difference = ptfm.pos - ptfm.prevPos; //get distance moved
+	if (difference.x > 0 || difference.y > 0) { //player moved right or down
+		pinput.distanceRemainingPos -= difference;
+	}
+	else if (difference.x < 0 || difference.y < 0) { //player moved left or up
+		pinput.distanceRemainingNeg -= difference;
+	}
+	if (pinput.right && pinput.distanceRemainingPos.x <= 0) {
+
+		pinput.distanceRemainingPos.x = 0;
+		pinput.right = false;
+
+		snapToGrid(_player);
+
+	}
+	else if (pinput.down && pinput.distanceRemainingPos.y <= 0) {
+		pinput.distanceRemainingPos.y = 0;
+		pinput.down = false;
+
+		snapToGrid(_player);
+	}
+	else if (pinput.left && pinput.distanceRemainingNeg.x >= 0) {
+		pinput.distanceRemainingNeg.x = 0;
+		pinput.left = false;
+
+		snapToGrid(_player);
+
+	}
+	else if (pinput.up && pinput.distanceRemainingNeg.y >= 0) {
+		pinput.distanceRemainingNeg.y = 0;
+		pinput.up = false;
+
+		snapToGrid(_player);
+
+	}
+
+	for (auto e : _entityManager.getEntities("enemy")) {
+
+	}
+}
+
+void Scene_CubeLeft::sAnimation()
+{
+}
+
+void Scene_CubeLeft::sCollision()
+{
+}
+
 void Scene_CubeLeft::onEnd()
 {
+	_game->changeScene("MENU", nullptr, false);
 }
 
 void Scene_CubeLeft::init(const std::string& path)
@@ -21,6 +82,14 @@ void Scene_CubeLeft::init(const std::string& path)
 
 void Scene_CubeLeft::registerActions()
 {
+	registerAction(sf::Keyboard::A, "LEFT");
+	registerAction(sf::Keyboard::Left, "LEFT");
+	registerAction(sf::Keyboard::W, "UP");
+	registerAction(sf::Keyboard::Up, "UP");
+	registerAction(sf::Keyboard::D, "RIGHT");
+	registerAction(sf::Keyboard::Right, "RIGHT");
+	registerAction(sf::Keyboard::S, "DOWN");
+	registerAction(sf::Keyboard::Down, "DOWN");
 }
 
 void Scene_CubeLeft::spawnPlayer(sf::Vector2f pos)
@@ -84,6 +153,207 @@ void Scene_CubeLeft::loadFromFile(const std::string& path)
 	std::cout << "DONE READING";
 }
 
+void Scene_CubeLeft::playerMovement()
+{
+	if (_player->hasComponent<CState>() && _player->getComponent<CState>().state == "dead") {
+		return;
+	}
+	Vec2 vel{ 0, 0 };
+	auto& input = _player->getComponent<CInput>();
+	if (input.left)
+		vel.x -= 1;
+	if (input.right)
+		vel.x += 1;
+	if (input.down)
+		vel.y += 1;
+	if (input.up)
+		vel.y -= 1;
+
+	_player->getComponent<CTransform>().vel = vel * _config.playerSpeed;
+}
+
+void Scene_CubeLeft::adjustPlayerPosition()
+{
+}
+
+void Scene_CubeLeft::snapToGrid(std::shared_ptr<Entity> entity)
+{
+	auto& tfm = entity->getComponent<CTransform>();
+
+	auto gridPosX = std::fmod(tfm.pos.x, 40.f);
+	auto gridPosY = std::fmod(tfm.pos.y, 40.f);
+
+	tfm.pos.x -= (gridPosX - 20);
+	tfm.pos.y -= (gridPosY - 20);
+}
+
+bool Scene_CubeLeft::canMoveInDirection(std::string direction)
+{
+	auto e = getCurrentTile();
+	if (e->getTag() == "robert") {
+		return true; //in case the player isn't overlapping any tiles
+	}
+	std::string tileType = e->getComponent<CState>().state;
+	if (tileType == "DownEnd") {
+		if (direction == "UP") {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+	if (tileType == "DownLeftCorner") {
+		if (direction == "UP" || direction == "RIGHT") {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+	if (tileType == "DownRightCorner") {
+		if (direction == "UP" || direction == "LEFT") {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+	if (tileType == "DownWall") {
+		if (direction == "DOWN") {
+			return false;
+		}
+		else {
+			return true;
+		}
+	}
+	if (tileType == "LeftEnd") {
+		if (direction == "RIGHT") {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+	if (tileType == "LeftRightHall") {
+		if (direction == "LEFT" || direction == "RIGHT") {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+	if (tileType == "LeftWall") {
+		if (direction == "LEFT") {
+			return false;
+		}
+		else {
+			return true;
+		}
+	}
+	if (tileType == "NoAccess") {
+		return false;
+	}
+	if (tileType == "NoWall") {
+		return true;
+	}
+	if (tileType == "RightEnd") {
+		if (direction == "LEFT") {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+	if (tileType == "RightWall") {
+		if (direction == "RIGHT") {
+			return false;
+		}
+		else {
+			return true;
+		}
+	}
+	if (tileType == "UpDownHall") {
+		if (direction == "UP" || direction == "DOWN") {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+	if (tileType == "UpEnd") {
+		if (direction == "DOWN") {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+	if (tileType == "UpLeftCorner") {
+		if (direction == "DOWN" || direction == "RIGHT") {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+	if (tileType == "UpRightCorner") {
+		if (direction == "DOWN" || direction == "LEFT") {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+	if (tileType == "UpWall") {
+		if (direction == "UP") {
+			return false;
+		}
+		else {
+			return true;
+		}
+	}
+	return true; //if there's a tile i missed somehow
+}
+
+sPtrEntt Scene_CubeLeft::getCurrentTile()
+{
+	for (auto e : _entityManager.getEntities()) {
+		auto overlap = Physics::getOverlap(_player, e);
+		if (overlap.x > 0 && overlap.y > 0) {
+			return e;
+
+		}
+	}
+	return _player;
+}
+
+void Scene_CubeLeft::checkIfPlayerInBounds()
+{
+	auto pPos = _player->getComponent<CTransform>().pos;
+
+	//each side of the square leads to another side of the square
+	//only one exit on each side
+
+	if (pPos.x < 0) {
+
+		_playerData.spawnPos = { 10, 5 };
+		_game->changeScene("PLAY_BOTTOM", std::make_shared<Scene_CubeBottom>(_game, "../assets/cubebottom.txt"), false);
+
+	}
+	else if (pPos.x > 440) {
+		_playerData.spawnPos = { 0, 5 };
+		_game->changeScene("PLAY", std::make_shared<Scene_DecaCube>(_game, "../assets/cubetop.txt"), false);
+	}
+	else if (pPos.y < 0) {
+		_playerData.spawnPos = { 5, 0 };
+		_game->changeScene("PLAY_BACK", std::make_shared<Scene_CubeBack>(_game, "../assets/cubeback.txt"), false);
+	}
+	else if (pPos.y > 440) {
+		_playerData.spawnPos = { 5, 10 };
+		_game->changeScene("PLAY_FRONT", std::make_shared<Scene_CubeFront>(_game, "../assets/cubefront.txt"), false);
+	}
+}
+
 Scene_CubeLeft::Scene_CubeLeft(GameEngine* gameEngine, const std::string& levelPath)
 	: Scene(gameEngine), _worldView(gameEngine->window().getDefaultView()), _levelPath(levelPath) 
 {
@@ -93,11 +363,48 @@ Scene_CubeLeft::Scene_CubeLeft(GameEngine* gameEngine, const std::string& levelP
 void Scene_CubeLeft::update(sf::Time dt)
 {
 	_entityManager.update();
+
+	playerMovement();
+	sMovement(dt);
+	if (_nextControl != "") {
+		sDoAction(Command{ _nextControl, "START" });
+	}
 	sRender();
+	checkIfPlayerInBounds();
 }
 
 void Scene_CubeLeft::sDoAction(const Command& command)
 {
+	if (command.type() == "START") {
+		_nextControl = command.name();
+	}
+
+	//code template from Dave Burchill, NBCC
+	if (!_player->getComponent<CInput>().left && !_player->getComponent<CInput>().right && !_player->getComponent<CInput>().up && !_player->getComponent<CInput>().down) {
+		bool validDirection = canMoveInDirection(_nextControl);
+		if (_nextControl == "LEFT" && validDirection) {
+			_player->getComponent<CInput>().left = true;
+			_player->getComponent<CInput>().distanceRemainingNeg.x = -40;
+
+		}
+		else if (_nextControl == "RIGHT" && validDirection) {
+			_player->getComponent<CInput>().right = true;
+			_player->getComponent<CInput>().distanceRemainingPos.x = 40;
+
+		}
+		else if (_nextControl == "UP" && validDirection) {
+			_player->getComponent<CInput>().up = true;
+			_player->getComponent<CInput>().distanceRemainingNeg.y = -40;
+
+		}
+		else if (_nextControl == "DOWN" && validDirection) {
+			_player->getComponent<CInput>().down = true;
+			_player->getComponent<CInput>().distanceRemainingPos.y = 40;
+
+		}
+		_nextControl = "";
+
+	}
 }
 
 void Scene_CubeLeft::sRender()
@@ -123,4 +430,5 @@ void Scene_CubeLeft::sRender()
 		//std::cout << tfm.pos.x << " " << tfm.pos.y << "\n";
 		_game->window().draw(anim.getSprite());
 	}
+	_game->window().display();
 }
