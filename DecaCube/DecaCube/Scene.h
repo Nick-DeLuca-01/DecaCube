@@ -6,12 +6,10 @@
 #include <map>
 #include <string>
 
-struct SpawnPoint {
-	std::string     type;
-	float           y;
-	auto operator<=>(const SpawnPoint& other) const {
-		return  y <=> other.y;
-	}
+struct PlayerData {
+	int score;
+	Vec2 spawnPos{ 5, 5 };
+	int rotation = 0;
 };
 
 struct LevelConfig {
@@ -36,7 +34,7 @@ protected:
 	bool			_isPaused{ false };
 	bool			_hasEnded{ false };
 	size_t			_currentFrame{ 0 };
-	Vec2                          _playerSpawn{ 5, 5 };
+	static PlayerData		_playerData;
 
 	virtual void	onEnd() = 0;
 	void			setPaused(bool paused);

@@ -25,9 +25,7 @@ class Scene_DecaCube : public Scene
     sPtrEntt                            _player{ nullptr };
     sf::View                            _worldView; // camera
     sf::FloatRect                       _worldBounds;
-    LevelConfig                         _config;
-    std::priority_queue<SpawnPoint>     _spawnPoints;
-    
+    LevelConfig                         _config;    
     bool                                _drawTextures{ true };
     bool                                _drawAABB{ false };
     const Vec2                          gridSize{ 40, 40 };

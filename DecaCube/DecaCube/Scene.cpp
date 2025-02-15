@@ -7,6 +7,8 @@ Scene::Scene(GameEngine* gameEngine) : _game(gameEngine)
 Scene::~Scene()
 {}
 
+PlayerData Scene::_playerData;
+
 void Scene::setPaused(bool paused)
 {
 	_isPaused = paused;

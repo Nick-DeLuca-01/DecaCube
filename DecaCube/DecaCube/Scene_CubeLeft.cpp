@@ -76,7 +76,7 @@ void Scene_CubeLeft::loadFromFile(const std::string& path)
 	_player = _entityManager.addEntity("robert");
 	auto bb = _player->addComponent<CAnimation>(Assets::getInstance().getAnimation("Robert")).animation.getBB();
 	_player->addComponent<CBoundingBox>(bb);
-	auto pixelPos = gridToMidPixel(_playerSpawn.x, _playerSpawn.y, _player);
+	auto pixelPos = gridToMidPixel(_playerData.spawnPos.x, _playerData.spawnPos.y, _player);
 	_player->addComponent<CTransform>(pixelPos);
 	_player->addComponent<CState>("alive");
 	_player->addComponent<CInput>();
