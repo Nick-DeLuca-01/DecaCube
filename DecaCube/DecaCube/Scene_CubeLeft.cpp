@@ -368,7 +368,7 @@ void Scene_CubeLeft::checkIfPlayerInBounds()
 		auto& pinput = _player->getComponent<CInput>();
 		pinput.distanceRemainingNeg = { 0, 0 };
 		pinput.distanceRemainingPos = { 0, 0 };
-		_playerData.spawnPos = { 5, 0 };
+		_playerData.spawnPos = { 0, 5 };
 		auto pixelPos = gridToMidPixel(_playerData.spawnPos.x, _playerData.spawnPos.y, _player);
 		pPos = pixelPos;
 		pinput.down = false;
@@ -382,7 +382,7 @@ void Scene_CubeLeft::checkIfPlayerInBounds()
 		auto& pinput = _player->getComponent<CInput>();
 		pinput.distanceRemainingNeg = { 0, 0 };
 		pinput.distanceRemainingPos = { 0, 0 };
-		_playerData.spawnPos = { 5, 10 };
+		_playerData.spawnPos = { 0, 5 };
 		auto pixelPos = gridToMidPixel(_playerData.spawnPos.x, _playerData.spawnPos.y, _player);
 		pPos = pixelPos;
 		pinput.down = false;
