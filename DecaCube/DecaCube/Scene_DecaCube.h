@@ -57,6 +57,7 @@ class Scene_DecaCube : public Scene
     bool canMoveInDirection(std::string direction);
     sPtrEntt getCurrentTile();
     void checkIfPlayerInBounds();
+    void fixPlayerPos();
 
 public:
     Scene_DecaCube(GameEngine* gameEngine, const std::string& levelPath);

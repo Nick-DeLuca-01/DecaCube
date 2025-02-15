@@ -51,6 +51,7 @@ class Scene_CubeLeft : public Scene
     bool canMoveInDirection(std::string direction);
     sPtrEntt getCurrentTile();
     void checkIfPlayerInBounds();
+    void fixPlayerPos();
 
 public:
     Scene_CubeLeft(GameEngine* gameEngine, const std::string& levelPath);

@@ -11,6 +11,7 @@ struct PlayerData {
 	Vec2 spawnPos{ 5, 5 };
 	int rotation = 0;
 	int lives = 3;
+	bool sceneChanged = false;
 };
 
 struct LevelConfig {

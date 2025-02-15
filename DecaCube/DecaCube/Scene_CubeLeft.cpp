@@ -150,6 +150,7 @@ void Scene_CubeLeft::loadFromFile(const std::string& path)
 	_player->addComponent<CState>("alive");
 	_player->addComponent<CInput>();
 
+
 	std::cout << "DONE READING";
 }
 
@@ -359,6 +360,7 @@ void Scene_CubeLeft::checkIfPlayerInBounds()
 		pinput.left = false;
 		pinput.right = false;
 		pinput.up = false;
+		_playerData.sceneChanged = true;
 		_game->changeScene("PLAY", std::make_shared<Scene_DecaCube>(_game, "../assets/cubetop.txt"), false);
 	}
 	else if (pPos.y < 0) {
@@ -389,6 +391,14 @@ void Scene_CubeLeft::checkIfPlayerInBounds()
 	}
 }
 
+void Scene_CubeLeft::fixPlayerPos()
+{
+	_playerData.sceneChanged = false;
+
+	auto pixelPos = gridToMidPixel(_playerData.spawnPos.x, _playerData.spawnPos.y, _player);
+	_player->getComponent<CTransform>().pos = pixelPos;
+}
+
 Scene_CubeLeft::Scene_CubeLeft(GameEngine* gameEngine, const std::string& levelPath)
 	: Scene(gameEngine), _worldView(gameEngine->window().getDefaultView()), _levelPath(levelPath) 
 {
@@ -398,7 +408,9 @@ Scene_CubeLeft::Scene_CubeLeft(GameEngine* gameEngine, const std::string& levelP
 void Scene_CubeLeft::update(sf::Time dt)
 {
 	_entityManager.update();
-
+	if (_playerData.sceneChanged) {
+		fixPlayerPos();
+	}
 	playerMovement();
 	sMovement(dt);
 	if (_nextControl != "") {

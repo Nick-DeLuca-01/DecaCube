@@ -175,6 +175,7 @@ void Scene_DecaCube::loadFromFile(const std::string& path)
 		}
 		config >> token;
 	}
+
 	std::cout << "DONE READING";
 }
 
@@ -334,6 +335,8 @@ void Scene_DecaCube::checkIfPlayerInBounds()
 {
 	auto& pPos = _player->getComponent<CTransform>().pos;
 
+	
+
 	//each side of the square leads to another side of the square
 	//only one exit on each side
 
@@ -348,6 +351,7 @@ void Scene_DecaCube::checkIfPlayerInBounds()
 		pinput.left = false;
 		pinput.right = false;
 		pinput.up = false;
+		_playerData.sceneChanged = true;
 		_game->changeScene("PLAY_LEFT", std::make_shared<Scene_CubeLeft>(_game, "../assets/cubeleft.txt"), false);
 
 	}
@@ -362,6 +366,7 @@ void Scene_DecaCube::checkIfPlayerInBounds()
 		pinput.left = false;
 		pinput.right = false;
 		pinput.up = false;
+		_playerData.sceneChanged = true;
 		_game->changeScene("PLAY_RIGHT", std::make_shared<Scene_CubeRight>(_game, "../assets/cuberight.txt"), false);
 	}
 	else if (pPos.y < 0) {
@@ -375,6 +380,7 @@ void Scene_DecaCube::checkIfPlayerInBounds()
 		pinput.left = false;
 		pinput.right = false;
 		pinput.up = false;
+		_playerData.sceneChanged = true;
 		_game->changeScene("PLAY_BACK", std::make_shared<Scene_CubeBack>(_game, "../assets/cubeback.txt"), false);
 	}
 	else if (pPos.y > 440) {
@@ -388,8 +394,17 @@ void Scene_DecaCube::checkIfPlayerInBounds()
 		pinput.left = false;
 		pinput.right = false;
 		pinput.up = false;
+		_playerData.sceneChanged = true;
 		_game->changeScene("PLAY_FRONT", std::make_shared<Scene_CubeFront>(_game, "../assets/cubefront.txt"), false);
 	}
+}
+
+void Scene_DecaCube::fixPlayerPos()
+{
+	_playerData.sceneChanged = false;
+
+	auto pixelPos = gridToMidPixel(_playerData.spawnPos.x, _playerData.spawnPos.y, _player);
+	_player->getComponent<CTransform>().pos = pixelPos;
 }
 
 Vec2 Scene_DecaCube::gridToMidPixel(float gridX, float gridY, std::shared_ptr<Entity> entity)
@@ -412,7 +427,9 @@ Scene_DecaCube::Scene_DecaCube(GameEngine* gameEngine, const std::string& levelP
 void Scene_DecaCube::update(sf::Time dt)
 {
 	_entityManager.update();
-
+	if (_playerData.sceneChanged) {
+		fixPlayerPos();
+	}
 	playerMovement();
 	sMovement(dt);
 	if (_nextControl != "") {
