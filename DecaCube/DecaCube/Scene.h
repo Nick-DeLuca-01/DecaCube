@@ -10,6 +10,7 @@ struct PlayerData {
 	int score = 0;
 	Vec2 spawnPos{ 5, 5 };
 	int rotation = 0;
+	int lives = 3;
 };
 
 struct LevelConfig {

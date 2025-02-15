@@ -133,8 +133,8 @@ Tile LeftRightHall 9 10
 Tile UpRightCorner 10 10
 
 
-# playerTag AnimationName Speed Lives GridStartX GridStartY
-Player Robert 80 3 5 5
+# playerTag AnimationName
+Player Robert
 
 
 

@@ -329,27 +329,62 @@ sPtrEntt Scene_CubeLeft::getCurrentTile()
 
 void Scene_CubeLeft::checkIfPlayerInBounds()
 {
-	auto pPos = _player->getComponent<CTransform>().pos;
+	auto& pPos = _player->getComponent<CTransform>().pos;
 
 	//each side of the square leads to another side of the square
 	//only one exit on each side
 
 	if (pPos.x < 0) {
-
+		auto& pinput = _player->getComponent<CInput>();
+		pinput.distanceRemainingNeg = { 0, 0 };
+		pinput.distanceRemainingPos = { 0, 0 };
 		_playerData.spawnPos = { 10, 5 };
+		auto pixelPos = gridToMidPixel(_playerData.spawnPos.x, _playerData.spawnPos.y, _player);
+		pPos = pixelPos;
+		pinput.down = false;
+		pinput.left = false;
+		pinput.right = false;
+		pinput.up = false;
 		_game->changeScene("PLAY_BOTTOM", std::make_shared<Scene_CubeBottom>(_game, "../assets/cubebottom.txt"), false);
 
 	}
 	else if (pPos.x > 440) {
+		auto& pinput = _player->getComponent<CInput>();
+		pinput.distanceRemainingNeg = { 0, 0 };
+		pinput.distanceRemainingPos = { 0, 0 };
 		_playerData.spawnPos = { 0, 5 };
+		auto pixelPos = gridToMidPixel(_playerData.spawnPos.x, _playerData.spawnPos.y, _player);
+		pPos = pixelPos;
+		pinput.down = false;
+		pinput.left = false;
+		pinput.right = false;
+		pinput.up = false;
 		_game->changeScene("PLAY", std::make_shared<Scene_DecaCube>(_game, "../assets/cubetop.txt"), false);
 	}
 	else if (pPos.y < 0) {
+		auto& pinput = _player->getComponent<CInput>();
+		pinput.distanceRemainingNeg = { 0, 0 };
+		pinput.distanceRemainingPos = { 0, 0 };
 		_playerData.spawnPos = { 5, 0 };
+		auto pixelPos = gridToMidPixel(_playerData.spawnPos.x, _playerData.spawnPos.y, _player);
+		pPos = pixelPos;
+		pinput.down = false;
+		pinput.left = false;
+		pinput.right = false;
+		pinput.up = false;
 		_game->changeScene("PLAY_BACK", std::make_shared<Scene_CubeBack>(_game, "../assets/cubeback.txt"), false);
 	}
 	else if (pPos.y > 440) {
+		auto& pinput = _player->getComponent<CInput>();
+		pinput.distanceRemainingNeg = { 0, 0 };
+		pinput.distanceRemainingPos = { 0, 0 };
 		_playerData.spawnPos = { 5, 10 };
+		auto pixelPos = gridToMidPixel(_playerData.spawnPos.x, _playerData.spawnPos.y, _player);
+		pPos = pixelPos;
+		pinput.down = false;
+		pinput.left = false;
+		pinput.right = false;
+		pinput.up = false;
 		_game->changeScene("PLAY_FRONT", std::make_shared<Scene_CubeFront>(_game, "../assets/cubefront.txt"), false);
 	}
 }

@@ -154,17 +154,14 @@ void Scene_DecaCube::loadFromFile(const std::string& path)
 		}
 		else if (token == "Player") {
 			std::string name;
-			float speed, lives, gx, gy;
+			
 
-			config >> name >> speed >> lives >> gx >> gy;
-
-			_config.playerSpeed = speed;
-			_lives = lives;
+			config >> name;
 
 			_player = _entityManager.addEntity("robert");
 			auto bb = _player->addComponent<CAnimation>(Assets::getInstance().getAnimation(name)).animation.getBB();
 			_player->addComponent<CBoundingBox>(bb);
-			auto pixelPos = gridToMidPixel(gx, gy, _player);
+			auto pixelPos = gridToMidPixel(_playerData.spawnPos.x, _playerData.spawnPos.y, _player);
 			_player->addComponent<CTransform>(pixelPos);
 			_player->addComponent<CState>("alive");
 			_player->addComponent<CInput>();
@@ -335,27 +332,62 @@ sPtrEntt Scene_DecaCube::getCurrentTile()
 
 void Scene_DecaCube::checkIfPlayerInBounds()
 {
-	auto pPos = _player->getComponent<CTransform>().pos;
+	auto& pPos = _player->getComponent<CTransform>().pos;
 
 	//each side of the square leads to another side of the square
 	//only one exit on each side
 
 	if (pPos.x < 0) {
-
+		auto& pinput = _player->getComponent<CInput>();
+		pinput.distanceRemainingNeg = { 0, 0 };
+		pinput.distanceRemainingPos = { 0, 0 };
 		_playerData.spawnPos = { 10, 5 };
+		auto pixelPos = gridToMidPixel(_playerData.spawnPos.x, _playerData.spawnPos.y, _player);
+		pPos = pixelPos;
+		pinput.down = false;
+		pinput.left = false;
+		pinput.right = false;
+		pinput.up = false;
 		_game->changeScene("PLAY_LEFT", std::make_shared<Scene_CubeLeft>(_game, "../assets/cubeleft.txt"), false);
 
 	}
 	else if (pPos.x > 440) {
+		auto& pinput = _player->getComponent<CInput>();
+		pinput.distanceRemainingNeg = { 0, 0 };
+		pinput.distanceRemainingPos = { 0, 0 };
 		_playerData.spawnPos = { 0, 5 };
+		auto pixelPos = gridToMidPixel(_playerData.spawnPos.x, _playerData.spawnPos.y, _player);
+		pPos = pixelPos;
+		pinput.down = false;
+		pinput.left = false;
+		pinput.right = false;
+		pinput.up = false;
 		_game->changeScene("PLAY_RIGHT", std::make_shared<Scene_CubeRight>(_game, "../assets/cuberight.txt"), false);
 	}
 	else if (pPos.y < 0) {
+		auto& pinput = _player->getComponent<CInput>();
+		pinput.distanceRemainingNeg = { 0, 0 };
+		pinput.distanceRemainingPos = { 0, 0 };
 		_playerData.spawnPos = { 5, 0 };
+		auto pixelPos = gridToMidPixel(_playerData.spawnPos.x, _playerData.spawnPos.y, _player);
+		pPos = pixelPos;
+		pinput.down = false;
+		pinput.left = false;
+		pinput.right = false;
+		pinput.up = false;
 		_game->changeScene("PLAY_BACK", std::make_shared<Scene_CubeBack>(_game, "../assets/cubeback.txt"), false);
 	}
 	else if (pPos.y > 440) {
+		auto& pinput = _player->getComponent<CInput>();
+		pinput.distanceRemainingNeg = { 0, 0 };
+		pinput.distanceRemainingPos = { 0, 0 };
 		_playerData.spawnPos = { 5, 10 };
+		auto pixelPos = gridToMidPixel(_playerData.spawnPos.x, _playerData.spawnPos.y, _player);
+		pPos = pixelPos;
+		pinput.down = false;
+		pinput.left = false;
+		pinput.right = false;
+		pinput.up = false;
 		_game->changeScene("PLAY_FRONT", std::make_shared<Scene_CubeFront>(_game, "../assets/cubefront.txt"), false);
 	}
 }
