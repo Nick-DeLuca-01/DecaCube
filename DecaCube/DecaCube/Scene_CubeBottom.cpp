@@ -398,10 +398,7 @@ void Scene_CubeBottom::fixPlayerPos()
 
 	auto pixelPos = gridToMidPixel(_playerData.spawnPos.x, _playerData.spawnPos.y, _player);
 	_player->getComponent<CTransform>().pos = pixelPos;
-	_player->getComponent<CInput>().down = false;
-	_player->getComponent<CInput>().up = false;
-	_player->getComponent<CInput>().left = false;
-	_player->getComponent<CInput>().right = false;
+	_nextControl = "";
 }
 
 Scene_CubeBottom::Scene_CubeBottom(GameEngine* gameEngine, const std::string& levelPath)
