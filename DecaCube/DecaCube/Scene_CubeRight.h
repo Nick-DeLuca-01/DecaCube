@@ -28,13 +28,30 @@ class Scene_CubeRight : public Scene
     bool                                _drawAABB{ false };
     const Vec2                          gridSize{ 40, 40 };
     bool                                _drawCam{ false };
-    int                                 _lives;
+
 
     std::string                         _levelPath;
     std::string                         _nextControl;
 
+    void sMovement(sf::Time dt);
+    void sAnimation();
+    void sCollision();
+
     // helper functions
     void	                onEnd() override;
+    void init(const std::string& path);
+    void registerActions();
+    void spawnPlayer(sf::Vector2f pos);
+    void loadLevel(const std::string& path);
+    Vec2 gridToMidPixel(float gridX, float gridY, std::shared_ptr<Entity> entity);
+    void loadFromFile(const std::string& path);
+    void playerMovement();
+    void adjustPlayerPosition();
+    void snapToGrid(std::shared_ptr<Entity> entity);
+    bool canMoveInDirection(std::string direction);
+    sPtrEntt getCurrentTile();
+    void checkIfPlayerInBounds();
+    void fixPlayerPos();
 public:
     Scene_CubeRight(GameEngine* gameEngine, const std::string& levelPath);
     void		            update(sf::Time dt) override;

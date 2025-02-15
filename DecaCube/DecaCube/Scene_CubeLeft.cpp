@@ -346,6 +346,7 @@ void Scene_CubeLeft::checkIfPlayerInBounds()
 		pinput.left = false;
 		pinput.right = false;
 		pinput.up = false;
+		_playerData.sceneChanged = true;
 		_game->changeScene("PLAY_BOTTOM", std::make_shared<Scene_CubeBottom>(_game, "../assets/cubebottom.txt"), false);
 
 	}
@@ -374,6 +375,7 @@ void Scene_CubeLeft::checkIfPlayerInBounds()
 		pinput.left = false;
 		pinput.right = false;
 		pinput.up = false;
+		_playerData.sceneChanged = true;
 		_game->changeScene("PLAY_BACK", std::make_shared<Scene_CubeBack>(_game, "../assets/cubeback.txt"), false);
 	}
 	else if (pPos.y > 440) {
@@ -387,6 +389,7 @@ void Scene_CubeLeft::checkIfPlayerInBounds()
 		pinput.left = false;
 		pinput.right = false;
 		pinput.up = false;
+		_playerData.sceneChanged = true;
 		_game->changeScene("PLAY_FRONT", std::make_shared<Scene_CubeFront>(_game, "../assets/cubefront.txt"), false);
 	}
 }
