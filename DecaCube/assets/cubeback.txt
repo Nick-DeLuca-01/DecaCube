@@ -99,7 +99,7 @@ Tile	DownWall	7	8
 Tile	RightWall	8	8
 Tile	UpLeftCorner	9	8
 Tile	UpRightCorner	10	8
-Tile	DownRightCorner	0	9
+Tile	DownLeftCorner	0	9
 Tile	LeftRightHall	1	9
 Tile	UpRightCorner	2	9
 Tile	UpLeftCorner	3	9
