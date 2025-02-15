@@ -116,7 +116,7 @@ Tile	UpRightCorner	2	10
 Tile	UpLeftCorner	3	10
 Tile	UpRightCorner	4	10
 Tile	UpDownHall	5	10
-Tile	UpRightCorner	6	10
+Tile	UpLeftCorner	6	10
 Tile	LeftRightHall	7	10
 Tile	UpWall	8	10
 Tile	LeftRightHall	9	10

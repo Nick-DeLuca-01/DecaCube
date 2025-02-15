@@ -92,7 +92,7 @@ Tile	UpDownHall	0	8
 Tile	UpLeftCorner	1	8
 Tile	NoWall	2	8
 Tile	RightWall	3	8
-Tile	UpLeftCorner	4	8
+Tile	DownLeftCorner	4	8
 Tile	RightWall	5	8
 Tile	DownLeftCorner	6	8
 Tile	UpRightCorner	7	8
