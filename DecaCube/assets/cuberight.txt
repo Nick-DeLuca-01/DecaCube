@@ -126,4 +126,4 @@ Tile	UpRightCorner	10	10
 # itemName gridX gridY points
 
 Item Ticket 0 0 400
-Item Frog 0 10 600
+Item Frog 10 0 600
