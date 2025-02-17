@@ -133,6 +133,32 @@ void Scene_CubeBottom::loadFromFile(const std::string& path)
 			e->addComponent<CTransform>(gridToMidPixel(gx, gy, e));
 			e->addComponent<CState>(name);
 		}
+		else if (token == "Item")
+		{
+			std::string name;
+
+			bool collected = false;
+
+			float gridX, gridY, points;
+
+			config >> name >> gridX >> gridY >> points;
+
+			for (int i = 0; i < _playerData.collectedItems.size(); i++) {
+				if (name == _playerData.collectedItems[i]) {
+					collected = true;
+				}
+			}
+
+			if (!collected) {
+				auto e = _entityManager.addEntity("item");
+				auto bb = e->addComponent<CAnimation>(Assets::getInstance().getAnimation(name)).animation.getBB();
+				e->addComponent<CBoundingBox>(bb);
+				auto pixelPos = gridToMidPixel(gridX, gridY, e);
+				e->addComponent<CTransform>(pixelPos);
+				e->addComponent<CState>(name);
+				e->addComponent<CScore>(points);
+			}
+		}
 		else
 		{
 			std::string buffer;

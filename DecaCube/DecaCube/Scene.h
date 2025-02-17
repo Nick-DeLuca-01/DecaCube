@@ -5,6 +5,7 @@
 #include "Command.h"
 #include <map>
 #include <string>
+#include <vector>
 
 struct PlayerData {
 	int score = 0;
@@ -12,6 +13,7 @@ struct PlayerData {
 	int rotation = 0;
 	int lives = 3;
 	bool sceneChanged = false;
+	std::vector<std::string> collectedItems;
 };
 
 struct LevelConfig {
