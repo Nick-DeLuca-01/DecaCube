@@ -121,3 +121,9 @@ Tile	LeftRightHall	7	10
 Tile	UpWall	8	10
 Tile	LeftRightHall	9	10
 Tile	UpRightCorner	10	10
+
+# items
+# itemName gridX gridY points
+
+Item Medal 0 4 500
+Item Sunrise 10 8 500

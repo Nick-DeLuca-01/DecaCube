@@ -121,3 +121,9 @@ Tile	LeftRightHall	7	10
 Tile	LeftRightHall	8	10
 Tile	LeftRightHall	9	10
 Tile	UpRightCorner	10	10
+
+# items
+# itemName gridX gridY points
+
+Item Book 5 4 300
+Item Pot 5 5 300

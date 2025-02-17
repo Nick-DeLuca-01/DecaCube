@@ -136,7 +136,10 @@ Tile UpRightCorner 10 10
 # playerTag AnimationName
 Player Robert
 
+# items
+# itemName gridX gridY points
 
+Item Ball 8 9 100
 
 
 

@@ -132,3 +132,9 @@ Tile LeftRightHall 7 10
 Tile UpRightCorner 8 10
 Tile UpLeftCorner 9 10
 Tile UpRightCorner 10 10
+
+# items
+# itemName gridX gridY points
+
+Item Envelope 3 5 400
+Item Key 7 5 400

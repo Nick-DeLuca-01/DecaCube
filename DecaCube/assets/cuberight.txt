@@ -121,3 +121,9 @@ Tile	LeftRightHall	7	10
 Tile	UpWall	8	10
 Tile	LeftRightHall	9	10
 Tile	UpRightCorner	10	10
+
+# items
+# itemName gridX gridY points
+
+Item Ticket 0 0 400
+Item Frog 0 10 600

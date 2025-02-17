@@ -24,6 +24,17 @@ Texture TexUpWall ../assets/textures/tiles/UpWall.png
 
 Texture TexRobert ../assets/textures/characters/Robert.png
 
+Texture TexBall ../assets/textures/items/Ball.png
+Texture TexBook ../assets/textures/items/Book.png
+Texture TexEnvelope ../assets/textures/items/Envelope.png
+Texture TexFrog ../assets/textures/items/Frog.png
+Texture TexHeart ../assets/textures/items/Heart.png
+Texture TexKey ../assets/textures/items/Key.png
+Texture TexMedal ../assets/textures/items/Medal.png
+Texture TexPot ../assets/textures/items/Pot.png
+Texture TexSunrise ../assets/textures/items/Sunrise.png
+Texture TexTicket ../assets/textures/items/Ticket.png
+
 # Animation Name Texture Frames Speed
 
 Animation DownEnd TexDownEnd 1 0
@@ -44,3 +55,14 @@ Animation UpRightCorner TexUpRightCorner 1 0
 Animation UpWall TexUpWall 1 0
 
 Animation Robert TexRobert 1 0
+
+Animation Ball TexBall 1 0
+Animation Heart TexHeart 1 0
+Animation Book TexBook 1 0
+Animation Pot TexPot 1 0
+Animation Ticket TexTicket 1 0
+Animation Frog TexFrog 1 0
+Animation Medal TexMedal 1 0
+Animation Sunrise TexSunrise 1 0
+Animation Envelope TexEnvelope 1 0
+Animation Key TexKey 1 0
