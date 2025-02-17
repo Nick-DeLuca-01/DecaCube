@@ -65,6 +65,16 @@ void Scene_CubeBottom::sAnimation()
 
 void Scene_CubeBottom::sCollision()
 {
+	for (auto e : _entityManager.getEntities("item")) {
+		auto overlap = Physics::getOverlap(e, _player);
+		if (overlap.x > 0 && overlap.y > 0) {
+			_playerData.score += e->getComponent<CScore>().score;
+			_playerData.collectedItems.push_back(e->getComponent<CState>().state);
+			e->destroy();
+			std::cout << _playerData.score << " points\n"; //temporary debug line
+
+		}
+	}
 }
 
 void Scene_CubeBottom::onEnd()
@@ -444,6 +454,7 @@ void Scene_CubeBottom::update(sf::Time dt)
 		sDoAction(Command{ _nextControl, "START" });
 	}
 	sRender();
+	sCollision();
 	checkIfPlayerInBounds();
 }
 
