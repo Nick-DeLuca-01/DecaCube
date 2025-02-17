@@ -40,6 +40,7 @@ public:
 		std::shared_ptr<Scene> scene,
 		bool endCurrentScene = false);
 	void				quit();
+	void				reset();
 	void				run();
 	void				quitLevel();
 	void				backLevel();

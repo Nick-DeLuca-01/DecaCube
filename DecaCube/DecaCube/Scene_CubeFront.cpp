@@ -82,6 +82,7 @@ void Scene_CubeFront::sCollision()
 void Scene_CubeFront::onEnd()
 {
 	_game->changeScene("MENU", nullptr, false);
+	_game->reset();
 }
 
 void Scene_CubeFront::init(const std::string& path)
@@ -185,9 +186,6 @@ void Scene_CubeFront::loadFromFile(const std::string& path)
 	_player->addComponent<CTransform>(pixelPos);
 	_player->addComponent<CState>("alive");
 	_player->addComponent<CInput>();
-
-
-	std::cout << "DONE READING";
 }
 
 void Scene_CubeFront::playerMovement()
@@ -459,6 +457,16 @@ void Scene_CubeFront::update(sf::Time dt)
 	sRender();
 	sCollision();
 	checkIfPlayerInBounds();
+
+	if (_playerData.collectedItems.size() >= 10) {
+		std::cout << "You win! Final score: " << _playerData.score;
+		_playerData.lives = 3;
+		_playerData.sceneChanged = false;
+		_playerData.score = 0;
+		_playerData.collectedItems.clear();
+		_playerData.spawnPos = { 5, 5 };
+		onEnd();
+	}
 }
 
 void Scene_CubeFront::sDoAction(const Command& command)

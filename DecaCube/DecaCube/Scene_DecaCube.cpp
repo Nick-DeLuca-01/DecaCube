@@ -81,6 +81,7 @@ void Scene_DecaCube::sCollision()
 void Scene_DecaCube::onEnd()
 {
 	_game->changeScene("MENU", nullptr, false);
+	_game->reset();
 }
 
 void Scene_DecaCube::registerActions()
@@ -210,8 +211,6 @@ void Scene_DecaCube::loadFromFile(const std::string& path)
 		}
 		config >> token;
 	}
-
-	std::cout << "DONE READING";
 }
 
 void Scene_DecaCube::snapToGrid(std::shared_ptr<Entity> entity)
@@ -474,6 +473,16 @@ void Scene_DecaCube::update(sf::Time dt)
 	sRender();
 	sCollision();
 	checkIfPlayerInBounds();
+
+	if (_playerData.collectedItems.size() >= 10) {
+		std::cout << "You win! Final score: " << _playerData.score;
+		_playerData.lives = 3;
+		_playerData.sceneChanged = false;
+		_playerData.score = 0;
+		_playerData.collectedItems.clear();
+		_playerData.spawnPos = { 5, 5 };
+		onEnd();
+	}
 }
 
 void Scene_DecaCube::sDoAction(const Command& command)

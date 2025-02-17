@@ -109,6 +109,19 @@ void GameEngine::quit()
 	_window.close();
 }
 
+void GameEngine::reset()
+{
+	//close all game windows
+
+	changeScene("PLAY", nullptr, false);
+	changeScene("PLAY_RIGHT", nullptr, true);
+	changeScene("PLAY_LEFT", nullptr, true);
+	changeScene("PLAY_FRONT", nullptr, true);
+	changeScene("PLAY_BOTTOM", nullptr, true);
+	changeScene("PLAY_BACK", nullptr, true);
+	quitLevel();
+}
+
 
 void GameEngine::run()
 {
