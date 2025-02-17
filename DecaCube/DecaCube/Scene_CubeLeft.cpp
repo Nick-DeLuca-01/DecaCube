@@ -499,6 +499,15 @@ void Scene_CubeLeft::sRender()
 		_game->window().draw(anim.getSprite());
 
 	}
+	for (auto e : _entityManager.getEntities("item")) {
+		//render items on top of tiles but below other entities
+		auto& tfm = e->getComponent<CTransform>();
+		auto& anim = e->getComponent<CAnimation>().animation;
+
+		anim.getSprite().setRotation(tfm.angle);
+		anim.getSprite().setPosition(tfm.pos.x, tfm.pos.y);
+		_game->window().draw(anim.getSprite());
+	}
 	for (auto e : _entityManager.getEntities("robert")) {
 		//render player
 		auto& tfm = e->getComponent<CTransform>();
