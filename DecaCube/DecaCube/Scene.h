@@ -14,6 +14,7 @@ struct PlayerData {
 	int lives = 3;
 	bool sceneChanged = false;
 	std::vector<std::string> collectedItems;
+	int faceRotation = 1; //up = up: 0, left = up: 1, down = up: 2, right = up: 3
 };
 
 struct LevelConfig {

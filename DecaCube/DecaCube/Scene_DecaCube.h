@@ -4,6 +4,7 @@
 #include "Scene.h"
 #include "Vec2.h"
 #include <queue>
+#include <string>
 
 
 //struct SpawnPoint {
@@ -58,6 +59,7 @@ class Scene_DecaCube : public Scene
     sPtrEntt getCurrentTile();
     void checkIfPlayerInBounds();
     void fixPlayerPos();
+    std::string getRotatedTileName(std::string name);
 
 public:
     Scene_DecaCube(GameEngine* gameEngine, const std::string& levelPath);
