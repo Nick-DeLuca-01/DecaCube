@@ -395,13 +395,7 @@ void Scene_DecaCube::checkIfPlayerInBounds()
 		pinput.distanceRemainingNeg = { 0, 0 };
 		pinput.distanceRemainingPos = { 0, 0 };
 		_playerData.spawnPos = { 10, 5 };
-		auto pixelPos = gridToMidPixel(_playerData.spawnPos.x, _playerData.spawnPos.y, _player);
-		pPos = pixelPos;
-		pinput.down = false;
-		pinput.left = false;
-		pinput.right = false;
-		pinput.up = false;
-		_playerData.sceneChanged = true;
+		
 		_game->changeScene("PLAY_LEFT", std::make_shared<Scene_CubeLeft>(_game, "../assets/cubeleft.txt"), false);
 
 	}

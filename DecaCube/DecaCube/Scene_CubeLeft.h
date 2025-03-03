@@ -52,6 +52,8 @@ class Scene_CubeLeft : public Scene
     sPtrEntt getCurrentTile();
     void checkIfPlayerInBounds();
     void fixPlayerPos();
+    std::string getRotatedTileName(std::string name);
+    Vec2 rotateTilePosition(Vec2 prePos);
 
 public:
     Scene_CubeLeft(GameEngine* gameEngine, const std::string& levelPath);

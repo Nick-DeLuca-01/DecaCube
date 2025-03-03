@@ -52,6 +52,8 @@ class Scene_CubeFront : public Scene
     sPtrEntt getCurrentTile();
     void checkIfPlayerInBounds();
     void fixPlayerPos();
+    std::string getRotatedTileName(std::string name);
+    Vec2 rotateTilePosition(Vec2 prePos);
 public:
     Scene_CubeFront(GameEngine* gameEngine, const std::string& levelPath);
     void		            update(sf::Time dt) override;

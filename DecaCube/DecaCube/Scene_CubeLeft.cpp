@@ -143,8 +143,16 @@ void Scene_CubeLeft::loadFromFile(const std::string& path)
 			auto e = _entityManager.addEntity("tile");
 			auto bb = e->addComponent<CAnimation>(Assets::getInstance().getAnimation(name)).animation.getBB();
 			e->addComponent<CBoundingBox>(bb);
+			Vec2 prePos(gx, gy);
+
+			Vec2 newPos = rotateTilePosition(prePos);
+
+			gx = newPos.x;
+			gy = newPos.y;
+
 			e->addComponent<CTransform>(gridToMidPixel(gx, gy, e));
-			e->addComponent<CState>(name);
+			e->getComponent<CTransform>().angle = 90 * _playerData.faceRotation; //each face gets rotated based on current face rotation
+			e->addComponent<CState>(getRotatedTileName(name));
 		}
 		else if (token == "Item")
 		{
@@ -166,6 +174,13 @@ void Scene_CubeLeft::loadFromFile(const std::string& path)
 				auto e = _entityManager.addEntity("item");
 				auto bb = e->addComponent<CAnimation>(Assets::getInstance().getAnimation(name)).animation.getBB();
 				e->addComponent<CBoundingBox>(bb);
+
+				Vec2 prePos(gridX, gridY);
+				Vec2 newPos = rotateTilePosition(prePos);
+
+				gridX = newPos.x;
+				gridY = newPos.y;
+
 				auto pixelPos = gridToMidPixel(gridX, gridY, e);
 				e->addComponent<CTransform>(pixelPos);
 				e->addComponent<CState>(name);
@@ -438,6 +453,199 @@ void Scene_CubeLeft::fixPlayerPos()
 	_player->getComponent<CInput>().up = false;
 	_player->getComponent<CInput>().left = false;
 	_player->getComponent<CInput>().right = false;
+}
+
+std::string Scene_CubeLeft::getRotatedTileName(std::string name)
+{
+	if (name == "DownEnd") {
+		switch (_playerData.faceRotation) {
+		case 0:
+			return name;
+		case 1:
+			return "LeftEnd";
+		case 2:
+			return "UpEnd";
+		case 3:
+			return "RightEnd";
+		}
+	}
+	if (name == "DownLeftCorner") {
+		switch (_playerData.faceRotation) {
+		case 0:
+			return name;
+		case 1:
+			return "UpLeftCornerCorner";
+		case 2:
+			return "UpRightCorner";
+		case 3:
+			return "DownRightCorner";
+		}
+	}
+	if (name == "DownRightCorner") {
+		switch (_playerData.faceRotation) {
+		case 0:
+			return name;
+		case 1:
+			return "DownLeftCorner";
+		case 2:
+			return "UpLeftCorner";
+		case 3:
+			return "UpRightCorner";
+		}
+	}
+	if (name == "DownWall") {
+		switch (_playerData.faceRotation) {
+		case 0:
+			return name;
+		case 1:
+			return "LeftWall";
+		case 2:
+			return "UpWall";
+		case 3:
+			return "RightWall";
+		}
+	}
+	if (name == "LeftEnd") {
+		switch (_playerData.faceRotation) {
+		case 0:
+			return name;
+		case 1:
+			return "UpEnd";
+		case 2:
+			return "RightEnd";
+		case 3:
+			return "DownEnd";
+		}
+	}
+	if (name == "LeftRightHall") {
+		switch (_playerData.faceRotation) {
+		case 0:
+			return name;
+		case 1:
+			return "UpDownHall";
+		case 2:
+			return "LeftRightHall";
+		case 3:
+			return "UpDownHall";
+		}
+	}
+	if (name == "LeftWall") {
+		switch (_playerData.faceRotation) {
+		case 0:
+			return name;
+		case 1:
+			return "UpWall";
+		case 2:
+			return "RightWall";
+		case 3:
+			return "DownWall";
+		}
+	}
+	if (name == "NoWall") {
+		return name;
+	}
+	if (name == "NoAccess") {
+		return name;
+	}
+	if (name == "RightEnd") {
+		switch (_playerData.faceRotation) {
+		case 0:
+			return name;
+		case 1:
+			return "DownEnd";
+		case 2:
+			return "LeftEnd";
+		case 3:
+			return "UpEnd";
+		}
+	}
+	if (name == "RightWall") {
+		switch (_playerData.faceRotation) {
+		case 0:
+			return name;
+		case 1:
+			return "DownWall";
+		case 2:
+			return "LeftWall";
+		case 3:
+			return "UpWall";
+		}
+	}
+	if (name == "UpDownHall") {
+		switch (_playerData.faceRotation) {
+		case 0:
+			return name;
+		case 1:
+			return "LeftRightHall";
+		case 2:
+			return "UpDownHall";
+		case 3:
+			return "LeftRightHall";
+		}
+	}
+	if (name == "UpEnd") {
+		switch (_playerData.faceRotation) {
+		case 0:
+			return name;
+		case 1:
+			return "RightEnd";
+		case 2:
+			return "DownEnd";
+		case 3:
+			return "LeftEnd";
+		}
+	}
+	if (name == "UpLeftCorner") {
+		switch (_playerData.faceRotation) {
+		case 0:
+			return name;
+		case 1:
+			return "UpRightCorner";
+		case 2:
+			return "DownRightCorner";
+		case 3:
+			return "DownLeftCorner";
+		}
+	}
+	if (name == "UpRightCorner") {
+		switch (_playerData.faceRotation) {
+		case 0:
+			return name;
+		case 1:
+			return "DownRightCorner";
+		case 2:
+			return "DownLeftCorner";
+		case 3:
+			return "UpLeftCorner";
+		}
+	}
+	if (name == "UpWall") {
+		switch (_playerData.faceRotation) {
+		case 0:
+			return name;
+		case 1:
+			return "RightWall";
+		case 2:
+			return "DownWall";
+		case 3:
+			return "LeftWall";
+		}
+	}
+	return name;
+}
+
+Vec2 Scene_CubeLeft::rotateTilePosition(Vec2 prePos)
+{
+	if (_playerData.faceRotation == 0) {
+		return prePos;
+	}
+	Vec2 newPos = prePos;
+	for (auto i = 0; i < _playerData.faceRotation; i++) {
+		int tempX = newPos.x;
+		newPos.x = newPos.y;
+		newPos.y = 10 - tempX;
+	}
+	return newPos;
 }
 
 Scene_CubeLeft::Scene_CubeLeft(GameEngine* gameEngine, const std::string& levelPath)
