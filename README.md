@@ -1,2 +1,2 @@
-# ComprehensiveDevProject
+# DecaCube
 Game Project Repository
