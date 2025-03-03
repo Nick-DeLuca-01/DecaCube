@@ -159,6 +159,14 @@ void Scene_DecaCube::loadFromFile(const std::string& path)
 			auto e = _entityManager.addEntity("tile");
 			auto bb = e->addComponent<CAnimation>(Assets::getInstance().getAnimation(name)).animation.getBB();
 			e->addComponent<CBoundingBox>(bb);
+
+			Vec2 prePos(gx, gy);
+
+			Vec2 newPos = rotateTilePosition(prePos);
+
+			gx = newPos.x;
+			gy = newPos.y;
+
 			e->addComponent<CTransform>(gridToMidPixel(gx, gy, e));
 			e->getComponent<CTransform>().angle = 90 * _playerData.faceRotation; //each face gets rotated based on current face rotation
 			e->addComponent<CState>(getRotatedTileName(name));
@@ -199,6 +207,13 @@ void Scene_DecaCube::loadFromFile(const std::string& path)
 				auto e = _entityManager.addEntity("item");
 				auto bb = e->addComponent<CAnimation>(Assets::getInstance().getAnimation(name)).animation.getBB();
 				e->addComponent<CBoundingBox>(bb);
+
+				Vec2 prePos(gridX, gridY);
+				Vec2 newPos = rotateTilePosition(prePos);
+
+				gridX = newPos.x;
+				gridY = newPos.y;
+
 				auto pixelPos = gridToMidPixel(gridX, gridY, e);
 				e->addComponent<CTransform>(pixelPos);
 				e->addComponent<CState>(name);
@@ -620,6 +635,20 @@ std::string Scene_DecaCube::getRotatedTileName(std::string name)
 		}
 	}
 	return name;
+}
+
+Vec2 Scene_DecaCube::rotateTilePosition(Vec2 prePos)
+{
+	if (_playerData.faceRotation == 0) {
+		return prePos;
+	}
+	Vec2 newPos = prePos;
+	for (auto i = 0; i < _playerData.faceRotation; i++) {
+		int tempX = newPos.x;
+		newPos.x = newPos.y;
+		newPos.y = 10 - tempX;
+	}
+	return newPos;
 }
 
 Vec2 Scene_DecaCube::gridToMidPixel(float gridX, float gridY, std::shared_ptr<Entity> entity)

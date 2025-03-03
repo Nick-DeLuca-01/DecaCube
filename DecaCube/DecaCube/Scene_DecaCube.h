@@ -60,6 +60,7 @@ class Scene_DecaCube : public Scene
     void checkIfPlayerInBounds();
     void fixPlayerPos();
     std::string getRotatedTileName(std::string name);
+    Vec2 rotateTilePosition(Vec2 prePos);
 
 public:
     Scene_DecaCube(GameEngine* gameEngine, const std::string& levelPath);
