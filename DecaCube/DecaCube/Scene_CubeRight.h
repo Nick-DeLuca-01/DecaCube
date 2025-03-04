@@ -54,7 +54,7 @@ class Scene_CubeRight : public Scene
     sPtrEntt getCurrentTile();
     void checkIfPlayerInBounds();
     void fixPlayerPos();
-    std::string getRotatedTileName(std::string name);
+    std::string getRotatedTileName(std::string name, int rotations);
     Vec2 rotateTilePosition(Vec2 prePos);
     Vec2 rotateEntityPosition(Vec2 prePos);
     void rotateEntireFace();

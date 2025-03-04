@@ -152,7 +152,7 @@ void Scene_CubeFront::loadFromFile(const std::string& path)
 
 			e->addComponent<CTransform>(gridToMidPixel(gx, gy, e));
 			e->getComponent<CTransform>().angle = 90 * _playerData.faceRotation; //each face gets rotated based on current face rotation
-			e->addComponent<CState>(getRotatedTileName(name));
+			e->addComponent<CState>(getRotatedTileName(name, _playerData.faceRotation));
 		}
 		else if (token == "Item")
 		{
@@ -460,10 +460,10 @@ void Scene_CubeFront::fixPlayerPos()
 	_nextControl = "";
 }
 
-std::string Scene_CubeFront::getRotatedTileName(std::string name)
+std::string Scene_CubeFront::getRotatedTileName(std::string name, int rotations)
 {
 	if (name == "DownEnd") {
-		switch (_playerData.faceRotation) {
+		switch (rotations) {
 		case 0:
 			return name;
 		case 1:
@@ -475,7 +475,7 @@ std::string Scene_CubeFront::getRotatedTileName(std::string name)
 		}
 	}
 	if (name == "DownLeftCorner") {
-		switch (_playerData.faceRotation) {
+		switch (rotations) {
 		case 0:
 			return name;
 		case 1:
@@ -487,7 +487,7 @@ std::string Scene_CubeFront::getRotatedTileName(std::string name)
 		}
 	}
 	if (name == "DownRightCorner") {
-		switch (_playerData.faceRotation) {
+		switch (rotations) {
 		case 0:
 			return name;
 		case 1:
@@ -499,7 +499,7 @@ std::string Scene_CubeFront::getRotatedTileName(std::string name)
 		}
 	}
 	if (name == "DownWall") {
-		switch (_playerData.faceRotation) {
+		switch (rotations) {
 		case 0:
 			return name;
 		case 1:
@@ -511,7 +511,7 @@ std::string Scene_CubeFront::getRotatedTileName(std::string name)
 		}
 	}
 	if (name == "LeftEnd") {
-		switch (_playerData.faceRotation) {
+		switch (rotations) {
 		case 0:
 			return name;
 		case 1:
@@ -523,7 +523,7 @@ std::string Scene_CubeFront::getRotatedTileName(std::string name)
 		}
 	}
 	if (name == "LeftRightHall") {
-		switch (_playerData.faceRotation) {
+		switch (rotations) {
 		case 0:
 			return name;
 		case 1:
@@ -535,7 +535,7 @@ std::string Scene_CubeFront::getRotatedTileName(std::string name)
 		}
 	}
 	if (name == "LeftWall") {
-		switch (_playerData.faceRotation) {
+		switch (rotations) {
 		case 0:
 			return name;
 		case 1:
@@ -553,7 +553,7 @@ std::string Scene_CubeFront::getRotatedTileName(std::string name)
 		return name;
 	}
 	if (name == "RightEnd") {
-		switch (_playerData.faceRotation) {
+		switch (rotations) {
 		case 0:
 			return name;
 		case 1:
@@ -565,7 +565,7 @@ std::string Scene_CubeFront::getRotatedTileName(std::string name)
 		}
 	}
 	if (name == "RightWall") {
-		switch (_playerData.faceRotation) {
+		switch (rotations) {
 		case 0:
 			return name;
 		case 1:
@@ -577,7 +577,7 @@ std::string Scene_CubeFront::getRotatedTileName(std::string name)
 		}
 	}
 	if (name == "UpDownHall") {
-		switch (_playerData.faceRotation) {
+		switch (rotations) {
 		case 0:
 			return name;
 		case 1:
@@ -589,7 +589,7 @@ std::string Scene_CubeFront::getRotatedTileName(std::string name)
 		}
 	}
 	if (name == "UpEnd") {
-		switch (_playerData.faceRotation) {
+		switch (rotations) {
 		case 0:
 			return name;
 		case 1:
@@ -601,7 +601,7 @@ std::string Scene_CubeFront::getRotatedTileName(std::string name)
 		}
 	}
 	if (name == "UpLeftCorner") {
-		switch (_playerData.faceRotation) {
+		switch (rotations) {
 		case 0:
 			return name;
 		case 1:
@@ -613,7 +613,7 @@ std::string Scene_CubeFront::getRotatedTileName(std::string name)
 		}
 	}
 	if (name == "UpRightCorner") {
-		switch (_playerData.faceRotation) {
+		switch (rotations) {
 		case 0:
 			return name;
 		case 1:
@@ -625,7 +625,7 @@ std::string Scene_CubeFront::getRotatedTileName(std::string name)
 		}
 	}
 	if (name == "UpWall") {
-		switch (_playerData.faceRotation) {
+		switch (rotations) {
 		case 0:
 			return name;
 		case 1:
@@ -677,7 +677,10 @@ void Scene_CubeFront::rotateEntireFace()
 		if (e->getTag() == "tile") {
 			e->getComponent<CTransform>().angle = 90 * _playerData.faceRotation;
 			std::string prevState = e->getComponent<CState>().state;
-			e->getComponent<CState>().state = getRotatedTileName(prevState);
+			int rotations = _playerData.faceRotation - _prevRotation;
+			if (rotations < 0)
+				rotations *= -1;
+			e->getComponent<CState>().state = getRotatedTileName(prevState, (rotations));
 		}
 	}
 }
