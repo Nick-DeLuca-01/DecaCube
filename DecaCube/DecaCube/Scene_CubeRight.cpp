@@ -490,6 +490,14 @@ void Scene_CubeRight::fixPlayerPos()
 	_playerData.sceneChanged = false;
 
 	auto pixelPos = gridToMidPixel(_playerData.spawnPos.x, _playerData.spawnPos.y, _player);
+	if (_prevRotation != _playerData.faceRotation && _initialized) {
+		rotateEntireFace();
+		
+	}
+	if (!_initialized) {
+		_initialized = true;
+	}
+	_prevRotation = _playerData.faceRotation;
 	_player->getComponent<CTransform>().pos = pixelPos;
 	_nextControl = "";
 }
@@ -685,6 +693,33 @@ Vec2 Scene_CubeRight::rotateTilePosition(Vec2 prePos)
 		newPos.y = 10 - tempX;
 	}
 	return newPos;
+}
+
+Vec2 Scene_CubeRight::rotateEntityPosition(Vec2 prePos)
+{
+	Vec2 newPos = prePos;
+	int i = _prevRotation;
+	while (i != _playerData.faceRotation) {
+		int tempY = newPos.y;
+		newPos.y = newPos.x;
+		newPos.x = 440 - tempY;
+
+		i++;
+		i %= 4;
+	}
+	return newPos;
+}
+
+void Scene_CubeRight::rotateEntireFace()
+{
+	for (auto e : _entityManager.getEntities()) {
+		auto& pos = e->getComponent<CTransform>().pos;
+		Vec2 newPos = rotateEntityPosition(pos);
+		pos = newPos;
+		if (e->getTag() == "tile") {
+			e->getComponent<CTransform>().angle = 90 * _playerData.faceRotation;
+		}
+	}
 }
 
 Scene_CubeRight::Scene_CubeRight(GameEngine* gameEngine, const std::string& levelPath)

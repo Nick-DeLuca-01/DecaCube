@@ -29,6 +29,7 @@ class Scene_CubeBottom : public Scene
     const Vec2                          gridSize{ 40, 40 };
     bool                                _drawCam{ false };
     int                                 _prevRotation{ 0 };
+    bool                                _initialized{ false };
 
 
     std::string                         _levelPath;
@@ -55,6 +56,8 @@ class Scene_CubeBottom : public Scene
     void fixPlayerPos();
     std::string getRotatedTileName(std::string name);
     Vec2 rotateTilePosition(Vec2 prePos);
+    Vec2 rotateEntityPosition(Vec2 prePos);
+    void rotateEntireFace();
 public:
     Scene_CubeBottom(GameEngine* gameEngine, const std::string& levelPath);
     void		            update(sf::Time dt) override;
