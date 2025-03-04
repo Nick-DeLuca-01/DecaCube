@@ -389,14 +389,25 @@ void Scene_CubeFront::checkIfPlayerInBounds()
 		pinput.distanceRemainingNeg = { 0, 0 };
 		pinput.distanceRemainingPos = { 0, 0 };
 		_playerData.spawnPos = { 5, 0 };
-		auto pixelPos = gridToMidPixel(_playerData.spawnPos.x, _playerData.spawnPos.y, _player);
-		pPos = pixelPos;
-		pinput.down = false;
-		pinput.left = false;
-		pinput.right = false;
-		pinput.up = false;
 		_playerData.sceneChanged = true;
-		_game->changeScene("PLAY_LEFT", std::make_shared<Scene_CubeLeft>(_game, "../assets/cubeleft.txt"), false);
+		switch (_playerData.faceRotation) {
+		case 0:
+			_playerData.faceRotation = (_playerData.faceRotation + 3) % 4;
+			_game->changeScene("PLAY_LEFT", std::make_shared<Scene_CubeLeft>(_game, "../assets/cubeleft.txt"), false);
+			break;
+		case 1:
+			_playerData.faceRotation = (_playerData.faceRotation + 2) % 4;
+			_game->changeScene("PLAY_BOTTOM", std::make_shared<Scene_CubeBottom>(_game, "../assets/cubebottom.txt"), false);
+			break;
+		case 2:
+			_playerData.faceRotation = (_playerData.faceRotation + 1) % 4;
+			_game->changeScene("PLAY_RIGHT", std::make_shared<Scene_CubeRight>(_game, "../assets/cuberight.txt"), false);
+			break;
+		case 3:
+			_game->changeScene("PLAY", std::make_shared<Scene_DecaCube>(_game, "../assets/cubetop.txt"), false);
+			break;
+		}
+		
 
 	}
 	else if (pPos.x > 440) {
@@ -404,42 +415,73 @@ void Scene_CubeFront::checkIfPlayerInBounds()
 		pinput.distanceRemainingNeg = { 0, 0 };
 		pinput.distanceRemainingPos = { 0, 0 };
 		_playerData.spawnPos = { 5, 0 };
-		auto pixelPos = gridToMidPixel(_playerData.spawnPos.x, _playerData.spawnPos.y, _player);
-		pPos = pixelPos;
-		pinput.down = false;
-		pinput.left = false;
-		pinput.right = false;
-		pinput.up = false;
 		_playerData.sceneChanged = true;
-		_game->changeScene("PLAY_RIGHT", std::make_shared<Scene_CubeRight>(_game, "../assets/cuberight.txt"), false);
+		switch (_playerData.faceRotation) {
+		case 0:
+			_playerData.faceRotation = (_playerData.faceRotation + 1) % 4;
+			_game->changeScene("PLAY_RIGHT", std::make_shared<Scene_CubeRight>(_game, "../assets/cuberight.txt"), false);
+			break;
+		case 1:
+			_game->changeScene("PLAY", std::make_shared<Scene_DecaCube>(_game, "../assets/cubetop.txt"), false);
+			break;
+		case 2:
+			_playerData.faceRotation = (_playerData.faceRotation + 3) % 4;
+			_game->changeScene("PLAY_LEFT", std::make_shared<Scene_CubeLeft>(_game, "../assets/cubeleft.txt"), false);
+			break;
+		case 3:
+			_playerData.faceRotation = (_playerData.faceRotation + 2) % 4;
+			_game->changeScene("PLAY_BOTTOM", std::make_shared<Scene_CubeBottom>(_game, "../assets/cubebottom.txt"), false);
+			break;
+		}
 	}
 	else if (pPos.y < 0) {
 		auto& pinput = _player->getComponent<CInput>();
 		pinput.distanceRemainingNeg = { 0, 0 };
 		pinput.distanceRemainingPos = { 0, 0 };
 		_playerData.spawnPos = { 5, 0 };
-		auto pixelPos = gridToMidPixel(_playerData.spawnPos.x, _playerData.spawnPos.y, _player);
-		pPos = pixelPos;
-		pinput.down = false;
-		pinput.left = false;
-		pinput.right = false;
-		pinput.up = false;
 		_playerData.sceneChanged = true;
-		_game->changeScene("PLAY", std::make_shared<Scene_DecaCube>(_game, "../assets/cubetop.txt"), false);
+		switch (_playerData.faceRotation) {
+		case 0:
+			_game->changeScene("PLAY", std::make_shared<Scene_DecaCube>(_game, "../assets/cubetop.txt"), false);
+			break;
+		case 1:
+			_playerData.faceRotation = (_playerData.faceRotation + 3) % 4;
+			_game->changeScene("PLAY_LEFT", std::make_shared<Scene_CubeLeft>(_game, "../assets/cubeleft.txt"), false);
+			break;
+		case 2:
+			_playerData.faceRotation = (_playerData.faceRotation + 2) % 4;
+			_game->changeScene("PLAY_BOTTOM", std::make_shared<Scene_CubeBottom>(_game, "../assets/cubebottom.txt"), false);
+			break;
+		case 3:
+			_playerData.faceRotation = (_playerData.faceRotation + 1) % 4;
+			_game->changeScene("PLAY_RIGHT", std::make_shared<Scene_CubeRight>(_game, "../assets/cuberight.txt"), false);
+			break;
+		}
 	}
 	else if (pPos.y > 440) {
 		auto& pinput = _player->getComponent<CInput>();
 		pinput.distanceRemainingNeg = { 0, 0 };
 		pinput.distanceRemainingPos = { 0, 0 };
 		_playerData.spawnPos = { 5, 0 };
-		auto pixelPos = gridToMidPixel(_playerData.spawnPos.x, _playerData.spawnPos.y, _player);
-		pPos = pixelPos;
-		pinput.down = false;
-		pinput.left = false;
-		pinput.right = false;
-		pinput.up = false;
 		_playerData.sceneChanged = true;
-		_game->changeScene("PLAY_BOTTOM", std::make_shared<Scene_CubeBottom>(_game, "../assets/cubebottom.txt"), false);
+		switch (_playerData.faceRotation) {
+		case 0:
+			_playerData.faceRotation = (_playerData.faceRotation + 2) % 4;
+			_game->changeScene("PLAY_BOTTOM", std::make_shared<Scene_CubeBottom>(_game, "../assets/cubebottom.txt"), false);
+			break;
+		case 1:
+			_playerData.faceRotation = (_playerData.faceRotation + 1) % 4;
+			_game->changeScene("PLAY_RIGHT", std::make_shared<Scene_CubeRight>(_game, "../assets/cuberight.txt"), false);
+			break;
+		case 2:
+			_game->changeScene("PLAY", std::make_shared<Scene_DecaCube>(_game, "../assets/cubetop.txt"), false);
+			break;
+		case 3:
+			_playerData.faceRotation = (_playerData.faceRotation + 3) % 4;
+			_game->changeScene("PLAY_LEFT", std::make_shared<Scene_CubeLeft>(_game, "../assets/cubeleft.txt"), false);
+			break;
+		}
+		
 	}
 }
 
