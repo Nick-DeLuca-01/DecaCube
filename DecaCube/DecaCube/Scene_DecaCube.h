@@ -31,7 +31,7 @@ class Scene_DecaCube : public Scene
     bool                                _drawAABB{ false };
     const Vec2                          gridSize{ 40, 40 };
     bool                                _drawCam{ false };
-    int                                 _lives;
+    int                                 _prevRotation{ 0 };
 
     std::string                         _levelPath;
     std::string                         _nextControl;

@@ -490,6 +490,9 @@ void Scene_DecaCube::fixPlayerPos()
 	_playerData.sceneChanged = false;
 
 	auto pixelPos = gridToMidPixel(_playerData.spawnPos.x, _playerData.spawnPos.y, _player);
+
+
+
 	_player->getComponent<CTransform>().pos = pixelPos;
 	_nextControl = "";
 }
