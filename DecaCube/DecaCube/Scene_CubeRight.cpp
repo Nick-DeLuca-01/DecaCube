@@ -521,7 +521,7 @@ std::string Scene_CubeRight::getRotatedTileName(std::string name, int rotations)
 		case 0:
 			return name;
 		case 1:
-			return "UpLeftCornerCorner";
+			return "UpLeftCorner";
 		case 2:
 			return "UpRightCorner";
 		case 3:
@@ -719,9 +719,13 @@ void Scene_CubeRight::rotateEntireFace()
 		if (e->getTag() == "tile") {
 			e->getComponent<CTransform>().angle = 90 * _playerData.faceRotation;
 			std::string prevState = e->getComponent<CState>().state;
-			int rotations = _playerData.faceRotation - _prevRotation;
-			if (rotations < 0)
-				rotations *= -1;
+			int rotations;
+			if (_playerData.faceRotation == 0) {
+				rotations = 4 - _prevRotation;
+			}
+			else {
+				rotations = _playerData.faceRotation - _prevRotation;
+			}
 			e->getComponent<CState>().state = getRotatedTileName(prevState, (rotations));
 		}
 	}
