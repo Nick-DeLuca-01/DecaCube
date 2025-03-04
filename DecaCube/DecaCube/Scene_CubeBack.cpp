@@ -720,6 +720,8 @@ void Scene_CubeBack::rotateEntireFace()
 		pos = newPos;
 		if (e->getTag() == "tile") {
 			e->getComponent<CTransform>().angle = 90 * _playerData.faceRotation;
+			std::string prevState = e->getComponent<CState>().state;
+			e->getComponent<CState>().state = getRotatedTileName(prevState);
 		}
 	}
 }
