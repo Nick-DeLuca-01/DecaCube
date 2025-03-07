@@ -761,6 +761,8 @@ void Scene_CubeRight::update(sf::Time dt)
 		_playerData.score = 0;
 		_playerData.collectedItems.clear();
 		_playerData.spawnPos = { 5, 5 };
+		_playerData.faceRotation = 0;
+		_playerData.elapsedTime = sf::Time::Zero;
 		onEnd();
 	}
 }
