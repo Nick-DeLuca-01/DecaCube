@@ -752,6 +752,8 @@ void Scene_CubeRight::update(sf::Time dt)
 	sCollision();
 	checkIfPlayerInBounds();
 
+	_playerData.elapsedTime += dt;
+
 	if (_playerData.collectedItems.size() >= 10) {
 		std::cout << "You win! Final score: " << _playerData.score;
 		_playerData.lives = 3;
@@ -834,5 +836,14 @@ void Scene_CubeRight::sRender()
 	score.setPosition(10, 440);
 
 	_game->window().draw(score);
+	auto curTime = _playerData.elapsedTime.asSeconds();
+
+	int curTimeInt = std::trunc(std::round(curTime * 10) / 10);
+
+	sf::Text time("Time: " + std::to_string(curTimeInt), Assets::getInstance().getFont("main"), 32);
+	time.setFillColor(sf::Color(0, 0, 0));
+	time.setPosition(300, 440);
+
+	_game->window().draw(time);
 	_game->window().display();
 }
