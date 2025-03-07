@@ -480,6 +480,7 @@ void Scene_CubeFront::checkIfPlayerInBounds()
 			_playerData.faceRotation = (_playerData.faceRotation + 3) % 4;
 			_game->changeScene("PLAY_LEFT", std::make_shared<Scene_CubeLeft>(_game, "../assets/cubeleft.txt"), false);
 			break;
+				
 		}
 		
 	}
@@ -829,5 +830,10 @@ void Scene_CubeFront::sRender()
 		//std::cout << tfm.pos.x << " " << tfm.pos.y << "\n";
 		_game->window().draw(anim.getSprite());
 	}
+	sf::Text score("Score: " + std::to_string(_playerData.score), Assets::getInstance().getFont("main"), 32);
+	score.setFillColor(sf::Color(0, 0, 0));
+	score.setPosition(10, 440);
+
+	_game->window().draw(score);
 	_game->window().display();
 }

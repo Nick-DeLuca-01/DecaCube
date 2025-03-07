@@ -843,6 +843,12 @@ void Scene_DecaCube::sRender()
 		_game->window().draw(anim.getSprite());
 	}
 
+	sf::Text score("Score: " + std::to_string(_playerData.score), Assets::getInstance().getFont("main"), 32);
+	score.setFillColor(sf::Color(0, 0, 0));
+	score.setPosition(10, 440);
+
+	_game->window().draw(score);
+
 	//for (auto e : _entityManager.getEntities()) {
 	//	if (e->hasComponent<CBoundingBox>()) {
 	//		auto& box = e->getComponent<CBoundingBox>();

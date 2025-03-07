@@ -65,12 +65,13 @@ void Scene_Menu::sRender()
 	sf::Text footer("UP: W    DOWN: S   PLAY:D    QUIT: ESC",
 		Assets::getInstance().getFont("main"), 20);
 	footer.setFillColor(normalColor);
-	footer.setPosition(32, 700);
+	footer.setPosition(32, 460);
 
 
 	m_menuText.setFillColor(normalColor);
 	m_menuText.setString(m_title);
 	m_menuText.setPosition(10, 10);
+	
 	_game->window().draw(m_menuText);
 
 	for (size_t i{ 0 }; i < m_menuStrings.size(); ++i)

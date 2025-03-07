@@ -1,6 +1,6 @@
 # Game Config
 
-Window  440 440
+Window  440 480
 
 Font    main       	../assets/fonts/Sansation.ttf
 

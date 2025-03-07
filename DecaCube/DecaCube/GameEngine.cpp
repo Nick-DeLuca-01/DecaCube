@@ -23,7 +23,7 @@ void GameEngine::init(const std::string& path)
 	loadConfigFromFile(path, width, height);
 
 
-	_window.create(sf::VideoMode(width, height), "Not Mario");
+	_window.create(sf::VideoMode(width, height), "Deca-Cube");
 
 	_statisticsText.setFont(Assets::getInstance().getFont("main"));
 	_statisticsText.setPosition(15.0f, 5.0f);
