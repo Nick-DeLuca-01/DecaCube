@@ -734,6 +734,14 @@ void Scene_CubeBack::rotateEntireFace()
 			e->getComponent<CState>().state = getRotatedTileName(prevState, (rotations));
 		}
 	}
+	for (auto e : _enemyData.enemyManager.getEntities()) {
+		if (_player->getComponent<CLocation>().currentFace == e->getComponent<CLocation>().currentFace) {
+			auto& pos = e->getComponent<CTransform>().pos;
+			Vec2 newPos = rotateEntityPosition(pos);
+			pos = newPos;
+			e->getComponent<CTransform>().angle = 90 * _playerData.faceRotation;
+		}
+	}
 }
 
 Scene_CubeBack::Scene_CubeBack(GameEngine* gameEngine, const std::string& levelPath)
