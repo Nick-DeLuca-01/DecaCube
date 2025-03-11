@@ -146,6 +146,7 @@ void Scene_DecaCube::loadEnemies(const std::string& path)
 	if (!_enemyData.enemiesLoaded) {
 		_enemyData.enemyManager = EntityManager();
 		loadFromFile(path);
+		_enemyData.enemiesLoaded = true;
 	}
 }
 
@@ -232,7 +233,21 @@ void Scene_DecaCube::loadFromFile(const std::string& path)
 			}
 		}
 		else if (token == "Enemy") {
+			std::string name, sprite;
+			int face, posx, posy;
+			config >> name >> sprite >> face >> posx >> posy;
 
+			auto e = _enemyData.enemyManager.addEntity("enemy");
+			auto bb = e->addComponent<CAnimation>(Assets::getInstance().getAnimation(sprite)).animation.getBB();
+			e->addComponent<CBoundingBox>(bb);
+			auto pixelPos = gridToMidPixel(posx, posy, e);
+			e->addComponent<CTransform>(pixelPos);
+			e->addComponent<CState>(name);
+			e->addComponent<CLocation>(face);
+			bool onOtherFace = (face != 1);
+			e->addComponent<COffScreen>(onOtherFace);
+			bool seesPlayer = (name == "Charger" || name == "Gunner" || name == "Flipper" || name == "Revenant");
+			e->addComponent<CSight>(seesPlayer);
 		}
 		else
 		{
@@ -766,6 +781,7 @@ Scene_DecaCube::Scene_DecaCube(GameEngine* gameEngine, const std::string& levelP
 void Scene_DecaCube::update(sf::Time dt)
 {
 	_entityManager.update();
+	_enemyData.enemyManager.update();
 	if (_playerData.sceneChanged) {
 		fixPlayerPos();
 	}
@@ -859,6 +875,17 @@ void Scene_DecaCube::sRender()
 
 		//std::cout << tfm.pos.x << " " << tfm.pos.y << "\n";
 		_game->window().draw(anim.getSprite());
+	}
+	for (auto e : _enemyData.enemyManager.getEntities("enemy")) {
+		if (_player->getComponent<CLocation>().currentFace == e->getComponent<CLocation>().currentFace) {
+			auto& tfm = e->getComponent<CTransform>();
+			auto& anim = e->getComponent<CAnimation>().animation;
+
+			anim.getSprite().setRotation(tfm.angle);
+			anim.getSprite().setPosition(tfm.pos.x, tfm.pos.y);
+
+			_game->window().draw(anim.getSprite());
+		}
 	}
 
 	sf::Text score("Score: " + std::to_string(_playerData.score), Assets::getInstance().getFont("main"), 32);
