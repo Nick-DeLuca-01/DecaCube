@@ -8,6 +8,7 @@ Scene::~Scene()
 {}
 
 PlayerData Scene::_playerData;
+EnemyData Scene::_enemyData;
 
 void Scene::setPaused(bool paused)
 {

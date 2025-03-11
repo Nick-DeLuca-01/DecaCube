@@ -495,6 +495,7 @@ void Scene_CubeBottom::fixPlayerPos()
 	}
 	_prevRotation = _playerData.faceRotation;
 	_player->getComponent<CTransform>().pos = pixelPos;
+	_player->getComponent<CLocation>().currentFace = 6;
 	_nextControl = "";
 }
 

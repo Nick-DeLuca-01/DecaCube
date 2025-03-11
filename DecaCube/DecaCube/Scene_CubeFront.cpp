@@ -500,6 +500,7 @@ void Scene_CubeFront::fixPlayerPos()
 	}
 	_prevRotation = _playerData.faceRotation;
 	_player->getComponent<CTransform>().pos = pixelPos;
+	_player->getComponent<CLocation>().currentFace = 4;
 	_nextControl = "";
 }
 

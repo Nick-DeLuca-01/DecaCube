@@ -18,7 +18,7 @@ struct PlayerData {
 };
 
 struct EnemyData {
-	EntityManager _enemyManager;
+	EntityManager enemyManager;
 	bool enemiesLoaded = false;
 };
 

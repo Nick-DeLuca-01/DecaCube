@@ -129,6 +129,7 @@ void Scene_DecaCube::adjustPlayerPosition()
 void Scene_DecaCube::init(const std::string& path)
 {
 	loadLevel(path);
+	loadEnemies("../assets/enemyinit.txt");
 	registerActions();
 	_initialized = true;
 }
@@ -138,6 +139,14 @@ void Scene_DecaCube::loadLevel(const std::string& path)
 	_entityManager = EntityManager();
 	loadFromFile(path);
 
+}
+
+void Scene_DecaCube::loadEnemies(const std::string& path)
+{
+	if (!_enemyData.enemiesLoaded) {
+		_enemyData.enemyManager = EntityManager();
+		loadFromFile(path);
+	}
 }
 
 void Scene_DecaCube::loadFromFile(const std::string& path)
@@ -185,6 +194,7 @@ void Scene_DecaCube::loadFromFile(const std::string& path)
 			_player->addComponent<CTransform>(pixelPos);
 			_player->addComponent<CState>("alive");
 			_player->addComponent<CInput>();
+			_player->addComponent<CLocation>(1);
 
 
 		}
@@ -220,6 +230,9 @@ void Scene_DecaCube::loadFromFile(const std::string& path)
 				e->addComponent<CState>(name);
 				e->addComponent<CScore>(points);
 			}
+		}
+		else if (token == "Enemy") {
+
 		}
 		else
 		{
@@ -499,6 +512,7 @@ void Scene_DecaCube::fixPlayerPos()
 	_prevRotation = _playerData.faceRotation;
 
 	_player->getComponent<CTransform>().pos = pixelPos;
+	_player->getComponent<CLocation>().currentFace = 1;
 	_nextControl = "";
 }
 
