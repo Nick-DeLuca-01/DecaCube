@@ -27,32 +27,6 @@ struct CAnimation : public Component {
 };
 
 
-struct CAutoPilot : public Component
-{
-    size_t currentLeg{ 0 };
-    sf::Time countdown{ sf::Time::Zero };
-
-    CAutoPilot() = default;
-};
-
-
-struct CMissiles : public Component {
-    size_t    missileCount{ 15 };
-
-    CMissiles() = default;
-};
-
-
-struct CGun : public Component {
-    bool isFiring{ false };
-    sf::Time countdown{ sf::Time::Zero };
-    int fireRate{ 1 };
-    int spreadLevel{ 1 };
-
-    CGun() = default;
-};
-
-
 struct CSprite : public Component {
     sf::Sprite sprite;
 
@@ -87,6 +61,28 @@ struct CTransform : public Component
 
 };
 
+struct CLocation : public Component
+{
+    int currentFace{ 1 };
+    
+    CLocation() = default;
+    CLocation(int face) : currentFace(face){}
+};
+
+struct CSight : public Component
+{
+    bool seesPlayer{ false };
+    CSight() = default;
+    CSight(bool see) : seesPlayer(see) {}
+};
+
+struct COffScreen : public Component 
+{
+    bool offScreen{ true };
+    sf::Time secondsOffScreen{ sf::Time::Zero };
+    COffScreen() = default;
+    COffScreen(bool isNotVisible) : offScreen(isNotVisible) {}
+};
 
 struct CCollision : public Component
 {
@@ -137,29 +133,11 @@ struct CScore : public Component
 };
 
 
-struct CHealth : public Component {
-    int         hp{ 1 };
-
-    CHealth() = default;
-    CHealth(int hp) : hp(hp) {}
-};
-
-
 struct CState : public Component {
     std::string state{ "none" };
 
     CState() = default;
     CState(const std::string& s) : state(s) {}
-};
-
-struct CShield : public Component {
-    bool isActive{ false };
-    sf::Time uptime{ sf::Time::Zero };
-    sf::Time cooldown{ sf::Time::Zero };
-    bool disabled{ false };
-
-    CShield() = default;
-    CShield(sf::Time uptime, sf::Time cooldown) : uptime(uptime), cooldown(cooldown) {}
 };
 
 #endif //BREAKOUT_COMPONENTS_H

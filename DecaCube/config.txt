@@ -24,6 +24,17 @@ Texture TexUpWall ../assets/textures/tiles/UpWall.png
 
 Texture TexRobert ../assets/textures/characters/Robert.png
 
+Texture TexCharger ../assets/textures/characters/Charger.png
+Texture TexDefender ../assets/textures/characters/Defender.png
+Texture TexFlipperLeft ../assets/textures/characters/Flipper_Left.png
+Texture TexFlipperRight ../assets/textures/characters/Flipper_Right.png
+Texture TexGunner ../assets/textures/characters/Gunner.png
+Texture TexMoon ../assets/textures/characters/Moon.png
+Texture TexRevenant ../assets/textures/characters/Revenant.png
+Texture TexStalkerHiding ../assets/textures/characters/Stalker_Hiding.png
+Texture TexStalkerVisible ../assets/textures/characters/Stalker_Visible.png
+Texture TexSun ../assets/textures/characters/Sun_Burn1.png
+
 Texture TexBall ../assets/textures/items/Ball.png
 Texture TexBook ../assets/textures/items/Book.png
 Texture TexEnvelope ../assets/textures/items/Envelope.png
@@ -55,6 +66,17 @@ Animation UpRightCorner TexUpRightCorner 1 0
 Animation UpWall TexUpWall 1 0
 
 Animation Robert TexRobert 1 0
+
+Animation Charger TexCharger 1 0
+Animation Defender TexDefender 1 0
+Animation FlipperLeft TexFlipperLeft 1 0
+Animation FlipperRight TexFlipperRight 1 0
+Animation Gunner TexGunner 1 0
+Animation Moon TexMoon 1 0
+Animation Revenant TexRevenant 1 0
+Animation StalkerHiding TexStalkerHiding 1 0
+Animation StalkerVisible TexStalkerVisible 1 0
+Animation Sun TexSun 1 0
 
 Animation Ball TexBall 1 0
 Animation Heart TexHeart 1 0

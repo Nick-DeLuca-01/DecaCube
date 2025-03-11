@@ -17,9 +17,14 @@ struct PlayerData {
 	sf::Time elapsedTime = sf::Time::Zero;
 };
 
+struct EnemyData {
+	EntityManager _enemyManager;
+	bool enemiesLoaded = false;
+};
+
 struct LevelConfig {
 	float       playerSpeed{ 80.f };
-	float       enemySpeed{ 80.f };
+	float       enemySpeed{ 60.f };
 
 };
 
@@ -40,6 +45,8 @@ protected:
 	bool			_hasEnded{ false };
 	size_t			_currentFrame{ 0 };
 	static PlayerData		_playerData;
+	static LevelConfig		_levelConfig;
+	static EnemyData		_enemyData;
 
 	virtual void	onEnd() = 0;
 	void			setPaused(bool paused);
