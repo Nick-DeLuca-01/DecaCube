@@ -741,6 +741,7 @@ Scene_CubeRight::Scene_CubeRight(GameEngine* gameEngine, const std::string& leve
 void Scene_CubeRight::update(sf::Time dt)
 {
 	_entityManager.update();
+	_enemyData.enemyManager.update();
 	if (_playerData.sceneChanged) {
 		fixPlayerPos();
 	}
@@ -833,6 +834,17 @@ void Scene_CubeRight::sRender()
 
 		//std::cout << tfm.pos.x << " " << tfm.pos.y << "\n";
 		_game->window().draw(anim.getSprite());
+	}
+	for (auto e : _enemyData.enemyManager.getEntities("enemy")) {
+		if (_player->getComponent<CLocation>().currentFace == e->getComponent<CLocation>().currentFace) {
+			auto& tfm = e->getComponent<CTransform>();
+			auto& anim = e->getComponent<CAnimation>().animation;
+
+			anim.getSprite().setRotation(tfm.angle);
+			anim.getSprite().setPosition(tfm.pos.x, tfm.pos.y);
+
+			_game->window().draw(anim.getSprite());
+		}
 	}
 	sf::Text score("Score: " + std::to_string(_playerData.score), Assets::getInstance().getFont("main"), 32);
 	score.setFillColor(sf::Color(0, 0, 0));
