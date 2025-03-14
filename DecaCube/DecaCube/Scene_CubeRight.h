@@ -38,6 +38,7 @@ class Scene_CubeRight : public Scene
     void sMovement(sf::Time dt);
     void sAnimation();
     void sCollision();
+    void sEnemyFaceChange(sf::Time dt);
 
     // helper functions
     void	                onEnd() override;
@@ -58,6 +59,8 @@ class Scene_CubeRight : public Scene
     Vec2 rotateTilePosition(Vec2 prePos);
     Vec2 rotateEntityPosition(Vec2 prePos);
     void rotateEntireFace();
+    int changeFace(int currentFace, bool isFlipper);
+
 public:
     Scene_CubeRight(GameEngine* gameEngine, const std::string& levelPath);
     void		            update(sf::Time dt) override;
