@@ -148,7 +148,7 @@ void Scene_DecaCube::sEnemyFaceChange(sf::Time dt)
 					sec = sf::seconds(15.f);
 				}
 				else {
-					std::uniform_real_distribution<float> sceneChangeThreshold(12.f, 22.f);
+					std::uniform_real_distribution<float> sceneChangeThreshold(_config.sceneChangeLower, _config.sceneChangeUpper);
 					sec = sf::seconds(sceneChangeThreshold(rng));
 				}
 				offScreen.sceneChangeThreshold = sec;
@@ -328,7 +328,7 @@ void Scene_DecaCube::loadFromFile(const std::string& path)
 				sec = sf::seconds(15.f);
 			}
 			else {
-				std::uniform_real_distribution<float> sceneChangeThreshold(12.f, 22.f);
+				std::uniform_real_distribution<float> sceneChangeThreshold(_config.sceneChangeLower, _config.sceneChangeUpper);
 				sec = sf::seconds(sceneChangeThreshold(rng));
 			}
 
@@ -337,6 +337,20 @@ void Scene_DecaCube::loadFromFile(const std::string& path)
 			e->addComponent<COffScreen>(onOtherFace, sec);
 			bool seesPlayer = (name == "Charger" || name == "Gunner" || name == "Flipper" || name == "Revenant");
 			e->addComponent<CSight>(seesPlayer);
+		}
+		else if (token == "EnemyConfig") {
+			float sceneChangeLower, sceneChangeUpper, midDifficultyTime, highDifficultyTime;
+			int enemySpeed, midDifficultyItems, highDifficultyItems;
+
+			config >> sceneChangeLower >> sceneChangeUpper >> enemySpeed >> midDifficultyTime >> midDifficultyItems >> highDifficultyTime >> highDifficultyItems;
+
+			_config.sceneChangeLower = sceneChangeLower;
+			_config.sceneChangeUpper = sceneChangeUpper;
+			_config.enemySpeed = enemySpeed;
+			_config.midDiffTime = sf::seconds(midDifficultyTime);
+			_config.midDiffItems = midDifficultyItems;
+			_config.highDiffTime = sf::seconds(highDifficultyTime);
+			_config.highDiffItems = highDifficultyItems;
 		}
 		else
 		{

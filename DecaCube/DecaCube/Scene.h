@@ -25,7 +25,12 @@ struct EnemyData {
 struct LevelConfig {
 	float       playerSpeed{ 80.f };
 	float       enemySpeed{ 60.f };
-
+	float		sceneChangeLower{ 12.f };
+	float		sceneChangeUpper{ 22.f };
+	sf::Time	midDiffTime{ sf::seconds(150.f) };
+	sf::Time	highDiffTime{ sf::seconds(300.f) };
+	int			midDiffItems{ 5 };
+	int			highDiffItems{ 10 };
 };
 
 
