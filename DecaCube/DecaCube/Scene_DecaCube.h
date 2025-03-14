@@ -43,6 +43,7 @@ class Scene_DecaCube : public Scene
     void sMovement(sf::Time dt);
     void sAnimation();
     void sCollision();
+    void sEnemyFaceChange(sf::Time dt);
 
 
     // helper functions
@@ -65,6 +66,7 @@ class Scene_DecaCube : public Scene
     Vec2 rotateTilePosition(Vec2 prePos);
     Vec2 rotateEntityPosition(Vec2 prePos);
     void rotateEntireFace();
+    int changeFace(int currentFace, bool isFlipper);
 
 public:
     Scene_DecaCube(GameEngine* gameEngine, const std::string& levelPath);

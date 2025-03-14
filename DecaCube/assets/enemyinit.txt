@@ -1,11 +1,11 @@
 # enemies
 # name spritename startingface posx posy
 # top1 right2 back3 front4 left5 bottom6
-Enemy Charger Charger 2 2 9
-Enemy Defender Defender 3 5 4
+# Enemy Charger Charger 2 2 9
+# Enemy Defender Defender 3 5 4
 Enemy Flipper FlipperLeft 5 5 5
-Enemy Gunner Gunner 6 7 2
-Enemy Moon Moon 4 4 5
-Enemy Revenant Revenant 1 5 5
-Enemy Stalker StalkerHiding 2 8 3
-Enemy Sun Sun 4 6 5
+# Enemy Gunner Gunner 6 7 2
+# Enemy Moon Moon 4 4 5
+# Enemy Revenant Revenant 1 5 5
+# Enemy Stalker StalkerHiding 2 8 3
+# Enemy Sun Sun 4 6 5

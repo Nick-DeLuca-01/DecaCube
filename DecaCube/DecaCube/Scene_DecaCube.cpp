@@ -12,6 +12,12 @@
 #include "Scene_CubeRight.h"
 
 #include <cmath>
+#include <random>
+
+namespace {
+	std::random_device rd;
+	std::mt19937 rng(rd());
+}
 
 void Scene_DecaCube::sMovement(sf::Time dt)
 {
@@ -74,6 +80,79 @@ void Scene_DecaCube::sCollision()
 			_playerData.collectedItems.push_back(e->getComponent<CState>().state);
 			e->destroy();
 			std::cout << _playerData.score << " points\n"; //temporary debug line
+		}
+	}
+}
+
+void Scene_DecaCube::sEnemyFaceChange(sf::Time dt)
+{
+	for (auto e : _enemyData.enemyManager.getEntities()) {
+		auto& offScreen = e->getComponent<COffScreen>();
+		if ((_player->getComponent<CLocation>().currentFace != e->getComponent<CLocation>().currentFace) || e->getComponent<CState>().state == "Flipper") {
+			offScreen.secondsOffScreen += dt; 
+			if (offScreen.secondsOffScreen >= offScreen.sceneChangeThreshold) {
+				//code to switch scene
+				int newFace = changeFace(e->getComponent<CLocation>().currentFace, e->getComponent<CState>().state == "Flipper");
+				
+				offScreen.secondsOffScreen = sf::Time::Zero;
+				e->getComponent<CLocation>().currentFace = newFace;
+				if (newFace == _player->getComponent<CLocation>().currentFace && e->getComponent<CState>().state != "Flipper") { //if switching to player's scene, pick random direction to come from
+					std::uniform_int_distribution<int> incomingDirection(1, 4);
+					int selectedSide = incomingDirection(rng);
+					Vec2 newPos{ 0, 0 };
+					switch (selectedSide) {
+					case 1:
+						newPos = { 5, 10 };
+						break;
+					case 2:
+						newPos = { 0, 5 };
+						break;
+					case 3:
+						newPos = { 5, 0 };
+						break;
+					case 4:
+						newPos = { 10, 5 };
+						break;
+					}
+					newPos = gridToMidPixel(newPos.x, newPos.y, e);
+					e->getComponent<CTransform>().pos = newPos;
+					
+				}
+				else if (newFace == _player->getComponent<CLocation>().currentFace && e->getComponent<CState>().state == "Flipper") {
+					//flipper is a special snowflake
+					std::uniform_int_distribution<int> gridCoord(0, 10);
+					Vec2 newPos{ 0, 0 };
+					newPos.x = gridCoord(rng);
+					newPos.y = gridCoord(rng);
+					newPos = gridToMidPixel(newPos.x, newPos.y, e);
+					auto pPos = _player->getComponent<CTransform>().pos;
+					while (((newPos.x - pPos.x) <= 80 && (newPos.x - pPos.x) >= -80) && ((newPos.y - pPos.y <= 80) && (newPos.y - pPos.y >= -80))) {
+						//flipper jumped to within 2 spaces of player, reposition to give player some breathing room
+						newPos.x = gridCoord(rng);
+						newPos.y = gridCoord(rng);
+						newPos = gridToMidPixel(newPos.x, newPos.y, e);
+					}
+					e->getComponent<CTransform>().pos = newPos;
+					
+				}
+				else { //if switching to not player's scene, pick random location (in case player switches to that side)
+					std::uniform_int_distribution<int> gridCoord(0, 10);
+					Vec2 newPos{ 0, 0 };
+					newPos.x = gridCoord(rng);
+					newPos.y = gridCoord(rng);
+					newPos = gridToMidPixel(newPos.x, newPos.y, e);
+					e->getComponent<CTransform>().pos = newPos;
+				}
+				sf::Time sec;
+				if (e->getComponent<CState>().state == "Flipper") {
+					sec = sf::seconds(15.f);
+				}
+				else {
+					std::uniform_real_distribution<float> sceneChangeThreshold(12.f, 22.f);
+					sec = sf::seconds(sceneChangeThreshold(rng));
+				}
+				offScreen.sceneChangeThreshold = sec;
+			}
 		}
 	}
 }
@@ -243,9 +322,19 @@ void Scene_DecaCube::loadFromFile(const std::string& path)
 			auto pixelPos = gridToMidPixel(posx, posy, e);
 			e->addComponent<CTransform>(pixelPos);
 			e->addComponent<CState>(name);
+
+			sf::Time sec;
+			if (name == "Flipper") {
+				sec = sf::seconds(15.f);
+			}
+			else {
+				std::uniform_real_distribution<float> sceneChangeThreshold(12.f, 22.f);
+				sec = sf::seconds(sceneChangeThreshold(rng));
+			}
+
 			e->addComponent<CLocation>(face);
 			bool onOtherFace = (face != 1);
-			e->addComponent<COffScreen>(onOtherFace);
+			e->addComponent<COffScreen>(onOtherFace, sec);
 			bool seesPlayer = (name == "Charger" || name == "Gunner" || name == "Flipper" || name == "Revenant");
 			e->addComponent<CSight>(seesPlayer);
 		}
@@ -769,6 +858,21 @@ void Scene_DecaCube::rotateEntireFace()
 	}
 }
 
+int Scene_DecaCube::changeFace(int currentFace, bool isFlipper)
+{
+	std::uniform_int_distribution<int> faces(1, 6);
+	int newFace = faces(rng);
+	while (newFace == currentFace || ((newFace + currentFace) == 7 && !isFlipper)) { //face values are set up so that opposing face values always add to seven, similar to most dice
+		//if the roll is the current face or the opposite face, reroll
+		//if enemy rolling is the flipper, ignore opposite face check
+		newFace = faces(rng);
+	}
+	if (isFlipper && _player->getComponent<CLocation>().currentFace != currentFace) { //if Flipper isn't on player's face, switch to player's face. otherwise we use the previous calc
+		newFace = _player->getComponent<CLocation>().currentFace;
+	}
+	return newFace;
+}
+
 Vec2 Scene_DecaCube::gridToMidPixel(float gridX, float gridY, std::shared_ptr<Entity> entity)
 {
 	float x = 0.f + gridX * gridSize.x;
@@ -794,6 +898,7 @@ void Scene_DecaCube::update(sf::Time dt)
 		fixPlayerPos();
 	}
 	playerMovement();
+	sEnemyFaceChange(dt);
 	sMovement(dt);
 	if (_nextControl != "") {
 		sDoAction(Command{ _nextControl, "START" });

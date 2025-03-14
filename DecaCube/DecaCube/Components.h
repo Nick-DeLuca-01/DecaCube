@@ -80,8 +80,10 @@ struct COffScreen : public Component
 {
     bool offScreen{ true };
     sf::Time secondsOffScreen{ sf::Time::Zero };
+    sf::Time sceneChangeThreshold{ sf::Time::Zero };
     COffScreen() = default;
     COffScreen(bool isNotVisible) : offScreen(isNotVisible) {}
+    COffScreen(bool isNotVisible, sf::Time seconds) : offScreen(isNotVisible), sceneChangeThreshold(seconds) {}
 };
 
 struct CCollision : public Component
