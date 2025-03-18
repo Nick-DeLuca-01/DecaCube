@@ -135,9 +135,12 @@ struct CPathFinding : public Component
     int directionFrom{ 0 }; //0 for up, 1 for left, 2 for down, 3 for right
 
     Vec2 targetGrid{ 5, 5 };
+    Vec2 distanceRemainingPos{ 0, 0 };
+    Vec2 distanceRemainingNeg{ 0, 0 };
 
     CPathFinding() = default;
 
+    
 };
 
 struct CScore : public Component

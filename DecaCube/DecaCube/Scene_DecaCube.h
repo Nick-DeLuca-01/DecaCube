@@ -48,10 +48,15 @@ class Scene_DecaCube : public Scene
 
     //enemy-specific ai
 
-    void flipper();
+    void flipper(std::shared_ptr<Entity> entity);
 
+    //general enemy functions
 
-    // helper functions
+    std::vector<Vec2> getAvailableNodes(Vec2 pos, std::shared_ptr<Entity> entity);
+
+    Vec2 pickBestNode(std::vector<Vec2> availableNodes);
+
+    //helper functions
     void	                onEnd() override;
     void registerActions();
     void spawnPlayer(sf::Vector2f pos);
@@ -61,10 +66,11 @@ class Scene_DecaCube : public Scene
     void loadLevel(const std::string& path);
     void loadEnemies(const std::string& path);
     Vec2 gridToMidPixel(float gridX, float gridY, std::shared_ptr<Entity> entity);
+    Vec2 midPixelToGrid(float midX, float midY, std::shared_ptr<Entity> entity);
     void loadFromFile(const std::string& path);
     void snapToGrid(std::shared_ptr<Entity> entity);
-    bool canMoveInDirection(std::string direction);
-    sPtrEntt getCurrentTile();
+    bool canMoveInDirection(std::string direction, std::shared_ptr<Entity> entity);
+    sPtrEntt getCurrentTile(std::shared_ptr<Entity> entity);
     void checkIfPlayerInBounds();
     void fixPlayerPos();
     std::string getRotatedTileName(std::string name, int rotations);

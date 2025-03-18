@@ -88,6 +88,7 @@ void Scene_DecaCube::sEnemyFaceChange(sf::Time dt)
 {
 	for (auto e : _enemyData.enemyManager.getEntities()) {
 		auto& offScreen = e->getComponent<COffScreen>();
+		auto& pathfinding = e->getComponent<CPathFinding>();
 		if ((_player->getComponent<CLocation>().currentFace != e->getComponent<CLocation>().currentFace) || e->getComponent<CState>().state == "Flipper") {
 			offScreen.secondsOffScreen += dt; 
 			if (offScreen.secondsOffScreen >= offScreen.sceneChangeThreshold) {
@@ -103,9 +104,11 @@ void Scene_DecaCube::sEnemyFaceChange(sf::Time dt)
 					switch (selectedSide) {
 					case 1:
 						newPos = { 5, 10 };
+						
 						break;
 					case 2:
 						newPos = { 0, 5 };
+						
 						break;
 					case 3:
 						newPos = { 5, 0 };
@@ -114,8 +117,10 @@ void Scene_DecaCube::sEnemyFaceChange(sf::Time dt)
 						newPos = { 10, 5 };
 						break;
 					}
+					pathfinding.directionFrom = (selectedSide - 1);
 					newPos = gridToMidPixel(newPos.x, newPos.y, e);
 					e->getComponent<CTransform>().pos = newPos;
+					offScreen.offScreen = false;
 					
 				}
 				else if (newFace == _player->getComponent<CLocation>().currentFace && e->getComponent<CState>().state == "Flipper") {
@@ -133,6 +138,8 @@ void Scene_DecaCube::sEnemyFaceChange(sf::Time dt)
 						newPos = gridToMidPixel(newPos.x, newPos.y, e);
 					}
 					e->getComponent<CTransform>().pos = newPos;
+					pathfinding.directionFrom = 4; //can move any direction after appearing
+					offScreen.offScreen = false;
 					
 				}
 				else { //if switching to not player's scene, pick random location (in case player switches to that side)
@@ -142,6 +149,8 @@ void Scene_DecaCube::sEnemyFaceChange(sf::Time dt)
 					newPos.y = gridCoord(rng);
 					newPos = gridToMidPixel(newPos.x, newPos.y, e);
 					e->getComponent<CTransform>().pos = newPos;
+					pathfinding.directionFrom = 4; //can move any direction
+					offScreen.offScreen = true;
 				}
 				sf::Time sec;
 				if (e->getComponent<CState>().state == "Flipper") {
@@ -163,15 +172,149 @@ void Scene_DecaCube::sEnemyBehaviour()
 		auto state = e->getComponent<CState>().state;
 		auto isVisible = e->getComponent<COffScreen>().offScreen != true;
 		if (state == "Flipper" && isVisible) {
-			flipper();
+			flipper(e);
 		}
 	}
 }
 
-void Scene_DecaCube::flipper()
+void Scene_DecaCube::flipper(std::shared_ptr<Entity> entity)
 {
+	//flipper's unique mechanics taken care of with face switching
 
+	auto tfm = entity->getComponent<CTransform>();
 
+	auto pathFinding = entity->getComponent<CPathFinding>();
+
+	std::vector<Vec2> availableNodes;
+
+	if (pathFinding.distanceRemainingPos.x == 0.f && pathFinding.distanceRemainingPos.y == 0.f && pathFinding.distanceRemainingNeg.x == 0.f && pathFinding.distanceRemainingNeg.y == 0.f) {
+		availableNodes = getAvailableNodes(tfm.pos, entity);
+	}
+}
+
+std::vector<Vec2> Scene_DecaCube::getAvailableNodes(Vec2 pos, std::shared_ptr<Entity> entity) //grid pos passed in
+{
+	std::vector<Vec2> availableNodes;
+
+	//function won't be called if enemy isn't at a grid position
+
+	bool canMove = true;
+
+	auto pathfinding = entity->getComponent<CPathFinding>();
+
+	auto pathfinder = _entityManager.getEntities("pathfinder")[0];
+
+	auto& pPos = pathfinder->getComponent<CTransform>().pos;
+
+	int i = 0;
+	
+	pPos = entity->getComponent<CTransform>().pos;
+	while (canMove) {
+		if (i == pathfinding.directionFrom) {
+			canMove = false;
+		}
+		if (!canMoveInDirection("UP", pathfinder)) {
+			canMove = false;
+		}
+		if (canMove) {
+			pPos.y -= 40.f;
+		}
+		if (pPos.y <= 0) {
+			canMove = false;
+			pPos.y += 40.f;
+		}
+		if (!canMove) {
+			availableNodes.push_back(midPixelToGrid(pPos.x, pPos.y, pathfinder));
+		}
+	}
+	i = 1;
+	canMove = true;
+	pPos = entity->getComponent<CTransform>().pos;
+	while (canMove) {
+		if (i == pathfinding.directionFrom) {
+			canMove = false;
+		}
+		if (!canMoveInDirection("LEFT", pathfinder)) {
+			canMove = false;
+		}
+		if (canMove) {
+			pPos.x -= 40.f;
+		}
+		if (pPos.x <= 0) {
+			canMove = false;
+			pPos.x += 40.f;
+		}
+		if (!canMove) {
+			availableNodes.push_back(midPixelToGrid(pPos.x, pPos.y, pathfinder));
+		}
+	}
+	i = 2;
+	canMove = true;
+	pPos = entity->getComponent<CTransform>().pos;
+	while (canMove) {
+		if (i == pathfinding.directionFrom) {
+			canMove = false;
+		}
+		if (!canMoveInDirection("DOWN", pathfinder)) {
+			canMove = false;
+		}
+		if (canMove) {
+			pPos.y += 40.f;
+		}
+		if (pPos.y >= 440) {
+			canMove = false;
+			pPos.y -= 40.f;
+		}
+		if (!canMove) {
+			availableNodes.push_back(midPixelToGrid(pPos.x, pPos.y, pathfinder));
+		}
+	}
+	i = 3;
+	canMove = true;
+	pPos = entity->getComponent<CTransform>().pos;
+	while (canMove) {
+		if (i == pathfinding.directionFrom) {
+			canMove = false;
+		}
+		if (!canMoveInDirection("RIGHT", pathfinder)) {
+			canMove = false;
+		}
+		if (canMove) {
+			pPos.x += 40.f;
+		}
+		if (pPos.x >= 440) {
+			canMove = false;
+			pPos.x -= 40.f;
+		}
+		if (!canMove) {
+			availableNodes.push_back(midPixelToGrid(pPos.x, pPos.y, pathfinder));
+		}
+	}
+	pPos = entity->getComponent<CTransform>().pos;
+	if (availableNodes.empty()) {
+		switch (pathfinding.directionFrom) {
+		case 0:
+			pPos.y -= 40.f;
+			break;
+		case 1:
+			pPos.x -= 40.f;
+			break;
+		case 2:
+			pPos.y += 40.f;
+			break;
+		case 3:
+			pPos.x += 40.f;
+			break;
+		}
+		availableNodes.push_back(pPos);
+	}
+
+	return availableNodes;
+}
+
+Vec2 Scene_DecaCube::pickBestNode(std::vector<Vec2> availableNodes)
+{
+	return Vec2();
 }
 
 void Scene_DecaCube::onEnd()
@@ -293,6 +436,10 @@ void Scene_DecaCube::loadFromFile(const std::string& path)
 			_player->addComponent<CInput>();
 			_player->addComponent<CLocation>(1);
 
+			auto e = _entityManager.addEntity("pathfinder");
+			sf::Vector2f smallBox = { 1,1 };
+			e->addComponent<CBoundingBox>(smallBox);
+			e->addComponent<CTransform>(pixelPos);
 
 		}
 		else if (token == "Item") 
@@ -391,9 +538,9 @@ void Scene_DecaCube::snapToGrid(std::shared_ptr<Entity> entity)
 	
 }
 
-bool Scene_DecaCube::canMoveInDirection(std::string direction)
+bool Scene_DecaCube::canMoveInDirection(std::string direction, std::shared_ptr<Entity> entity)
 {
-	auto e = getCurrentTile();
+	auto e = getCurrentTile(entity);
 	if (e->getTag() == "robert") {
 		return true; //in case the player isn't overlapping any tiles
 	}
@@ -519,10 +666,10 @@ bool Scene_DecaCube::canMoveInDirection(std::string direction)
 	return true; //if there's a tile i missed somehow
 }
 
-sPtrEntt Scene_DecaCube::getCurrentTile()
+sPtrEntt Scene_DecaCube::getCurrentTile(std::shared_ptr<Entity> entity)
 {
 	for (auto e : _entityManager.getEntities()) {
-		auto overlap = Physics::getOverlap(_player, e); 
+		auto overlap = Physics::getOverlap(entity, e); 
 		if (overlap.x > 0 && overlap.y > 0) {
 			return e;
 		
@@ -915,6 +1062,19 @@ Vec2 Scene_DecaCube::gridToMidPixel(float gridX, float gridY, std::shared_ptr<En
 	return Vec2(x + spriteSize.x / 2.f, y - spriteSize.y / 2.f);
 }
 
+Vec2 Scene_DecaCube::midPixelToGrid(float midX, float midY, std::shared_ptr<Entity> entity)
+{
+	if (entity->getTag() == "pathfinder") {
+		return Vec2((midX - 20.f) / gridSize.x, (440.f - (midY + 20.f)) / gridSize.y);
+	}
+
+	sf::Vector2f spriteSize = entity->getComponent<CAnimation>().animation.getBB();
+	float x = midX - (spriteSize.x / 2.f);
+	float y = midY - (spriteSize.y / 2.f);
+
+	return Vec2(x / gridSize.x, (440.f - y) / gridSize.y );
+}
+
 Scene_DecaCube::Scene_DecaCube(GameEngine* gameEngine, const std::string& levelPath)
 	: Scene(gameEngine), _worldView(gameEngine->window().getDefaultView()), _levelPath(levelPath) {
 
@@ -931,6 +1091,7 @@ void Scene_DecaCube::update(sf::Time dt)
 	}
 	playerMovement();
 	sEnemyFaceChange(dt);
+	sEnemyBehaviour();
 	sMovement(dt);
 	if (_nextControl != "") {
 		sDoAction(Command{ _nextControl, "START" });
@@ -963,7 +1124,7 @@ void Scene_DecaCube::sDoAction(const Command& command)
 
 	//code template from Dave Burchill, NBCC
 	if (!_player->getComponent<CInput>().left && !_player->getComponent<CInput>().right && !_player->getComponent<CInput>().up && !_player->getComponent<CInput>().down) {
-		bool validDirection = canMoveInDirection(_nextControl);
+		bool validDirection = canMoveInDirection(_nextControl, _player);
 		if (_nextControl == "LEFT" && validDirection) {
 			_player->getComponent<CInput>().left = true;
 			_player->getComponent<CInput>().distanceRemainingNeg.x = -40;
