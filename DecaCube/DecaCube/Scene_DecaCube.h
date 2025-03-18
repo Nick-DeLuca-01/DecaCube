@@ -44,6 +44,11 @@ class Scene_DecaCube : public Scene
     void sAnimation();
     void sCollision();
     void sEnemyFaceChange(sf::Time dt);
+    void sEnemyBehaviour();
+
+    //enemy-specific ai
+
+    void flipper();
 
 
     // helper functions

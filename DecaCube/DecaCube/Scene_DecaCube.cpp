@@ -157,6 +157,23 @@ void Scene_DecaCube::sEnemyFaceChange(sf::Time dt)
 	}
 }
 
+void Scene_DecaCube::sEnemyBehaviour()
+{
+	for (auto e : _enemyData.enemyManager.getEntities()) {
+		auto state = e->getComponent<CState>().state;
+		auto isVisible = e->getComponent<COffScreen>().offScreen != true;
+		if (state == "Flipper" && isVisible) {
+			flipper();
+		}
+	}
+}
+
+void Scene_DecaCube::flipper()
+{
+
+
+}
+
 void Scene_DecaCube::onEnd()
 {
 	_game->changeScene("MENU", nullptr, false);
@@ -322,6 +339,7 @@ void Scene_DecaCube::loadFromFile(const std::string& path)
 			auto pixelPos = gridToMidPixel(posx, posy, e);
 			e->addComponent<CTransform>(pixelPos);
 			e->addComponent<CState>(name);
+			e->addComponent<CPathFinding>();
 
 			sf::Time sec;
 			if (name == "Flipper") {

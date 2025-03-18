@@ -10,6 +10,7 @@
 #include <memory>
 #include <SFML/Graphics.hpp>
 #include "Utilities.h"
+#include <vector>
 
 
 struct Component
@@ -120,13 +121,24 @@ struct CInput : public Component
     bool spinr{ false };
     bool spinl{ false };
 
-    Vec2 distanceRemainingPos{ 0, 0 }; //for left and down directions
-    Vec2 distanceRemainingNeg{ 0, 0 }; //for right and up directions
+    Vec2 distanceRemainingPos{ 0, 0 }; //for right and down directions
+    Vec2 distanceRemainingNeg{ 0, 0 }; //for left and up directions
 
 
     CInput() = default;
 };
 
+struct CPathFinding : public Component
+{
+    std::vector<Vec2> visitedNodes; //holds last 4 nodes to help avoid going in circles
+
+    int directionFrom{ 0 }; //0 for up, 1 for left, 2 for down, 3 for right
+
+    Vec2 targetGrid{ 5, 5 };
+
+    CPathFinding() = default;
+
+};
 
 struct CScore : public Component
 {
