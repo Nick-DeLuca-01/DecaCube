@@ -81,6 +81,8 @@ class Scene_DecaCube : public Scene
     void rotateEntireFace();
     int changeFace(int currentFace, bool isFlipper);
 
+    bool alreadyTraveled(std::vector<Vec2> visitedNodes, Vec2 targetNode);
+
 public:
     Scene_DecaCube(GameEngine* gameEngine, const std::string& levelPath);
     void		            update(sf::Time dt) override;

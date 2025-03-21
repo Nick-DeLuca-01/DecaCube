@@ -222,7 +222,9 @@ std::vector<Vec2> Scene_DecaCube::getAvailableNodes(Vec2 pos, std::shared_ptr<En
 			auto pathfinderPos = midPixelToGrid(pPos.x, pPos.y, pathfinder);
 			auto enemyPos = midPixelToGrid(ePos.x, ePos.y, entity);
 
-			if (pathfinderPos != enemyPos) {
+			bool alreadyVisited = alreadyTraveled(pathfinding.visitedNodes, pathfinderPos);
+
+			if (pathfinderPos != enemyPos && !alreadyVisited) {
 				availableNodes.push_back(pathfinderPos);
 			}
 		}
@@ -248,7 +250,9 @@ std::vector<Vec2> Scene_DecaCube::getAvailableNodes(Vec2 pos, std::shared_ptr<En
 			auto pathfinderPos = midPixelToGrid(pPos.x, pPos.y, pathfinder);
 			auto enemyPos = midPixelToGrid(ePos.x, ePos.y, entity);
 
-			if (pathfinderPos != enemyPos) {
+			bool alreadyVisited = alreadyTraveled(pathfinding.visitedNodes, pathfinderPos);
+
+			if (pathfinderPos != enemyPos && !alreadyVisited) {
 				availableNodes.push_back(pathfinderPos);
 			}
 		}
@@ -274,7 +278,9 @@ std::vector<Vec2> Scene_DecaCube::getAvailableNodes(Vec2 pos, std::shared_ptr<En
 			auto pathfinderPos = midPixelToGrid(pPos.x, pPos.y, pathfinder);
 			auto enemyPos = midPixelToGrid(ePos.x, ePos.y, entity);
 
-			if (pathfinderPos != enemyPos) {
+			bool alreadyVisited = alreadyTraveled(pathfinding.visitedNodes, pathfinderPos);
+
+			if (pathfinderPos != enemyPos && !alreadyVisited) {
 				availableNodes.push_back(pathfinderPos);
 			}
 		}
@@ -300,7 +306,9 @@ std::vector<Vec2> Scene_DecaCube::getAvailableNodes(Vec2 pos, std::shared_ptr<En
 			auto pathfinderPos = midPixelToGrid(pPos.x, pPos.y, pathfinder);
 			auto enemyPos = midPixelToGrid(ePos.x, ePos.y, entity);
 
-			if (pathfinderPos != enemyPos) {
+			bool alreadyVisited = alreadyTraveled(pathfinding.visitedNodes, pathfinderPos);
+
+			if (pathfinderPos != enemyPos && !alreadyVisited) {
 				availableNodes.push_back(pathfinderPos);
 			}
 		}
@@ -321,7 +329,7 @@ std::vector<Vec2> Scene_DecaCube::getAvailableNodes(Vec2 pos, std::shared_ptr<En
 			pPos.x += 40.f;
 			break;
 		}
-		availableNodes.push_back(pPos);
+		availableNodes.push_back(midPixelToGrid(pPos.x, pPos.y, pathfinder));
 	}
 
 	return availableNodes;
@@ -355,13 +363,18 @@ void Scene_DecaCube::enemyAwareMovement(std::shared_ptr<Entity> enemy)
 {
 	auto tfm = enemy->getComponent<CTransform>();
 
-	auto pathFinding = enemy->getComponent<CPathFinding>();
+	auto& pathFinding = enemy->getComponent<CPathFinding>();
 
 	std::vector<Vec2> availableNodes;
 
 	if (pathFinding.distanceRemainingPos.x == 0.f && pathFinding.distanceRemainingPos.y == 0.f && pathFinding.distanceRemainingNeg.x == 0.f && pathFinding.distanceRemainingNeg.y == 0.f) {
 		availableNodes = getAvailableNodes(tfm.pos, enemy);
 		Vec2 bestNode = pickBestNode(availableNodes);
+		pathFinding.targetGrid = bestNode;
+		pathFinding.visitedNodes.push_back(bestNode);
+		if (pathFinding.visitedNodes.size() > 4) {
+			pathFinding.visitedNodes.erase(pathFinding.visitedNodes.begin()); //only tracks the last 4 visited nodes, to prevent going in circles
+		}
 	}
 }
 
@@ -1098,6 +1111,16 @@ int Scene_DecaCube::changeFace(int currentFace, bool isFlipper)
 		newFace = _player->getComponent<CLocation>().currentFace;
 	}
 	return newFace;
+}
+
+bool Scene_DecaCube::alreadyTraveled(std::vector<Vec2> visitedNodes, Vec2 targetNode)
+{
+	for (auto node : visitedNodes) {
+		if (targetNode == node) {
+			return true;
+		}
+	}
+	return false;
 }
 
 Vec2 Scene_DecaCube::gridToMidPixel(float gridX, float gridY, std::shared_ptr<Entity> entity)
