@@ -39,7 +39,6 @@ float dist(const sf::Vector2f& u, const sf::Vector2f& v)
     return length(v - u);
 }
 
-
 float bearing(const sf::Vector2f& v)
 {
     return radToDeg(std::atan2(v.y, v.x));

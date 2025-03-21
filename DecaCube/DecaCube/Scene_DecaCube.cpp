@@ -337,7 +337,26 @@ std::vector<Vec2> Scene_DecaCube::getAvailableNodes(Vec2 pos, std::shared_ptr<En
 
 Vec2 Scene_DecaCube::pickBestNode(std::vector<Vec2> availableNodes)
 {
-	return Vec2();
+	float minDistance = 1000.f;
+	Vec2 closestNode;
+
+	auto playerPos = _player->getComponent<CTransform>().pos;
+	auto playerGrid = midPixelToGrid(playerPos.x, playerPos.y, _player);
+	playerGrid.x = std::roundf(playerGrid.x);
+	playerGrid.y = std::roundf(playerGrid.y); //rounded to avoid potential weird issues with enemy movement
+	sf::Vector2f pGrid{ playerGrid.x, playerGrid.y };
+
+
+	for (auto n : availableNodes) {
+		sf::Vector2f vecN{ n.x, n.y };
+		auto distance = dist(pGrid, vecN);
+		if (distance < minDistance) {
+			closestNode = { n.x, n.y };
+			minDistance = distance;
+		}
+	}
+
+	return closestNode;
 }
 
 void Scene_DecaCube::onEnd()
