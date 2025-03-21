@@ -192,7 +192,7 @@ void Scene_DecaCube::flipper(std::shared_ptr<Entity> entity)
 	}
 }
 
-std::vector<Vec2> Scene_DecaCube::getAvailableNodes(Vec2 pos, std::shared_ptr<Entity> entity) //grid pos passed in
+std::vector<Vec2> Scene_DecaCube::getAvailableNodes(Vec2 pos, std::shared_ptr<Entity> entity) //grid pos passed in, as well as moving entity
 {
 	std::vector<Vec2> availableNodes;
 
@@ -202,13 +202,15 @@ std::vector<Vec2> Scene_DecaCube::getAvailableNodes(Vec2 pos, std::shared_ptr<En
 
 	auto pathfinding = entity->getComponent<CPathFinding>();
 
-	auto pathfinder = _entityManager.getEntities("pathfinder")[0];
+	auto pathfinder = _entityManager.getEntities("pathfinder")[0]; //pathfinder entity, not the moving one
 
 	auto& pPos = pathfinder->getComponent<CTransform>().pos;
 
+	auto ePos = entity->getComponent<CTransform>().pos;
+
 	int i = 0;
 	
-	pPos = entity->getComponent<CTransform>().pos;
+	pPos = ePos;
 	while (canMove) {
 		if (i == pathfinding.directionFrom) {
 			canMove = false;
@@ -224,12 +226,18 @@ std::vector<Vec2> Scene_DecaCube::getAvailableNodes(Vec2 pos, std::shared_ptr<En
 			pPos.y += 40.f;
 		}
 		if (!canMove) {
-			availableNodes.push_back(midPixelToGrid(pPos.x, pPos.y, pathfinder));
+
+			auto pathfinderPos = midPixelToGrid(pPos.x, pPos.y, pathfinder);
+			auto enemyPos = midPixelToGrid(ePos.x, ePos.y, entity);
+
+			if (pathfinderPos != enemyPos) {
+				availableNodes.push_back(pathfinderPos);
+			}
 		}
 	}
 	i = 1;
 	canMove = true;
-	pPos = entity->getComponent<CTransform>().pos;
+	pPos = ePos;
 	while (canMove) {
 		if (i == pathfinding.directionFrom) {
 			canMove = false;
@@ -245,12 +253,17 @@ std::vector<Vec2> Scene_DecaCube::getAvailableNodes(Vec2 pos, std::shared_ptr<En
 			pPos.x += 40.f;
 		}
 		if (!canMove) {
-			availableNodes.push_back(midPixelToGrid(pPos.x, pPos.y, pathfinder));
+			auto pathfinderPos = midPixelToGrid(pPos.x, pPos.y, pathfinder);
+			auto enemyPos = midPixelToGrid(ePos.x, ePos.y, entity);
+
+			if (pathfinderPos != enemyPos) {
+				availableNodes.push_back(pathfinderPos);
+			}
 		}
 	}
 	i = 2;
 	canMove = true;
-	pPos = entity->getComponent<CTransform>().pos;
+	pPos = ePos;
 	while (canMove) {
 		if (i == pathfinding.directionFrom) {
 			canMove = false;
@@ -266,12 +279,17 @@ std::vector<Vec2> Scene_DecaCube::getAvailableNodes(Vec2 pos, std::shared_ptr<En
 			pPos.y -= 40.f;
 		}
 		if (!canMove) {
-			availableNodes.push_back(midPixelToGrid(pPos.x, pPos.y, pathfinder));
+			auto pathfinderPos = midPixelToGrid(pPos.x, pPos.y, pathfinder);
+			auto enemyPos = midPixelToGrid(ePos.x, ePos.y, entity);
+
+			if (pathfinderPos != enemyPos) {
+				availableNodes.push_back(pathfinderPos);
+			}
 		}
 	}
 	i = 3;
 	canMove = true;
-	pPos = entity->getComponent<CTransform>().pos;
+	pPos = ePos;
 	while (canMove) {
 		if (i == pathfinding.directionFrom) {
 			canMove = false;
@@ -287,7 +305,12 @@ std::vector<Vec2> Scene_DecaCube::getAvailableNodes(Vec2 pos, std::shared_ptr<En
 			pPos.x -= 40.f;
 		}
 		if (!canMove) {
-			availableNodes.push_back(midPixelToGrid(pPos.x, pPos.y, pathfinder));
+			auto pathfinderPos = midPixelToGrid(pPos.x, pPos.y, pathfinder);
+			auto enemyPos = midPixelToGrid(ePos.x, ePos.y, entity);
+
+			if (pathfinderPos != enemyPos) {
+				availableNodes.push_back(pathfinderPos);
+			}
 		}
 	}
 	pPos = entity->getComponent<CTransform>().pos;
@@ -1070,7 +1093,7 @@ Vec2 Scene_DecaCube::midPixelToGrid(float midX, float midY, std::shared_ptr<Enti
 
 	sf::Vector2f spriteSize = entity->getComponent<CAnimation>().animation.getBB();
 	float x = midX - (spriteSize.x / 2.f);
-	float y = midY - (spriteSize.y / 2.f);
+	float y = midY + (spriteSize.y / 2.f);
 
 	return Vec2(x / gridSize.x, (440.f - y) / gridSize.y );
 }
