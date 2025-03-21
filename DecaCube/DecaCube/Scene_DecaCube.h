@@ -56,6 +56,8 @@ class Scene_DecaCube : public Scene
 
     Vec2 pickBestNode(std::vector<Vec2> availableNodes);
 
+    void enemyAwareMovement(std::shared_ptr<Entity> enemy);
+
     //helper functions
     void	                onEnd() override;
     void registerActions();
