@@ -138,6 +138,11 @@ struct CPathFinding : public Component
     Vec2 distanceRemainingPos{ 0, 0 };
     Vec2 distanceRemainingNeg{ 0, 0 };
 
+    bool up{ false };
+    bool left{ false };
+    bool right{ false };
+    bool down{ false };
+
     CPathFinding() = default;
 
     

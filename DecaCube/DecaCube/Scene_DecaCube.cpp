@@ -62,8 +62,47 @@ void Scene_DecaCube::sMovement(sf::Time dt)
 
 	}
 
-	for (auto e : _entityManager.getEntities("enemy")) {
+	for (auto e : _enemyData.enemyManager.getEntities("enemy")) {
+		auto& etfm = e->getComponent<CTransform>();
+		auto& ePathfinding = e->getComponent<CPathFinding>();
 
+		etfm.prevPos = etfm.pos;
+
+		etfm.pos += etfm.vel * dt.asSeconds();
+
+		auto eDiff = etfm.pos - etfm.prevPos;
+
+		if (eDiff.x > 0 || eDiff.y > 0) {
+			ePathfinding.distanceRemainingPos -= eDiff;
+		}
+		else if (eDiff.x < 0 || eDiff.y < 0) {
+			ePathfinding.distanceRemainingNeg -= eDiff;
+		}
+
+		if (ePathfinding.distanceRemainingPos.x <= 0 && ePathfinding.right) {
+			ePathfinding.distanceRemainingPos.x = 0;
+			etfm.vel.x = 0;
+			ePathfinding.right = false;
+			snapToGrid(e);
+		}
+		else if (ePathfinding.distanceRemainingPos.y <= 0 && ePathfinding.down) {
+			ePathfinding.distanceRemainingPos.y = 0;
+			etfm.vel.y = 0;
+			ePathfinding.down = false;
+			snapToGrid(e);
+		}
+		else if (ePathfinding.distanceRemainingNeg.x >= 0 && ePathfinding.left) {
+			ePathfinding.distanceRemainingNeg.x = 0;
+			etfm.vel.x = 0;
+			ePathfinding.left = false;
+			snapToGrid(e);
+		}
+		else if (ePathfinding.distanceRemainingNeg.y >= 0 && ePathfinding.up) {
+			ePathfinding.distanceRemainingNeg.y = 0;
+			etfm.vel.y = 0;
+			ePathfinding.up = false;
+			snapToGrid(e);
+		}
 	}
 }
 
@@ -361,7 +400,7 @@ Vec2 Scene_DecaCube::pickBestNode(std::vector<Vec2> availableNodes)
 
 void Scene_DecaCube::enemyAwareMovement(std::shared_ptr<Entity> enemy)
 {
-	auto tfm = enemy->getComponent<CTransform>();
+	auto& tfm = enemy->getComponent<CTransform>();
 
 	auto& pathFinding = enemy->getComponent<CPathFinding>();
 
@@ -375,6 +414,36 @@ void Scene_DecaCube::enemyAwareMovement(std::shared_ptr<Entity> enemy)
 		if (pathFinding.visitedNodes.size() > 4) {
 			pathFinding.visitedNodes.erase(pathFinding.visitedNodes.begin()); //only tracks the last 4 visited nodes, to prevent going in circles
 		}
+
+		auto bestNodePix = gridToMidPixel(bestNode.x, bestNode.y, enemy);
+		auto enemyPos = tfm.pos;
+
+		auto distance = bestNodePix - enemyPos;
+		if (distance.x > 0) {
+			pathFinding.distanceRemainingPos.x = distance.x;
+			tfm.vel.x += 1;
+			pathFinding.right = true;
+			pathFinding.directionFrom = 1;
+		}
+		else if (distance.x < 0) {
+			pathFinding.distanceRemainingNeg.x = distance.x;
+			tfm.vel.x -= 1;
+			pathFinding.left = true;
+			pathFinding.directionFrom = 3;
+		}
+		else if (distance.y > 0) {
+			pathFinding.distanceRemainingPos.y = distance.y;
+			tfm.vel.y += 1;
+			pathFinding.down = true;
+			pathFinding.directionFrom = 0;
+		}
+		else if (distance.y < 0) {
+			pathFinding.distanceRemainingNeg.y = distance.y;
+			tfm.vel.y -= 1;
+			pathFinding.up = true;
+			pathFinding.directionFrom = 2;
+		}
+		tfm.vel = tfm.vel * _config.enemySpeed;
 	}
 }
 
