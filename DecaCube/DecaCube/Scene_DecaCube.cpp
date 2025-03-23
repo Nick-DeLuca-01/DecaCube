@@ -229,146 +229,74 @@ std::vector<Vec2> Scene_DecaCube::getAvailableNodes(Vec2 pos, std::shared_ptr<En
 
 	//function won't be called if enemy isn't at a grid position
 
-	bool canMove = true;
+	bool canMove = false;
 
 	auto pathfinding = entity->getComponent<CPathFinding>();
 
-	auto pathfinder = _entityManager.getEntities("pathfinder")[0]; //pathfinder entity, not the moving one
-
-	auto& pPos = pathfinder->getComponent<CTransform>().pos;
-
 	auto ePos = entity->getComponent<CTransform>().pos;
 
-	int i = 0;
-	
-	pPos = ePos;
-	while (canMove) {
-		if (i == pathfinding.directionFrom) {
-			canMove = false;
-		}
-		if (!canMoveInDirection("UP", pathfinder)) {
-			canMove = false;
-		}
+	if (pathfinding.directionFrom != 0) {
+		canMove = canMoveInDirection("UP", entity);
 		if (canMove) {
-			pPos.y -= 40.f;
-		}
-		if (pPos.y <= 0) {
-			canMove = false;
-			pPos.y += 40.f;
-		}
-		if (!canMove) {
-
-			auto pathfinderPos = midPixelToGrid(pPos.x, pPos.y, pathfinder);
-			auto enemyPos = midPixelToGrid(ePos.x, ePos.y, entity);
-
-			bool alreadyVisited = alreadyTraveled(pathfinding.visitedNodes, pathfinderPos);
-
-			if (pathfinderPos != enemyPos && !alreadyVisited) {
-				availableNodes.push_back(pathfinderPos);
+			
+			auto grid = midPixelToGrid(ePos.x, ePos.y - 40, entity);
+			bool alreadyVisited = alreadyTraveled(pathfinding.visitedNodes, grid);
+			if (!alreadyVisited) {
+				availableNodes.push_back(grid);
 			}
 		}
 	}
-	i = 1;
-	canMove = true;
-	pPos = ePos;
-	while (canMove) {
-		if (i == pathfinding.directionFrom) {
-			canMove = false;
-		}
-		if (!canMoveInDirection("LEFT", pathfinder)) {
-			canMove = false;
-		}
+	if (pathfinding.directionFrom != 1) {
+		canMove = canMoveInDirection("LEFT", entity);
 		if (canMove) {
-			pPos.x -= 40.f;
-		}
-		if (pPos.x <= 0) {
-			canMove = false;
-			pPos.x += 40.f;
-		}
-		if (!canMove) {
-			auto pathfinderPos = midPixelToGrid(pPos.x, pPos.y, pathfinder);
-			auto enemyPos = midPixelToGrid(ePos.x, ePos.y, entity);
 
-			bool alreadyVisited = alreadyTraveled(pathfinding.visitedNodes, pathfinderPos);
-
-			if (pathfinderPos != enemyPos && !alreadyVisited) {
-				availableNodes.push_back(pathfinderPos);
+			auto grid = midPixelToGrid(ePos.x - 40, ePos.y, entity);
+			bool alreadyVisited = alreadyTraveled(pathfinding.visitedNodes, grid);
+			if (!alreadyVisited) {
+				availableNodes.push_back(grid);
 			}
 		}
 	}
-	i = 2;
-	canMove = true;
-	pPos = ePos;
-	while (canMove) {
-		if (i == pathfinding.directionFrom) {
-			canMove = false;
-		}
-		if (!canMoveInDirection("DOWN", pathfinder)) {
-			canMove = false;
-		}
+	if (pathfinding.directionFrom != 2) {
+		canMove = canMoveInDirection("DOWN", entity);
 		if (canMove) {
-			pPos.y += 40.f;
-		}
-		if (pPos.y >= 440) {
-			canMove = false;
-			pPos.y -= 40.f;
-		}
-		if (!canMove) {
-			auto pathfinderPos = midPixelToGrid(pPos.x, pPos.y, pathfinder);
-			auto enemyPos = midPixelToGrid(ePos.x, ePos.y, entity);
 
-			bool alreadyVisited = alreadyTraveled(pathfinding.visitedNodes, pathfinderPos);
-
-			if (pathfinderPos != enemyPos && !alreadyVisited) {
-				availableNodes.push_back(pathfinderPos);
+			auto grid = midPixelToGrid(ePos.x, ePos.y + 40, entity);
+			bool alreadyVisited = alreadyTraveled(pathfinding.visitedNodes, grid);
+			if (!alreadyVisited) {
+				availableNodes.push_back(grid);
 			}
 		}
 	}
-	i = 3;
-	canMove = true;
-	pPos = ePos;
-	while (canMove) {
-		if (i == pathfinding.directionFrom) {
-			canMove = false;
-		}
-		if (!canMoveInDirection("RIGHT", pathfinder)) {
-			canMove = false;
-		}
+	if (pathfinding.directionFrom != 3) {
+		canMove = canMoveInDirection("RIGHT", entity);
 		if (canMove) {
-			pPos.x += 40.f;
-		}
-		if (pPos.x >= 440) {
-			canMove = false;
-			pPos.x -= 40.f;
-		}
-		if (!canMove) {
-			auto pathfinderPos = midPixelToGrid(pPos.x, pPos.y, pathfinder);
-			auto enemyPos = midPixelToGrid(ePos.x, ePos.y, entity);
 
-			bool alreadyVisited = alreadyTraveled(pathfinding.visitedNodes, pathfinderPos);
-
-			if (pathfinderPos != enemyPos && !alreadyVisited) {
-				availableNodes.push_back(pathfinderPos);
+			auto grid = midPixelToGrid(ePos.x + 40, ePos.y, entity);
+			bool alreadyVisited = alreadyTraveled(pathfinding.visitedNodes, grid);
+			if (!alreadyVisited) {
+				availableNodes.push_back(grid);
 			}
 		}
 	}
-	pPos = entity->getComponent<CTransform>().pos;
+
+	Vec2 goBackPos = ePos;
 	if (availableNodes.empty()) {
 		switch (pathfinding.directionFrom) {
 		case 0:
-			pPos.y -= 40.f;
+			goBackPos.y -= 40.f;
 			break;
 		case 1:
-			pPos.x -= 40.f;
+			goBackPos.x -= 40.f;
 			break;
 		case 2:
-			pPos.y += 40.f;
+			goBackPos.y += 40.f;
 			break;
 		case 3:
-			pPos.x += 40.f;
+			goBackPos.x += 40.f;
 			break;
 		}
-		availableNodes.push_back(midPixelToGrid(pPos.x, pPos.y, pathfinder));
+		availableNodes.push_back(midPixelToGrid(goBackPos.x, goBackPos.y, entity));
 	}
 
 	return availableNodes;
@@ -411,8 +339,8 @@ void Scene_DecaCube::enemyAwareMovement(std::shared_ptr<Entity> enemy)
 		Vec2 bestNode = pickBestNode(availableNodes);
 		pathFinding.targetGrid = bestNode;
 		pathFinding.visitedNodes.push_back(bestNode);
-		if (pathFinding.visitedNodes.size() > 4) {
-			pathFinding.visitedNodes.erase(pathFinding.visitedNodes.begin()); //only tracks the last 4 visited nodes, to prevent going in circles
+		if (pathFinding.visitedNodes.size() > 7) {
+			pathFinding.visitedNodes.erase(pathFinding.visitedNodes.begin()); //only tracks the last 7 visited nodes, to prevent going in circles
 		}
 
 		auto bestNodePix = gridToMidPixel(bestNode.x, bestNode.y, enemy);
