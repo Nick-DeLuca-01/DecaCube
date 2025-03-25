@@ -61,6 +61,10 @@ void Scene_DecaCube::sMovement(sf::Time dt)
 		snapToGrid(_player);
 
 	}
+	for (auto bullet : _entityManager.getEntities("bullet")) {
+		auto& btfm = bullet->getComponent<CTransform>();
+		btfm.pos += btfm.vel * dt.asSeconds();
+	}
 
 	for (auto e : _enemyData.enemyManager.getEntities("enemy")) {
 		auto& etfm = e->getComponent<CTransform>();
@@ -213,7 +217,7 @@ void Scene_DecaCube::sEnemyBehaviour()
 			flipper(e);
 		}
 		else if (state == "Gunner" && isVisible) {
-			std::cout << "TODO";
+			gunner(e);
 		}
 	}
 }
@@ -223,6 +227,55 @@ void Scene_DecaCube::flipper(std::shared_ptr<Entity> entity)
 	//flipper's unique mechanics taken care of with face switching
 
 	enemyAwareMovement(entity);
+}
+
+void Scene_DecaCube::gunner(std::shared_ptr<Entity> entity)
+{
+	//gunner is aware of where player is, moves towards you constantly
+	//when it sees player, fires a bullet
+
+	auto& gun = entity->getComponent<CGun>();
+	auto& tfm = entity->getComponent<CTransform>();
+	bool seesPlayer = canSeePlayer(entity);
+	if (seesPlayer && gun.cooldown.asSeconds() <= 0) {
+		gun.chargeTime = sf::seconds(1);
+		gun.cooldown = sf::seconds(4);
+	}
+
+	int directionFacing = (entity->getComponent<CPathFinding>().directionFrom + 2) % 4;
+	tfm.angle = (-90 * directionFacing);
+
+	if (gun.chargeTime.asSeconds() <= 0 && !gun.onCooldown) {
+		auto e = _entityManager.addEntity("bullet");
+		auto bb = e->addComponent<CAnimation>(Assets::getInstance().getAnimation("Bullet")).animation.getBB();
+		e->addComponent<CBoundingBox>(bb);
+		e->addComponent<CTransform>(tfm.pos);
+		e->getComponent<CTransform>().angle = tfm.angle;
+		Vec2 speed;
+		switch (directionFacing) {
+		case 0:
+			speed = { 0.f, -1.f };
+			break;
+		case 1:
+			speed = { -1.f, 0.f };
+			break;
+		case 2:
+			speed = { 0.f, 1.f };
+			break;
+		case 3:
+			speed = { 1.f, 0.f };
+			break;
+		}
+		speed.x = _config.enemySpeed * 2;
+		speed.y = _config.enemySpeed * 2;
+		e->getComponent<CTransform>().vel = speed;
+
+		gun.onCooldown = true;
+	}
+	enemyAwareMovement(entity);
+	clearBullets();
+	
+	
 }
 
 std::vector<Vec2> Scene_DecaCube::getAvailableNodes(Vec2 pos, std::shared_ptr<Entity> entity) //grid pos passed in, as well as moving entity
@@ -374,6 +427,84 @@ void Scene_DecaCube::enemyAwareMovement(std::shared_ptr<Entity> enemy)
 			pathFinding.directionFrom = 2;
 		}
 		tfm.vel = tfm.vel * _config.enemySpeed;
+	}
+}
+
+bool Scene_DecaCube::canSeePlayer(std::shared_ptr<Entity> enemy)
+{
+	auto& tfm = enemy->getComponent<CTransform>();
+
+	auto pathfinding = enemy->getComponent<CPathFinding>();
+
+	auto pathfinder = _entityManager.getEntities("pathfinder")[0]; //pathfinder entity, not the moving one
+
+	auto& pPos = pathfinder->getComponent<CTransform>().pos;
+
+	auto ePos = enemy->getComponent<CTransform>().pos;
+
+	bool canMove = true;
+
+	bool seesPlayer = false;
+
+	if (pathfinding.distanceRemainingPos.x == 0.f && pathfinding.distanceRemainingPos.y == 0.f && pathfinding.distanceRemainingNeg.x == 0.f && pathfinding.distanceRemainingNeg.y == 0.f) {
+		for (int i = 0; i < 4; i++) {
+			pPos = ePos;
+			canMove = true;
+			if (i == pathfinding.directionFrom) {
+				canMove = false;
+			}
+			std::string direction;
+			switch (i) {
+			case 0:
+				direction = "UP";
+				break;
+			case 1:
+				direction = "LEFT";
+				break;
+			case 2:
+				direction = "DOWN";
+				break;
+			case 3:
+				direction = "RIGHT";
+				break;
+			}
+			while (canMove && !seesPlayer) {
+				
+				canMove = canMoveInDirection(direction, pathfinder);
+				switch (i) {
+				case 0:
+					pPos.y -= 40;
+					break;
+				case 1:
+					pPos.x -= 40;
+					break;
+				case 2:
+					pPos.y += 40;
+					break;
+				case 3:
+					pPos.x += 40;
+					break;
+				}
+				seesPlayer = touchingPlayer(pathfinder);
+			}
+		}
+	}
+	return seesPlayer;
+}
+
+bool Scene_DecaCube::touchingPlayer(std::shared_ptr<Entity> entity)
+{
+	auto overlap = Physics::getOverlap(entity, _player);
+	return (overlap.x > 0 && overlap.y > 0);
+}
+
+void Scene_DecaCube::clearBullets()
+{
+	for (auto bullet : _entityManager.getEntities("bullet")) {
+		auto tfm = bullet->getComponent<CTransform>();
+		if (tfm.pos.x >= 440 || tfm.pos.x <= 0 || tfm.pos.y >= 440 || tfm.pos.y <= 0) {
+			bullet->destroy();
+		}
 	}
 }
 
@@ -562,6 +693,10 @@ void Scene_DecaCube::loadFromFile(const std::string& path)
 			e->addComponent<COffScreen>(onOtherFace, sec);
 			bool seesPlayer = (name == "Charger" || name == "Gunner" || name == "Flipper" || name == "Revenant");
 			e->addComponent<CSight>(seesPlayer);
+
+			if (name == "Gunner") {
+				e->addComponent<CGun>();
+			}
 		}
 		else if (token == "EnemyConfig") {
 			float sceneChangeLower, sceneChangeUpper, midDifficultyTime, highDifficultyTime;
@@ -1178,6 +1313,21 @@ void Scene_DecaCube::update(sf::Time dt)
 
 	_playerData.elapsedTime += dt;
 
+	for (auto enemy : _enemyData.enemyManager.getEntities()) {
+		if (enemy->hasComponent<CGun>()) {
+			auto& gun = enemy->getComponent<CGun>();
+			gun.cooldown -= dt;
+			gun.chargeTime -= dt;
+			if (gun.cooldown.asSeconds() <= 0) {
+				gun.cooldown = sf::Time::Zero;
+				gun.onCooldown = false;
+			}
+			if (gun.chargeTime.asSeconds() <= 0) {
+				gun.chargeTime = sf::Time::Zero;
+			}
+		}
+	}
+
 	if (_playerData.collectedItems.size() >= 10) {
 		std::cout << "You win! Final score: " << _playerData.score;
 		_playerData.lives = 3;
@@ -1240,6 +1390,14 @@ void Scene_DecaCube::sRender()
 	}
 	for (auto e : _entityManager.getEntities("item")) {
 		//render items on top of tiles but below other entities
+		auto& tfm = e->getComponent<CTransform>();
+		auto& anim = e->getComponent<CAnimation>().animation;
+
+		anim.getSprite().setRotation(tfm.angle);
+		anim.getSprite().setPosition(tfm.pos.x, tfm.pos.y);
+		_game->window().draw(anim.getSprite());
+	}
+	for (auto e : _entityManager.getEntities("bullet")) {
 		auto& tfm = e->getComponent<CTransform>();
 		auto& anim = e->getComponent<CAnimation>().animation;
 

@@ -49,6 +49,7 @@ class Scene_DecaCube : public Scene
     //enemy-specific ai
 
     void flipper(std::shared_ptr<Entity> entity);
+    void gunner(std::shared_ptr<Entity> entity);
 
     //general enemy functions
 
@@ -57,6 +58,12 @@ class Scene_DecaCube : public Scene
     Vec2 pickBestNode(std::vector<Vec2> availableNodes);
 
     void enemyAwareMovement(std::shared_ptr<Entity> enemy);
+
+    bool canSeePlayer(std::shared_ptr<Entity> enemy);
+
+    bool touchingPlayer(std::shared_ptr<Entity> entity);
+
+    void clearBullets();
 
     //helper functions
     void	                onEnd() override;

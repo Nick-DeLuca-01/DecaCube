@@ -46,6 +46,8 @@ Texture TexPot ../assets/textures/items/Pot.png
 Texture TexSunrise ../assets/textures/items/Sunrise.png
 Texture TexTicket ../assets/textures/items/Ticket.png
 
+Texture TexBullet ../assets/textures/characters/Bullet.png
+
 # Animation Name Texture Frames Speed
 
 Animation DownEnd TexDownEnd 1 0
@@ -88,3 +90,5 @@ Animation Medal TexMedal 1 0
 Animation Sunrise TexSunrise 1 0
 Animation Envelope TexEnvelope 1 0
 Animation Key TexKey 1 0
+
+Animation Bullet TexBullet 1 0

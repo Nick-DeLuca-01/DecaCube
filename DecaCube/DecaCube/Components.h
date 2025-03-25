@@ -162,4 +162,13 @@ struct CState : public Component {
     CState(const std::string& s) : state(s) {}
 };
 
+struct CGun : public Component {
+    sf::Time chargeTime = sf::Time::Zero;
+    sf::Time cooldown = sf::Time::Zero;
+
+    bool onCooldown = false;
+
+    CGun() = default;
+};
+
 #endif //BREAKOUT_COMPONENTS_H
