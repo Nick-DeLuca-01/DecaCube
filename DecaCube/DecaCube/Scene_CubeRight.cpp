@@ -816,6 +816,11 @@ void Scene_CubeRight::fixPlayerPos()
 	_player->getComponent<CTransform>().pos = pixelPos;
 	_player->getComponent<CLocation>().currentFace = 2;
 	_nextControl = "";
+	for (auto enemy : _enemyData.enemyManager.getEntities()) {
+		if (enemy->getComponent<CLocation>().currentFace == _player->getComponent<CLocation>().currentFace) {
+			enemy->getComponent<COffScreen>().offScreen = false;
+		}
+	}
 }
 
 std::string Scene_CubeRight::getRotatedTileName(std::string name, int rotations)

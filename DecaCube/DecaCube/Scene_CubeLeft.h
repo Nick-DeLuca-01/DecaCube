@@ -39,6 +39,15 @@ class Scene_CubeLeft : public Scene
     void sAnimation();
     void sCollision();
     void sEnemyFaceChange(sf::Time dt);
+    void sEnemyBehaviour();
+
+    void flipper(std::shared_ptr<Entity> entity);
+
+    std::vector<Vec2> getAvailableNodes(Vec2 pos, std::shared_ptr<Entity> entity);
+
+    Vec2 pickBestNode(std::vector<Vec2> availableNodes);
+
+    void enemyAwareMovement(std::shared_ptr<Entity> enemy);
 
     // helper functions
     void	                onEnd() override;
@@ -47,12 +56,13 @@ class Scene_CubeLeft : public Scene
     void spawnPlayer(sf::Vector2f pos);
     void loadLevel(const std::string& path);
     Vec2 gridToMidPixel(float gridX, float gridY, std::shared_ptr<Entity> entity);
+    Vec2 midPixelToGrid(float midX, float midY, std::shared_ptr<Entity> entity);
     void loadFromFile(const std::string& path);
     void playerMovement();
     void adjustPlayerPosition();
     void snapToGrid(std::shared_ptr<Entity> entity);
-    bool canMoveInDirection(std::string direction);
-    sPtrEntt getCurrentTile();
+    bool canMoveInDirection(std::string direction, std::shared_ptr<Entity> entity);
+    sPtrEntt getCurrentTile(std::shared_ptr<Entity> entity);
     void checkIfPlayerInBounds();
     void fixPlayerPos();
     std::string getRotatedTileName(std::string name, int rotations);
@@ -60,6 +70,8 @@ class Scene_CubeLeft : public Scene
     Vec2 rotateEntityPosition(Vec2 prePos);
     void rotateEntireFace();
     int changeFace(int currentFace, bool isFlipper);
+
+    bool alreadyTraveled(std::vector<Vec2> visitedNodes, Vec2 targetNode);
 
 public:
     Scene_CubeLeft(GameEngine* gameEngine, const std::string& levelPath);
