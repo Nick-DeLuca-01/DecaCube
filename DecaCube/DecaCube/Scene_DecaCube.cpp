@@ -118,7 +118,6 @@ void Scene_DecaCube::sCollision()
 			_playerData.score += e->getComponent<CScore>().score;
 			_playerData.collectedItems.push_back(e->getComponent<CState>().state);
 			e->destroy();
-			std::cout << _playerData.score << " points\n"; //temporary debug line
 		}
 	}
 }
@@ -212,6 +211,9 @@ void Scene_DecaCube::sEnemyBehaviour()
 		auto isVisible = e->getComponent<COffScreen>().offScreen != true;
 		if (state == "Flipper" && isVisible) {
 			flipper(e);
+		}
+		else if (state == "Gunner" && isVisible) {
+			std::cout << "TODO";
 		}
 	}
 }

@@ -62,8 +62,47 @@ void Scene_CubeRight::sMovement(sf::Time dt)
 
 	}
 
-	for (auto e : _entityManager.getEntities("enemy")) {
+	for (auto e : _enemyData.enemyManager.getEntities("enemy")) {
+		auto& etfm = e->getComponent<CTransform>();
+		auto& ePathfinding = e->getComponent<CPathFinding>();
 
+		etfm.prevPos = etfm.pos;
+
+		etfm.pos += etfm.vel * dt.asSeconds();
+
+		auto eDiff = etfm.pos - etfm.prevPos;
+
+		if (eDiff.x > 0 || eDiff.y > 0) {
+			ePathfinding.distanceRemainingPos -= eDiff;
+		}
+		else if (eDiff.x < 0 || eDiff.y < 0) {
+			ePathfinding.distanceRemainingNeg -= eDiff;
+		}
+
+		if (ePathfinding.distanceRemainingPos.x <= 0 && ePathfinding.right) {
+			ePathfinding.distanceRemainingPos.x = 0;
+			etfm.vel.x = 0;
+			ePathfinding.right = false;
+			snapToGrid(e);
+		}
+		else if (ePathfinding.distanceRemainingPos.y <= 0 && ePathfinding.down) {
+			ePathfinding.distanceRemainingPos.y = 0;
+			etfm.vel.y = 0;
+			ePathfinding.down = false;
+			snapToGrid(e);
+		}
+		else if (ePathfinding.distanceRemainingNeg.x >= 0 && ePathfinding.left) {
+			ePathfinding.distanceRemainingNeg.x = 0;
+			etfm.vel.x = 0;
+			ePathfinding.left = false;
+			snapToGrid(e);
+		}
+		else if (ePathfinding.distanceRemainingNeg.y >= 0 && ePathfinding.up) {
+			ePathfinding.distanceRemainingNeg.y = 0;
+			etfm.vel.y = 0;
+			ePathfinding.up = false;
+			snapToGrid(e);
+		}
 	}
 }
 
@@ -79,7 +118,6 @@ void Scene_CubeRight::sCollision()
 			_playerData.score += e->getComponent<CScore>().score;
 			_playerData.collectedItems.push_back(e->getComponent<CState>().state);
 			e->destroy();
-			std::cout << _playerData.score << " points\n"; //temporary debug line
 
 		}
 	}
@@ -89,6 +127,7 @@ void Scene_CubeRight::sEnemyFaceChange(sf::Time dt)
 {
 	for (auto e : _enemyData.enemyManager.getEntities()) {
 		auto& offScreen = e->getComponent<COffScreen>();
+		auto& pathfinding = e->getComponent<CPathFinding>();
 		if ((_player->getComponent<CLocation>().currentFace != e->getComponent<CLocation>().currentFace) || e->getComponent<CState>().state == "Flipper") {
 			offScreen.secondsOffScreen += dt;
 			if (offScreen.secondsOffScreen >= offScreen.sceneChangeThreshold) {
@@ -104,9 +143,11 @@ void Scene_CubeRight::sEnemyFaceChange(sf::Time dt)
 					switch (selectedSide) {
 					case 1:
 						newPos = { 5, 10 };
+
 						break;
 					case 2:
 						newPos = { 0, 5 };
+
 						break;
 					case 3:
 						newPos = { 5, 0 };
@@ -115,8 +156,10 @@ void Scene_CubeRight::sEnemyFaceChange(sf::Time dt)
 						newPos = { 10, 5 };
 						break;
 					}
+					pathfinding.directionFrom = (selectedSide - 1);
 					newPos = gridToMidPixel(newPos.x, newPos.y, e);
 					e->getComponent<CTransform>().pos = newPos;
+					offScreen.offScreen = false;
 
 				}
 				else if (newFace == _player->getComponent<CLocation>().currentFace && e->getComponent<CState>().state == "Flipper") {
@@ -134,6 +177,8 @@ void Scene_CubeRight::sEnemyFaceChange(sf::Time dt)
 						newPos = gridToMidPixel(newPos.x, newPos.y, e);
 					}
 					e->getComponent<CTransform>().pos = newPos;
+					pathfinding.directionFrom = 4; //can move any direction after appearing
+					offScreen.offScreen = false;
 
 				}
 				else { //if switching to not player's scene, pick random location (in case player switches to that side)
@@ -143,6 +188,8 @@ void Scene_CubeRight::sEnemyFaceChange(sf::Time dt)
 					newPos.y = gridCoord(rng);
 					newPos = gridToMidPixel(newPos.x, newPos.y, e);
 					e->getComponent<CTransform>().pos = newPos;
+					pathfinding.directionFrom = 4; //can move any direction
+					offScreen.offScreen = true;
 				}
 				sf::Time sec;
 				if (e->getComponent<CState>().state == "Flipper") {
@@ -155,6 +202,177 @@ void Scene_CubeRight::sEnemyFaceChange(sf::Time dt)
 				offScreen.sceneChangeThreshold = sec;
 			}
 		}
+	}
+}
+
+void Scene_CubeRight::sEnemyBehaviour()
+{
+	for (auto e : _enemyData.enemyManager.getEntities()) {
+		auto state = e->getComponent<CState>().state;
+		auto isVisible = e->getComponent<COffScreen>().offScreen != true;
+		if (state == "Flipper" && isVisible) {
+			flipper(e);
+		}
+		else if (state == "Gunner" && isVisible) {
+			std::cout << "TODO";
+		}
+	}
+}
+
+void Scene_CubeRight::flipper(std::shared_ptr<Entity> entity)
+{
+	enemyAwareMovement(entity);
+}
+
+std::vector<Vec2> Scene_CubeRight::getAvailableNodes(Vec2 pos, std::shared_ptr<Entity> entity)
+{
+	std::vector<Vec2> availableNodes;
+
+	//function won't be called if enemy isn't at a grid position
+
+	bool canMove = false;
+
+	auto pathfinding = entity->getComponent<CPathFinding>();
+
+	auto ePos = entity->getComponent<CTransform>().pos;
+
+	if (pathfinding.directionFrom != 0) {
+		canMove = canMoveInDirection("UP", entity);
+		if (canMove) {
+
+			auto grid = midPixelToGrid(ePos.x, ePos.y - 40, entity);
+			bool alreadyVisited = alreadyTraveled(pathfinding.visitedNodes, grid);
+			if (!alreadyVisited) {
+				availableNodes.push_back(grid);
+			}
+		}
+	}
+	if (pathfinding.directionFrom != 1) {
+		canMove = canMoveInDirection("LEFT", entity);
+		if (canMove) {
+
+			auto grid = midPixelToGrid(ePos.x - 40, ePos.y, entity);
+			bool alreadyVisited = alreadyTraveled(pathfinding.visitedNodes, grid);
+			if (!alreadyVisited) {
+				availableNodes.push_back(grid);
+			}
+		}
+	}
+	if (pathfinding.directionFrom != 2) {
+		canMove = canMoveInDirection("DOWN", entity);
+		if (canMove) {
+
+			auto grid = midPixelToGrid(ePos.x, ePos.y + 40, entity);
+			bool alreadyVisited = alreadyTraveled(pathfinding.visitedNodes, grid);
+			if (!alreadyVisited) {
+				availableNodes.push_back(grid);
+			}
+		}
+	}
+	if (pathfinding.directionFrom != 3) {
+		canMove = canMoveInDirection("RIGHT", entity);
+		if (canMove) {
+
+			auto grid = midPixelToGrid(ePos.x + 40, ePos.y, entity);
+			bool alreadyVisited = alreadyTraveled(pathfinding.visitedNodes, grid);
+			if (!alreadyVisited) {
+				availableNodes.push_back(grid);
+			}
+		}
+	}
+
+	Vec2 goBackPos = ePos;
+	if (availableNodes.empty()) {
+		switch (pathfinding.directionFrom) {
+		case 0:
+			goBackPos.y -= 40.f;
+			break;
+		case 1:
+			goBackPos.x -= 40.f;
+			break;
+		case 2:
+			goBackPos.y += 40.f;
+			break;
+		case 3:
+			goBackPos.x += 40.f;
+			break;
+		}
+		availableNodes.push_back(midPixelToGrid(goBackPos.x, goBackPos.y, entity));
+	}
+
+	return availableNodes;
+}
+
+Vec2 Scene_CubeRight::pickBestNode(std::vector<Vec2> availableNodes)
+{
+	float minDistance = 1000.f;
+	Vec2 closestNode;
+
+	auto playerPos = _player->getComponent<CTransform>().pos;
+	auto playerGrid = midPixelToGrid(playerPos.x, playerPos.y, _player);
+	playerGrid.x = std::roundf(playerGrid.x);
+	playerGrid.y = std::roundf(playerGrid.y); //rounded to avoid potential weird issues with enemy movement
+	sf::Vector2f pGrid{ playerGrid.x, playerGrid.y };
+
+
+	for (auto n : availableNodes) {
+		sf::Vector2f vecN{ n.x, n.y };
+		auto distance = dist(pGrid, vecN);
+		if (distance < minDistance) {
+			closestNode = { n.x, n.y };
+			minDistance = distance;
+		}
+	}
+
+	return closestNode;
+}
+
+void Scene_CubeRight::enemyAwareMovement(std::shared_ptr<Entity> enemy)
+{
+	auto& tfm = enemy->getComponent<CTransform>();
+
+	auto& pathFinding = enemy->getComponent<CPathFinding>();
+
+	std::vector<Vec2> availableNodes;
+
+	if (pathFinding.distanceRemainingPos.x == 0.f && pathFinding.distanceRemainingPos.y == 0.f && pathFinding.distanceRemainingNeg.x == 0.f && pathFinding.distanceRemainingNeg.y == 0.f) {
+		availableNodes = getAvailableNodes(tfm.pos, enemy);
+		Vec2 bestNode = pickBestNode(availableNodes);
+		pathFinding.targetGrid = bestNode;
+		pathFinding.visitedNodes.push_back(bestNode);
+		if (pathFinding.visitedNodes.size() > 7) {
+			pathFinding.visitedNodes.erase(pathFinding.visitedNodes.begin()); //only tracks the last 7 visited nodes, to prevent going in circles
+		}
+
+		auto bestNodePix = gridToMidPixel(bestNode.x, bestNode.y, enemy);
+		auto enemyPos = tfm.pos;
+
+		auto distance = bestNodePix - enemyPos;
+		if (distance.x > 0) {
+			pathFinding.distanceRemainingPos.x = distance.x;
+			tfm.vel.x += 1;
+			pathFinding.right = true;
+			pathFinding.directionFrom = 1;
+		}
+		else if (distance.x < 0) {
+			pathFinding.distanceRemainingNeg.x = distance.x;
+			tfm.vel.x -= 1;
+			pathFinding.left = true;
+			pathFinding.directionFrom = 3;
+		}
+		else if (distance.y > 0) {
+			pathFinding.distanceRemainingPos.y = distance.y;
+			tfm.vel.y += 1;
+			pathFinding.down = true;
+			pathFinding.directionFrom = 0;
+		}
+		else if (distance.y < 0) {
+			pathFinding.distanceRemainingNeg.y = distance.y;
+			tfm.vel.y -= 1;
+			pathFinding.up = true;
+			pathFinding.directionFrom = 2;
+		}
+		tfm.vel = tfm.vel * _config.enemySpeed;
 	}
 }
 
@@ -200,6 +418,19 @@ Vec2 Scene_CubeRight::gridToMidPixel(float gridX, float gridY, std::shared_ptr<E
 	sf::Vector2f spriteSize = entity->getComponent<CAnimation>().animation.getBB();
 
 	return Vec2(x + spriteSize.x / 2.f, y - spriteSize.y / 2.f);
+}
+
+Vec2 Scene_CubeRight::midPixelToGrid(float midX, float midY, std::shared_ptr<Entity> entity)
+{
+	if (entity->getTag() == "pathfinder") {
+		return Vec2((midX - 20.f) / gridSize.x, (440.f - (midY + 20.f)) / gridSize.y);
+	}
+
+	sf::Vector2f spriteSize = entity->getComponent<CAnimation>().animation.getBB();
+	float x = midX - (spriteSize.x / 2.f);
+	float y = midY + (spriteSize.y / 2.f);
+
+	return Vec2(x / gridSize.x, (440.f - y) / gridSize.y);
 }
 
 void Scene_CubeRight::loadFromFile(const std::string& path)
@@ -280,6 +511,11 @@ void Scene_CubeRight::loadFromFile(const std::string& path)
 	_player->addComponent<CTransform>(pixelPos);
 	_player->addComponent<CState>("alive");
 	_player->addComponent<CInput>();
+
+	auto e = _entityManager.addEntity("pathfinder");
+	sf::Vector2f smallBox = { 1,1 };
+	e->addComponent<CBoundingBox>(smallBox);
+	e->addComponent<CTransform>(pixelPos);
 }
 
 void Scene_CubeRight::playerMovement()
@@ -316,9 +552,9 @@ void Scene_CubeRight::snapToGrid(std::shared_ptr<Entity> entity)
 	tfm.pos.y -= (gridPosY - 20);
 }
 
-bool Scene_CubeRight::canMoveInDirection(std::string direction)
+bool Scene_CubeRight::canMoveInDirection(std::string direction, std::shared_ptr<Entity> entity)
 {
-	auto e = getCurrentTile();
+	auto e = getCurrentTile(entity);
 	if (e->getTag() == "robert") {
 		return true; //in case the player isn't overlapping any tiles
 	}
@@ -441,13 +677,13 @@ bool Scene_CubeRight::canMoveInDirection(std::string direction)
 			return true;
 		}
 	}
-	return true; //if there's a tile i missed somehow
+	return true;
 }
 
-sPtrEntt Scene_CubeRight::getCurrentTile()
+sPtrEntt Scene_CubeRight::getCurrentTile(std::shared_ptr<Entity> entity)
 {
 	for (auto e : _entityManager.getEntities()) {
-		auto overlap = Physics::getOverlap(_player, e);
+		auto overlap = Physics::getOverlap(entity, e);
 		if (overlap.x > 0 && overlap.y > 0) {
 			return e;
 
@@ -834,6 +1070,16 @@ int Scene_CubeRight::changeFace(int currentFace, bool isFlipper)
 	return newFace;
 }
 
+bool Scene_CubeRight::alreadyTraveled(std::vector<Vec2> visitedNodes, Vec2 targetNode)
+{
+	for (auto node : visitedNodes) {
+		if (targetNode == node) {
+			return true;
+		}
+	}
+	return false;
+}
+
 Scene_CubeRight::Scene_CubeRight(GameEngine* gameEngine, const std::string& levelPath)
 	: Scene(gameEngine), _worldView(gameEngine->window().getDefaultView()), _levelPath(levelPath) 
 {
@@ -849,6 +1095,7 @@ void Scene_CubeRight::update(sf::Time dt)
 	}
 	playerMovement();
 	sEnemyFaceChange(dt);
+	sEnemyBehaviour();
 	sMovement(dt);
 	if (_nextControl != "") {
 		sDoAction(Command{ _nextControl, "START" });
@@ -880,7 +1127,7 @@ void Scene_CubeRight::sDoAction(const Command& command)
 
 	//code template from Dave Burchill, NBCC
 	if (!_player->getComponent<CInput>().left && !_player->getComponent<CInput>().right && !_player->getComponent<CInput>().up && !_player->getComponent<CInput>().down) {
-		bool validDirection = canMoveInDirection(_nextControl);
+		bool validDirection = canMoveInDirection(_nextControl, _player);
 		if (_nextControl == "LEFT" && validDirection) {
 			_player->getComponent<CInput>().left = true;
 			_player->getComponent<CInput>().distanceRemainingNeg.x = -40;
