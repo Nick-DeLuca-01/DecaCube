@@ -237,6 +237,10 @@ void Scene_DecaCube::gunner(std::shared_ptr<Entity> entity)
 	auto& gun = entity->getComponent<CGun>();
 	auto& tfm = entity->getComponent<CTransform>();
 	bool seesPlayer = canSeePlayer(entity);
+
+	enemyAwareMovement(entity);
+
+
 	if (seesPlayer && !gun.onCooldown) {
 		gun.cooldown = sf::seconds(4);
 	}
@@ -265,13 +269,13 @@ void Scene_DecaCube::gunner(std::shared_ptr<Entity> entity)
 			speed = { 1.f, 0.f };
 			break;
 		}
-		speed.x = _config.enemySpeed * 2;
-		speed.y = _config.enemySpeed * 2;
+		speed.x *= _config.enemySpeed * 2;
+		speed.y *= _config.enemySpeed * 2;
 		e->getComponent<CTransform>().vel = speed;
 
 		gun.onCooldown = true;
 	}
-	enemyAwareMovement(entity);
+	
 	clearBullets();
 	
 	
