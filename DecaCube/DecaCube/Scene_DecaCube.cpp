@@ -245,33 +245,33 @@ void Scene_DecaCube::gunner(std::shared_ptr<Entity> entity)
 	int directionFacing = (entity->getComponent<CPathFinding>().directionFrom + 2) % 4;
 	tfm.angle = (-90 * directionFacing);
 
-	if (gun.chargeTime.asSeconds() <= 0 && !gun.onCooldown) {
-		auto e = _entityManager.addEntity("bullet");
-		auto bb = e->addComponent<CAnimation>(Assets::getInstance().getAnimation("Bullet")).animation.getBB();
-		e->addComponent<CBoundingBox>(bb);
-		e->addComponent<CTransform>(tfm.pos);
-		e->getComponent<CTransform>().angle = tfm.angle;
-		Vec2 speed;
-		switch (directionFacing) {
-		case 0:
-			speed = { 0.f, -1.f };
-			break;
-		case 1:
-			speed = { -1.f, 0.f };
-			break;
-		case 2:
-			speed = { 0.f, 1.f };
-			break;
-		case 3:
-			speed = { 1.f, 0.f };
-			break;
-		}
-		speed.x = _config.enemySpeed * 2;
-		speed.y = _config.enemySpeed * 2;
-		e->getComponent<CTransform>().vel = speed;
+	//if (gun.chargeTime.asSeconds() <= 0 && !gun.onCooldown && seesPlayer) {
+	//	auto e = _entityManager.addEntity("bullet");
+	//	auto bb = e->addComponent<CAnimation>(Assets::getInstance().getAnimation("Bullet")).animation.getBB();
+	//	e->addComponent<CBoundingBox>(bb);
+	//	e->addComponent<CTransform>(tfm.pos);
+	//	e->getComponent<CTransform>().angle = tfm.angle;
+	//	Vec2 speed;
+	//	switch (directionFacing) {
+	//	case 0:
+	//		speed = { 0.f, -1.f };
+	//		break;
+	//	case 1:
+	//		speed = { -1.f, 0.f };
+	//		break;
+	//	case 2:
+	//		speed = { 0.f, 1.f };
+	//		break;
+	//	case 3:
+	//		speed = { 1.f, 0.f };
+	//		break;
+	//	}
+	//	speed.x = _config.enemySpeed * 2;
+	//	speed.y = _config.enemySpeed * 2;
+	//	e->getComponent<CTransform>().vel = speed;
 
-		gun.onCooldown = true;
-	}
+	//	gun.onCooldown = true;
+	//}
 	enemyAwareMovement(entity);
 	clearBullets();
 	
@@ -486,6 +486,9 @@ bool Scene_DecaCube::canSeePlayer(std::shared_ptr<Entity> enemy)
 					break;
 				}
 				seesPlayer = touchingPlayer(pathfinder);
+				if (pPos.x > 440 || pPos.x < 0 || pPos.y > 440 || pPos.y < 0) {
+					canMove = false;
+				}
 			}
 		}
 	}
@@ -1250,7 +1253,7 @@ int Scene_DecaCube::changeFace(int currentFace, bool isFlipper)
 	if (isFlipper && _player->getComponent<CLocation>().currentFace != currentFace) { //if Flipper isn't on player's face, switch to player's face. otherwise we use the previous calc
 		newFace = _player->getComponent<CLocation>().currentFace;
 	}
-	return newFace;
+	return 1;
 }
 
 bool Scene_DecaCube::alreadyTraveled(std::vector<Vec2> visitedNodes, Vec2 targetNode)
