@@ -31,6 +31,9 @@ struct LevelConfig {
 	sf::Time	highDiffTime{ sf::seconds(300.f) };
 	int			midDiffItems{ 5 };
 	int			highDiffItems{ 10 };
+	sf::Time	gunnerCDLow{ sf::seconds(5.f) };
+	sf::Time	gunnerCDMid{ sf::seconds(3.f) };
+	sf::Time	gunnerCDHigh{ sf::seconds(1.f) };
 };
 
 

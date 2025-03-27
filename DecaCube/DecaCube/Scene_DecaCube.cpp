@@ -706,9 +706,9 @@ void Scene_DecaCube::loadFromFile(const std::string& path)
 		}
 		else if (token == "EnemyConfig") {
 			float sceneChangeLower, sceneChangeUpper, midDifficultyTime, highDifficultyTime;
-			int enemySpeed, midDifficultyItems, highDifficultyItems;
+			int enemySpeed, midDifficultyItems, highDifficultyItems, gunnerCDLow, gunnerCDMid, gunnerCDHigh;
 
-			config >> sceneChangeLower >> sceneChangeUpper >> enemySpeed >> midDifficultyTime >> midDifficultyItems >> highDifficultyTime >> highDifficultyItems;
+			config >> sceneChangeLower >> sceneChangeUpper >> enemySpeed >> midDifficultyTime >> midDifficultyItems >> highDifficultyTime >> highDifficultyItems >> gunnerCDLow >> gunnerCDMid >> gunnerCDHigh;
 
 			_config.sceneChangeLower = sceneChangeLower;
 			_config.sceneChangeUpper = sceneChangeUpper;
@@ -717,6 +717,9 @@ void Scene_DecaCube::loadFromFile(const std::string& path)
 			_config.midDiffItems = midDifficultyItems;
 			_config.highDiffTime = sf::seconds(highDifficultyTime);
 			_config.highDiffItems = highDifficultyItems;
+			_config.gunnerCDLow = sf::seconds(gunnerCDLow);
+			_config.gunnerCDMid = sf::seconds(gunnerCDMid);
+			_config.gunnerCDHigh = sf::seconds(gunnerCDHigh);
 		}
 		else
 		{
