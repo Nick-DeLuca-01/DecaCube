@@ -471,9 +471,9 @@ bool Scene_DecaCube::canSeePlayer(std::shared_ptr<Entity> enemy)
 				direction = "RIGHT";
 				break;
 			}
+			canMove = canMoveInDirection(direction, pathfinder);
 			while (canMove && !seesPlayer) {
 				
-				canMove = canMoveInDirection(direction, pathfinder);
 				switch (i) {
 				case 0:
 					pPos.y -= 40;
