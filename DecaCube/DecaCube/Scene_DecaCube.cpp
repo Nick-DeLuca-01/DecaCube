@@ -242,7 +242,7 @@ void Scene_DecaCube::gunner(std::shared_ptr<Entity> entity)
 
 
 	if (seesPlayer && !gun.onCooldown) {
-		gun.cooldown = sf::seconds(4);
+		gun.cooldown = _config.gunnerCDLow;
 	}
 
 	int directionFacing = (entity->getComponent<CPathFinding>().directionFrom + 2) % 4;
