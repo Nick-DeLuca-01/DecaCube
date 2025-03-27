@@ -163,7 +163,6 @@ struct CState : public Component {
 };
 
 struct CGun : public Component {
-    sf::Time chargeTime = sf::Time::Zero;
     sf::Time cooldown = sf::Time::Zero;
 
     bool onCooldown = false;

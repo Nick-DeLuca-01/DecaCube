@@ -237,41 +237,40 @@ void Scene_DecaCube::gunner(std::shared_ptr<Entity> entity)
 	auto& gun = entity->getComponent<CGun>();
 	auto& tfm = entity->getComponent<CTransform>();
 	bool seesPlayer = canSeePlayer(entity);
-	if (seesPlayer && gun.cooldown.asSeconds() <= 0) {
-		gun.chargeTime = sf::seconds(1);
+	if (seesPlayer && !gun.onCooldown) {
 		gun.cooldown = sf::seconds(4);
 	}
 
 	int directionFacing = (entity->getComponent<CPathFinding>().directionFrom + 2) % 4;
 	tfm.angle = (-90 * directionFacing);
 
-	//if (gun.chargeTime.asSeconds() <= 0 && !gun.onCooldown && seesPlayer) {
-	//	auto e = _entityManager.addEntity("bullet");
-	//	auto bb = e->addComponent<CAnimation>(Assets::getInstance().getAnimation("Bullet")).animation.getBB();
-	//	e->addComponent<CBoundingBox>(bb);
-	//	e->addComponent<CTransform>(tfm.pos);
-	//	e->getComponent<CTransform>().angle = tfm.angle;
-	//	Vec2 speed;
-	//	switch (directionFacing) {
-	//	case 0:
-	//		speed = { 0.f, -1.f };
-	//		break;
-	//	case 1:
-	//		speed = { -1.f, 0.f };
-	//		break;
-	//	case 2:
-	//		speed = { 0.f, 1.f };
-	//		break;
-	//	case 3:
-	//		speed = { 1.f, 0.f };
-	//		break;
-	//	}
-	//	speed.x = _config.enemySpeed * 2;
-	//	speed.y = _config.enemySpeed * 2;
-	//	e->getComponent<CTransform>().vel = speed;
+	if (!gun.onCooldown && seesPlayer) {
+		auto e = _entityManager.addEntity("bullet");
+		auto bb = e->addComponent<CAnimation>(Assets::getInstance().getAnimation("Bullet")).animation.getBB();
+		e->addComponent<CBoundingBox>(bb);
+		e->addComponent<CTransform>(tfm.pos);
+		e->getComponent<CTransform>().angle = tfm.angle;
+		Vec2 speed;
+		switch (directionFacing) {
+		case 0:
+			speed = { 0.f, -1.f };
+			break;
+		case 1:
+			speed = { -1.f, 0.f };
+			break;
+		case 2:
+			speed = { 0.f, 1.f };
+			break;
+		case 3:
+			speed = { 1.f, 0.f };
+			break;
+		}
+		speed.x = _config.enemySpeed * 2;
+		speed.y = _config.enemySpeed * 2;
+		e->getComponent<CTransform>().vel = speed;
 
-	//	gun.onCooldown = true;
-	//}
+		gun.onCooldown = true;
+	}
 	enemyAwareMovement(entity);
 	clearBullets();
 	
@@ -1319,14 +1318,12 @@ void Scene_DecaCube::update(sf::Time dt)
 	for (auto enemy : _enemyData.enemyManager.getEntities()) {
 		if (enemy->hasComponent<CGun>()) {
 			auto& gun = enemy->getComponent<CGun>();
-			gun.cooldown -= dt;
-			gun.chargeTime -= dt;
+			if (gun.onCooldown) {
+				gun.cooldown -= dt;
+			}
 			if (gun.cooldown.asSeconds() <= 0) {
 				gun.cooldown = sf::Time::Zero;
 				gun.onCooldown = false;
-			}
-			if (gun.chargeTime.asSeconds() <= 0) {
-				gun.chargeTime = sf::Time::Zero;
 			}
 		}
 	}
