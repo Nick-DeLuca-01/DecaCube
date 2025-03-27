@@ -1006,6 +1006,9 @@ void Scene_DecaCube::fixPlayerPos()
 		if (enemy->getComponent<CLocation>().currentFace == _player->getComponent<CLocation>().currentFace) {
 			enemy->getComponent<COffScreen>().offScreen = false;
 		}
+		else {
+			enemy->getComponent<COffScreen>().offScreen = true;
+		}
 	}
 }
 
