@@ -219,6 +219,9 @@ void Scene_DecaCube::sEnemyBehaviour()
 		else if (state == "Gunner" && isVisible) {
 			gunner(e);
 		}
+		else if ((state == "Sun" || state == "Moon") && isVisible) {
+			sunAndMoon(e);
+		}
 	}
 }
 
@@ -281,6 +284,19 @@ void Scene_DecaCube::gunner(std::shared_ptr<Entity> entity)
 	
 }
 
+void Scene_DecaCube::sunAndMoon(std::shared_ptr<Entity> entity)
+{
+	auto& atfm = entity->getComponent<CTransform>();
+	bool seesPlayer = canSeePlayer(entity);
+	//bool remembersPlayer = entity->getComponent<CSight>().seesPlayer;
+	if (seesPlayer) {
+		enemyAwareMovement(entity);
+	}
+	else {
+		enemyUnawareMovement(entity);
+	}
+}
+
 std::vector<Vec2> Scene_DecaCube::getAvailableNodes(Vec2 pos, std::shared_ptr<Entity> entity) //grid pos passed in, as well as moving entity
 {
 	std::vector<Vec2> availableNodes;
@@ -299,7 +315,7 @@ std::vector<Vec2> Scene_DecaCube::getAvailableNodes(Vec2 pos, std::shared_ptr<En
 			
 			auto grid = midPixelToGrid(ePos.x, ePos.y - 40, entity);
 			bool alreadyVisited = alreadyTraveled(pathfinding.visitedNodes, grid);
-			if (!alreadyVisited) {
+			if (!alreadyVisited && (ePos.y - 40) >= 0) {
 				availableNodes.push_back(grid);
 			}
 		}
@@ -310,7 +326,7 @@ std::vector<Vec2> Scene_DecaCube::getAvailableNodes(Vec2 pos, std::shared_ptr<En
 
 			auto grid = midPixelToGrid(ePos.x - 40, ePos.y, entity);
 			bool alreadyVisited = alreadyTraveled(pathfinding.visitedNodes, grid);
-			if (!alreadyVisited) {
+			if (!alreadyVisited && (ePos.x - 40) >= 0) {
 				availableNodes.push_back(grid);
 			}
 		}
@@ -321,7 +337,7 @@ std::vector<Vec2> Scene_DecaCube::getAvailableNodes(Vec2 pos, std::shared_ptr<En
 
 			auto grid = midPixelToGrid(ePos.x, ePos.y + 40, entity);
 			bool alreadyVisited = alreadyTraveled(pathfinding.visitedNodes, grid);
-			if (!alreadyVisited) {
+			if (!alreadyVisited && (ePos.y + 40) <= 440) {
 				availableNodes.push_back(grid);
 			}
 		}
@@ -332,7 +348,7 @@ std::vector<Vec2> Scene_DecaCube::getAvailableNodes(Vec2 pos, std::shared_ptr<En
 
 			auto grid = midPixelToGrid(ePos.x + 40, ePos.y, entity);
 			bool alreadyVisited = alreadyTraveled(pathfinding.visitedNodes, grid);
-			if (!alreadyVisited) {
+			if (!alreadyVisited && (ePos.x + 40) <= 440) {
 				availableNodes.push_back(grid);
 			}
 		}
@@ -384,6 +400,18 @@ Vec2 Scene_DecaCube::pickBestNode(std::vector<Vec2> availableNodes)
 	return closestNode;
 }
 
+Vec2 Scene_DecaCube::pickRandomNode(std::vector<Vec2> availableNodes)
+{
+	std::uniform_int_distribution<int> pickNode(0, availableNodes.size() - 1);
+	int selectedNode = pickNode(rng);
+	return availableNodes[selectedNode];
+}
+
+Vec2 Scene_DecaCube::approachRememberedNode(std::vector<Vec2> availableNodes, Vec2 rememberedNode)
+{
+	return Vec2();
+}
+
 void Scene_DecaCube::enemyAwareMovement(std::shared_ptr<Entity> enemy)
 {
 	auto& tfm = enemy->getComponent<CTransform>();
@@ -405,32 +433,65 @@ void Scene_DecaCube::enemyAwareMovement(std::shared_ptr<Entity> enemy)
 		auto enemyPos = tfm.pos;
 
 		auto distance = bestNodePix - enemyPos;
-		if (distance.x > 0) {
-			pathFinding.distanceRemainingPos.x = distance.x;
-			tfm.vel.x += 1;
-			pathFinding.right = true;
-			pathFinding.directionFrom = 1;
-		}
-		else if (distance.x < 0) {
-			pathFinding.distanceRemainingNeg.x = distance.x;
-			tfm.vel.x -= 1;
-			pathFinding.left = true;
-			pathFinding.directionFrom = 3;
-		}
-		else if (distance.y > 0) {
-			pathFinding.distanceRemainingPos.y = distance.y;
-			tfm.vel.y += 1;
-			pathFinding.down = true;
-			pathFinding.directionFrom = 0;
-		}
-		else if (distance.y < 0) {
-			pathFinding.distanceRemainingNeg.y = distance.y;
-			tfm.vel.y -= 1;
-			pathFinding.up = true;
-			pathFinding.directionFrom = 2;
-		}
-		tfm.vel = tfm.vel * _config.enemySpeed;
+		enemyMovement(distance, enemy);
 	}
+}
+
+void Scene_DecaCube::enemyUnawareMovement(std::shared_ptr<Entity> enemy)
+{
+	auto& tfm = enemy->getComponent<CTransform>();
+
+	auto& pathFinding = enemy->getComponent<CPathFinding>();
+
+	std::vector<Vec2> availableNodes;
+
+	if (pathFinding.distanceRemainingPos.x == 0.f && pathFinding.distanceRemainingPos.y == 0.f && pathFinding.distanceRemainingNeg.x == 0.f && pathFinding.distanceRemainingNeg.y == 0.f) {
+		availableNodes = getAvailableNodes(tfm.pos, enemy);
+		Vec2 randomNode = pickRandomNode(availableNodes);
+		pathFinding.targetGrid = randomNode;
+		pathFinding.visitedNodes.push_back(randomNode);
+		if (pathFinding.visitedNodes.size() > 7) {
+			pathFinding.visitedNodes.erase(pathFinding.visitedNodes.begin()); //only tracks the last 7 visited nodes, to prevent going in circles
+		}
+
+		auto randomNodePix = gridToMidPixel(randomNode.x, randomNode.y, enemy);
+		auto enemyPos = tfm.pos;
+
+		auto distance = randomNodePix - enemyPos;
+		enemyMovement(distance, enemy);
+	}
+}
+
+void Scene_DecaCube::enemyMovement(Vec2 distance, std::shared_ptr<Entity> enemy)
+{
+	auto& pathFinding = enemy->getComponent<CPathFinding>();
+	auto& tfm = enemy->getComponent<CTransform>();
+
+	if (distance.x > 0) {
+		pathFinding.distanceRemainingPos.x = distance.x;
+		tfm.vel.x += 1;
+		pathFinding.right = true;
+		pathFinding.directionFrom = 1;
+	}
+	else if (distance.x < 0) {
+		pathFinding.distanceRemainingNeg.x = distance.x;
+		tfm.vel.x -= 1;
+		pathFinding.left = true;
+		pathFinding.directionFrom = 3;
+	}
+	else if (distance.y > 0) {
+		pathFinding.distanceRemainingPos.y = distance.y;
+		tfm.vel.y += 1;
+		pathFinding.down = true;
+		pathFinding.directionFrom = 0;
+	}
+	else if (distance.y < 0) {
+		pathFinding.distanceRemainingNeg.y = distance.y;
+		tfm.vel.y -= 1;
+		pathFinding.up = true;
+		pathFinding.directionFrom = 2;
+	}
+	tfm.vel = tfm.vel * _config.enemySpeed;
 }
 
 bool Scene_DecaCube::canSeePlayer(std::shared_ptr<Entity> enemy)
@@ -1264,7 +1325,7 @@ int Scene_DecaCube::changeFace(int currentFace, bool isFlipper)
 	if (isFlipper && _player->getComponent<CLocation>().currentFace != currentFace) { //if Flipper isn't on player's face, switch to player's face. otherwise we use the previous calc
 		newFace = _player->getComponent<CLocation>().currentFace;
 	}
-	return newFace;
+	return 1;
 }
 
 bool Scene_DecaCube::alreadyTraveled(std::vector<Vec2> visitedNodes, Vec2 targetNode)

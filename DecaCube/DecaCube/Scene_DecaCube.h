@@ -50,6 +50,7 @@ class Scene_DecaCube : public Scene
 
     void flipper(std::shared_ptr<Entity> entity);
     void gunner(std::shared_ptr<Entity> entity);
+    void sunAndMoon(std::shared_ptr<Entity> entity);
 
     //general enemy functions
 
@@ -57,7 +58,15 @@ class Scene_DecaCube : public Scene
 
     Vec2 pickBestNode(std::vector<Vec2> availableNodes);
 
+    Vec2 pickRandomNode(std::vector<Vec2> availableNodes);
+
+    Vec2 approachRememberedNode(std::vector<Vec2> availableNodes, Vec2 rememberedNode);
+
     void enemyAwareMovement(std::shared_ptr<Entity> enemy);
+
+    void enemyUnawareMovement(std::shared_ptr<Entity> enemy);
+
+    void enemyMovement(Vec2 distance, std::shared_ptr<Entity> enemy);
 
     bool canSeePlayer(std::shared_ptr<Entity> enemy);
 
