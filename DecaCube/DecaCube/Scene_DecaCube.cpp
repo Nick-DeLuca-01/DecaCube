@@ -135,7 +135,7 @@ void Scene_DecaCube::sEnemyFaceChange(sf::Time dt)
 			offScreen.secondsOffScreen += dt; 
 			if (offScreen.secondsOffScreen >= offScreen.sceneChangeThreshold) {
 				//code to switch scene
-				int newFace = changeFace(e->getComponent<CLocation>().currentFace, e->getComponent<CState>().state == "Flipper");
+				int newFace = changeFace(e->getComponent<CLocation>().currentFace, (e->getComponent<CState>().state == "Flipper") || (e->getComponent<CSight>().seesPlayer));
 				
 				offScreen.secondsOffScreen = sf::Time::Zero;
 				e->getComponent<CLocation>().currentFace = newFace;
@@ -287,9 +287,26 @@ void Scene_DecaCube::gunner(std::shared_ptr<Entity> entity)
 void Scene_DecaCube::sunAndMoon(std::shared_ptr<Entity> entity)
 {
 	auto& atfm = entity->getComponent<CTransform>();
+	auto& asight = entity->getComponent<CSight>();
 	bool seesPlayer = canSeePlayer(entity);
-	//bool remembersPlayer = entity->getComponent<CSight>().seesPlayer;
 	if (seesPlayer) {
+		asight.seesPlayer = true;
+		asight.rememberDuration = _config.sunMoonRememberLow;
+		std::string other;
+		if (entity->getComponent<CState>().state == "Sun") {
+			other = "Moon";
+		}
+		else {
+			other = "Sun";
+		}
+		for (auto e : _enemyData.enemyManager.getEntities()) {
+			if (e->getComponent<CState>().state == other) {
+				e->getComponent<CSight>().seesPlayer = true;
+				e->getComponent<CSight>().rememberDuration = asight.rememberDuration;
+			}
+		}
+	}
+	if (asight.seesPlayer) {
 		enemyAwareMovement(entity);
 	}
 	else {
@@ -768,10 +785,10 @@ void Scene_DecaCube::loadFromFile(const std::string& path)
 			}
 		}
 		else if (token == "EnemyConfig") {
-			float sceneChangeLower, sceneChangeUpper, midDifficultyTime, highDifficultyTime;
+			float sceneChangeLower, sceneChangeUpper, midDifficultyTime, highDifficultyTime, sunMoonRememberLow, sunMoonRememberMid, sunMoonRememberHigh;
 			int enemySpeed, midDifficultyItems, highDifficultyItems, gunnerCDLow, gunnerCDMid, gunnerCDHigh;
 
-			config >> sceneChangeLower >> sceneChangeUpper >> enemySpeed >> midDifficultyTime >> midDifficultyItems >> highDifficultyTime >> highDifficultyItems >> gunnerCDLow >> gunnerCDMid >> gunnerCDHigh;
+			config >> sceneChangeLower >> sceneChangeUpper >> enemySpeed >> midDifficultyTime >> midDifficultyItems >> highDifficultyTime >> highDifficultyItems >> gunnerCDLow >> gunnerCDMid >> gunnerCDHigh >> sunMoonRememberLow >> sunMoonRememberMid >> sunMoonRememberHigh;
 
 			_config.sceneChangeLower = sceneChangeLower;
 			_config.sceneChangeUpper = sceneChangeUpper;
@@ -783,6 +800,9 @@ void Scene_DecaCube::loadFromFile(const std::string& path)
 			_config.gunnerCDLow = sf::seconds(gunnerCDLow);
 			_config.gunnerCDMid = sf::seconds(gunnerCDMid);
 			_config.gunnerCDHigh = sf::seconds(gunnerCDHigh);
+			_config.sunMoonRememberLow = sf::seconds(sunMoonRememberLow);
+			_config.sunMoonRememberMid = sf::seconds(sunMoonRememberMid);
+			_config.sunMoonRememberHigh = sf::seconds(sunMoonRememberHigh);
 		}
 		else
 		{
@@ -1313,16 +1333,16 @@ void Scene_DecaCube::rotateEntireFace()
 	}
 }
 
-int Scene_DecaCube::changeFace(int currentFace, bool isFlipper)
+int Scene_DecaCube::changeFace(int currentFace, bool knowsPlayerPos)
 {
 	std::uniform_int_distribution<int> faces(1, 6);
 	int newFace = faces(rng);
-	while (newFace == currentFace || ((newFace + currentFace) == 7 && !isFlipper)) { //face values are set up so that opposing face values always add to seven, similar to most dice
+	while (newFace == currentFace || ((newFace + currentFace) == 7 && !knowsPlayerPos)) { //face values are set up so that opposing face values always add to seven, similar to most dice
 		//if the roll is the current face or the opposite face, reroll
 		//if enemy rolling is the flipper, ignore opposite face check
 		newFace = faces(rng);
 	}
-	if (isFlipper && _player->getComponent<CLocation>().currentFace != currentFace) { //if Flipper isn't on player's face, switch to player's face. otherwise we use the previous calc
+	if (knowsPlayerPos && _player->getComponent<CLocation>().currentFace != currentFace) { //if Flipper isn't on player's face, switch to player's face. otherwise we use the previous calc
 		newFace = _player->getComponent<CLocation>().currentFace;
 	}
 	return 1;
@@ -1397,6 +1417,13 @@ void Scene_DecaCube::update(sf::Time dt)
 			if (gun.cooldown.asSeconds() <= 0) {
 				gun.cooldown = sf::Time::Zero;
 				gun.onCooldown = false;
+			}
+		}
+		if (enemy->hasComponent<CSight>()) {
+			auto& sight = enemy->getComponent<CSight>();
+			if (sight.rememberDuration.asSeconds() <= 0) {
+				sight.rememberDuration = sf::Time::Zero;
+				sight.seesPlayer = false;
 			}
 		}
 	}

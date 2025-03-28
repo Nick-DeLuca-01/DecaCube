@@ -2,9 +2,9 @@
 # name spritename startingface posx posy
 # top1 right2 back3 front4 left5 bottom6
 
-# config sceneChangeLower sceneChangeUpper enemySpeed midDiffTime midDiffItems highDiffTime highDiffItems gunnerCDLow CDMid CDHigh
+# config sceneChangeLower sceneChangeUpper enemySpeed midDiffTime midDiffItems highDiffTime highDiffItems gunnerCDLow CDMid CDHigh sunMoonRememberLengthLow Mid High
 
-EnemyConfig 12 22 60 150 5 300 10 5 3 1
+EnemyConfig 12 22 60 150 5 300 10 5 3 1 5 7 10
 
 # Enemy Charger Charger 2 2 9
 # Enemy Defender Defender 3 5 4

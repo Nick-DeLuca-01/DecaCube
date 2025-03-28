@@ -34,6 +34,9 @@ struct LevelConfig {
 	sf::Time	gunnerCDLow{ sf::seconds(5.f) };
 	sf::Time	gunnerCDMid{ sf::seconds(3.f) };
 	sf::Time	gunnerCDHigh{ sf::seconds(1.f) };
+	sf::Time    sunMoonRememberLow{ sf::seconds(5.f) };
+	sf::Time	sunMoonRememberMid{ sf::seconds(7.f) };
+	sf::Time	sunMoonRememberHigh{ sf::seconds(10.f) };
 };
 
 

@@ -73,6 +73,7 @@ struct CLocation : public Component
 struct CSight : public Component
 {
     bool seesPlayer{ false };
+    sf::Time rememberDuration = sf::Time::Zero;
     CSight() = default;
     CSight(bool see) : seesPlayer(see) {}
 };

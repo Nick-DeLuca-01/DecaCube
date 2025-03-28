@@ -95,7 +95,7 @@ class Scene_DecaCube : public Scene
     Vec2 rotateTilePosition(Vec2 prePos);
     Vec2 rotateEntityPosition(Vec2 prePos);
     void rotateEntireFace();
-    int changeFace(int currentFace, bool isFlipper);
+    int changeFace(int currentFace, bool knowsPlayerPos);
 
     bool alreadyTraveled(std::vector<Vec2> visitedNodes, Vec2 targetNode);
 
