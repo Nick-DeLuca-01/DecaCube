@@ -481,6 +481,7 @@ bool Scene_CubeBack::canSeePlayer(std::shared_ptr<Entity> enemy)
 					break;
 				}
 				seesPlayer = touchingPlayer(pathfinder);
+				canMove = canMoveInDirection(direction, pathfinder);
 				if (pPos.x > 440 || pPos.x < 0 || pPos.y > 440 || pPos.y < 0) {
 					canMove = false;
 				}

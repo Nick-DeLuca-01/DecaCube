@@ -481,6 +481,7 @@ bool Scene_CubeBottom::canSeePlayer(std::shared_ptr<Entity> enemy)
 					break;
 				}
 				seesPlayer = touchingPlayer(pathfinder);
+				canMove = canMoveInDirection(direction, pathfinder);
 				if (pPos.x > 440 || pPos.x < 0 || pPos.y > 440 || pPos.y < 0) {
 					canMove = false;
 				}
@@ -1204,7 +1205,7 @@ int Scene_CubeBottom::changeFace(int currentFace, bool isFlipper)
 	if (isFlipper && _player->getComponent<CLocation>().currentFace != currentFace) { //if Flipper isn't on player's face, switch to player's face. otherwise we use the previous calc
 		newFace = _player->getComponent<CLocation>().currentFace;
 	}
-	return 6;
+	return newFace;
 }
 
 bool Scene_CubeBottom::alreadyTraveled(std::vector<Vec2> visitedNodes, Vec2 targetNode)
