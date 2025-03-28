@@ -43,6 +43,9 @@ class Scene_CubeRight : public Scene
 
 
     void flipper(std::shared_ptr<Entity> entity);
+    void gunner(std::shared_ptr<Entity> entity);
+
+    //general enemy functions
 
     std::vector<Vec2> getAvailableNodes(Vec2 pos, std::shared_ptr<Entity> entity);
 
@@ -50,17 +53,23 @@ class Scene_CubeRight : public Scene
 
     void enemyAwareMovement(std::shared_ptr<Entity> enemy);
 
-    // helper functions
+    bool canSeePlayer(std::shared_ptr<Entity> enemy);
+
+    bool touchingPlayer(std::shared_ptr<Entity> entity);
+
+    void clearBullets();
+
+    //helper functions
     void	                onEnd() override;
-    void init(const std::string& path);
     void registerActions();
     void spawnPlayer(sf::Vector2f pos);
+    void playerMovement();
+    void adjustPlayerPosition();
+    void init(const std::string& path);
     void loadLevel(const std::string& path);
     Vec2 gridToMidPixel(float gridX, float gridY, std::shared_ptr<Entity> entity);
     Vec2 midPixelToGrid(float midX, float midY, std::shared_ptr<Entity> entity);
     void loadFromFile(const std::string& path);
-    void playerMovement();
-    void adjustPlayerPosition();
     void snapToGrid(std::shared_ptr<Entity> entity);
     bool canMoveInDirection(std::string direction, std::shared_ptr<Entity> entity);
     sPtrEntt getCurrentTile(std::shared_ptr<Entity> entity);

@@ -61,7 +61,10 @@ void Scene_CubeFront::sMovement(sf::Time dt)
 		snapToGrid(_player);
 
 	}
-
+	for (auto bullet : _entityManager.getEntities("bullet")) {
+		auto& btfm = bullet->getComponent<CTransform>();
+		btfm.pos += btfm.vel * dt.asSeconds();
+	}
 	for (auto e : _enemyData.enemyManager.getEntities("enemy")) {
 		auto& etfm = e->getComponent<CTransform>();
 		auto& ePathfinding = e->getComponent<CPathFinding>();
@@ -214,7 +217,7 @@ void Scene_CubeFront::sEnemyBehaviour()
 			flipper(e);
 		}
 		else if (state == "Gunner" && isVisible) {
-			std::cout << "TODO";
+			gunner(e);
 		}
 	}
 }
@@ -222,6 +225,51 @@ void Scene_CubeFront::sEnemyBehaviour()
 void Scene_CubeFront::flipper(std::shared_ptr<Entity> entity)
 {
 	enemyAwareMovement(entity);
+}
+
+void Scene_CubeFront::gunner(std::shared_ptr<Entity> entity)
+{
+	auto& gun = entity->getComponent<CGun>();
+	auto& tfm = entity->getComponent<CTransform>();
+	bool seesPlayer = canSeePlayer(entity);
+	enemyAwareMovement(entity);
+
+	if (seesPlayer && !gun.onCooldown) {
+		gun.cooldown = _config.gunnerCDLow;
+	}
+
+	int directionFacing = (entity->getComponent<CPathFinding>().directionFrom + 2) % 4;
+	tfm.angle = (-90 * directionFacing);
+
+	if (!gun.onCooldown && seesPlayer) {
+		auto e = _entityManager.addEntity("bullet");
+		auto bb = e->addComponent<CAnimation>(Assets::getInstance().getAnimation("Bullet")).animation.getBB();
+		e->addComponent<CBoundingBox>(bb);
+		e->addComponent<CTransform>(tfm.pos);
+		e->getComponent<CTransform>().angle = tfm.angle;
+		Vec2 speed;
+		switch (directionFacing) {
+		case 0:
+			speed = { 0.f, -1.f };
+			break;
+		case 1:
+			speed = { -1.f, 0.f };
+			break;
+		case 2:
+			speed = { 0.f, 1.f };
+			break;
+		case 3:
+			speed = { 1.f, 0.f };
+			break;
+		}
+		speed.x *= _config.enemySpeed * 2;
+		speed.y *= _config.enemySpeed * 2;
+		e->getComponent<CTransform>().vel = speed;
+
+		gun.onCooldown = true;
+	}
+
+	clearBullets();
 }
 
 std::vector<Vec2> Scene_CubeFront::getAvailableNodes(Vec2 pos, std::shared_ptr<Entity> entity)
@@ -373,6 +421,87 @@ void Scene_CubeFront::enemyAwareMovement(std::shared_ptr<Entity> enemy)
 			pathFinding.directionFrom = 2;
 		}
 		tfm.vel = tfm.vel * _config.enemySpeed;
+	}
+}
+
+bool Scene_CubeFront::canSeePlayer(std::shared_ptr<Entity> enemy)
+{
+	auto& tfm = enemy->getComponent<CTransform>();
+
+	auto pathfinding = enemy->getComponent<CPathFinding>();
+
+	auto pathfinder = _entityManager.getEntities("pathfinder")[0]; //pathfinder entity, not the moving one
+
+	auto& pPos = pathfinder->getComponent<CTransform>().pos;
+
+	auto ePos = enemy->getComponent<CTransform>().pos;
+
+	bool canMove = true;
+
+	bool seesPlayer = false;
+
+	if (pathfinding.distanceRemainingPos.x == 0.f && pathfinding.distanceRemainingPos.y == 0.f && pathfinding.distanceRemainingNeg.x == 0.f && pathfinding.distanceRemainingNeg.y == 0.f) {
+		for (int i = 0; i < 4; i++) {
+			pPos = ePos;
+			canMove = true;
+			if (i == pathfinding.directionFrom) {
+				canMove = false;
+			}
+			std::string direction;
+			switch (i) {
+			case 0:
+				direction = "UP";
+				break;
+			case 1:
+				direction = "LEFT";
+				break;
+			case 2:
+				direction = "DOWN";
+				break;
+			case 3:
+				direction = "RIGHT";
+				break;
+			}
+			canMove = canMoveInDirection(direction, pathfinder);
+			while (canMove && !seesPlayer) {
+
+				switch (i) {
+				case 0:
+					pPos.y -= 40;
+					break;
+				case 1:
+					pPos.x -= 40;
+					break;
+				case 2:
+					pPos.y += 40;
+					break;
+				case 3:
+					pPos.x += 40;
+					break;
+				}
+				seesPlayer = touchingPlayer(pathfinder);
+				if (pPos.x > 440 || pPos.x < 0 || pPos.y > 440 || pPos.y < 0) {
+					canMove = false;
+				}
+			}
+		}
+	}
+	return seesPlayer;
+}
+
+bool Scene_CubeFront::touchingPlayer(std::shared_ptr<Entity> entity)
+{
+	auto overlap = Physics::getOverlap(entity, _player);
+	return (overlap.x > 0 && overlap.y > 0);
+}
+
+void Scene_CubeFront::clearBullets()
+{
+	for (auto bullet : _entityManager.getEntities("bullet")) {
+		auto tfm = bullet->getComponent<CTransform>();
+		if (tfm.pos.x >= 440 || tfm.pos.x <= 0 || tfm.pos.y >= 440 || tfm.pos.y <= 0) {
+			bullet->destroy();
+		}
 	}
 }
 
@@ -821,6 +950,9 @@ void Scene_CubeFront::fixPlayerPos()
 		if (enemy->getComponent<CLocation>().currentFace == _player->getComponent<CLocation>().currentFace) {
 			enemy->getComponent<COffScreen>().offScreen = false;
 		}
+		else {
+			enemy->getComponent<COffScreen>().offScreen = true;
+		}
 	}
 }
 
@@ -1112,6 +1244,19 @@ void Scene_CubeFront::update(sf::Time dt)
 
 	_playerData.elapsedTime += dt;
 
+	for (auto enemy : _enemyData.enemyManager.getEntities()) {
+		if (enemy->hasComponent<CGun>()) {
+			auto& gun = enemy->getComponent<CGun>();
+			if (gun.onCooldown) {
+				gun.cooldown -= dt;
+			}
+			if (gun.cooldown.asSeconds() <= 0) {
+				gun.cooldown = sf::Time::Zero;
+				gun.onCooldown = false;
+			}
+		}
+	}
+
 	if (_playerData.collectedItems.size() >= 10) {
 		std::cout << "You win! Final score: " << _playerData.score;
 		_playerData.lives = 3;
@@ -1173,6 +1318,14 @@ void Scene_CubeFront::sRender()
 	}
 	for (auto e : _entityManager.getEntities("item")) {
 		//render items on top of tiles but below other entities
+		auto& tfm = e->getComponent<CTransform>();
+		auto& anim = e->getComponent<CAnimation>().animation;
+
+		anim.getSprite().setRotation(tfm.angle);
+		anim.getSprite().setPosition(tfm.pos.x, tfm.pos.y);
+		_game->window().draw(anim.getSprite());
+	}
+	for (auto e : _entityManager.getEntities("bullet")) {
 		auto& tfm = e->getComponent<CTransform>();
 		auto& anim = e->getComponent<CAnimation>().animation;
 

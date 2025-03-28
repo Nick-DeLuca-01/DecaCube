@@ -43,12 +43,14 @@ class Scene_CubeBack : public Scene
 
 
     void flipper(std::shared_ptr<Entity> entity);
+    void gunner(std::shared_ptr<Entity> entity);
 
     std::vector<Vec2> getAvailableNodes(Vec2 pos, std::shared_ptr<Entity> entity);
-
     Vec2 pickBestNode(std::vector<Vec2> availableNodes);
-
     void enemyAwareMovement(std::shared_ptr<Entity> enemy);
+    bool canSeePlayer(std::shared_ptr<Entity> enemy);
+    bool touchingPlayer(std::shared_ptr<Entity> entity);
+    void clearBullets();
 
     // helper functions
     void	                onEnd() override;
