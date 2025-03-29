@@ -44,10 +44,14 @@ class Scene_CubeBack : public Scene
 
     void flipper(std::shared_ptr<Entity> entity);
     void gunner(std::shared_ptr<Entity> entity);
+    void sunAndMoon(std::shared_ptr<Entity> entity);
 
     std::vector<Vec2> getAvailableNodes(Vec2 pos, std::shared_ptr<Entity> entity);
     Vec2 pickBestNode(std::vector<Vec2> availableNodes);
+    Vec2 pickRandomNode(std::vector<Vec2> availableNodes);
     void enemyAwareMovement(std::shared_ptr<Entity> enemy);
+    void enemyUnawareMovement(std::shared_ptr<Entity> enemy);
+    void enemyMovement(Vec2 distance, std::shared_ptr<Entity> enemy);
     bool canSeePlayer(std::shared_ptr<Entity> enemy);
     bool touchingPlayer(std::shared_ptr<Entity> entity);
     void clearBullets();
@@ -72,7 +76,7 @@ class Scene_CubeBack : public Scene
     Vec2 rotateTilePosition(Vec2 prePos);
     Vec2 rotateEntityPosition(Vec2 prePos);
     void rotateEntireFace();
-    int changeFace(int currentFace, bool isFlipper);
+    int changeFace(int currentFace, bool knowsPlayerPos);
 
     bool alreadyTraveled(std::vector<Vec2> visitedNodes, Vec2 targetNode);
 

@@ -424,11 +424,6 @@ Vec2 Scene_DecaCube::pickRandomNode(std::vector<Vec2> availableNodes)
 	return availableNodes[selectedNode];
 }
 
-Vec2 Scene_DecaCube::approachRememberedNode(std::vector<Vec2> availableNodes, Vec2 rememberedNode)
-{
-	return Vec2();
-}
-
 void Scene_DecaCube::enemyAwareMovement(std::shared_ptr<Entity> enemy)
 {
 	auto& tfm = enemy->getComponent<CTransform>();
@@ -1345,7 +1340,7 @@ int Scene_DecaCube::changeFace(int currentFace, bool knowsPlayerPos)
 	if (knowsPlayerPos && _player->getComponent<CLocation>().currentFace != currentFace) { //if Flipper isn't on player's face, switch to player's face. otherwise we use the previous calc
 		newFace = _player->getComponent<CLocation>().currentFace;
 	}
-	return 1;
+	return newFace;
 }
 
 bool Scene_DecaCube::alreadyTraveled(std::vector<Vec2> visitedNodes, Vec2 targetNode)

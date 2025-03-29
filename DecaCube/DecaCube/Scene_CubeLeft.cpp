@@ -135,7 +135,7 @@ void Scene_CubeLeft::sEnemyFaceChange(sf::Time dt)
 			offScreen.secondsOffScreen += dt;
 			if (offScreen.secondsOffScreen >= offScreen.sceneChangeThreshold) {
 				//code to switch scene
-				int newFace = changeFace(e->getComponent<CLocation>().currentFace, e->getComponent<CState>().state == "Flipper");
+				int newFace = changeFace(e->getComponent<CLocation>().currentFace, (e->getComponent<CState>().state == "Flipper") || (e->getComponent<CSight>().seesPlayer));
 
 				offScreen.secondsOffScreen = sf::Time::Zero;
 				e->getComponent<CLocation>().currentFace = newFace;
@@ -219,6 +219,9 @@ void Scene_CubeLeft::sEnemyBehaviour()
 		else if (state == "Gunner" && isVisible) {
 			gunner(e);
 		}
+		else if ((state == "Sun" || state == "Moon") && isVisible) {
+			sunAndMoon(e);
+		}
 	}
 }
 
@@ -273,6 +276,36 @@ void Scene_CubeLeft::gunner(std::shared_ptr<Entity> entity)
 	clearBullets();
 }
 
+void Scene_CubeLeft::sunAndMoon(std::shared_ptr<Entity> entity)
+{
+	auto& atfm = entity->getComponent<CTransform>();
+	auto& asight = entity->getComponent<CSight>();
+	bool seesPlayer = canSeePlayer(entity);
+	if (seesPlayer) {
+		asight.seesPlayer = true;
+		asight.rememberDuration = _config.sunMoonRememberLow;
+		std::string other;
+		if (entity->getComponent<CState>().state == "Sun") {
+			other = "Moon";
+		}
+		else {
+			other = "Sun";
+		}
+		for (auto e : _enemyData.enemyManager.getEntities()) {
+			if (e->getComponent<CState>().state == other) {
+				e->getComponent<CSight>().seesPlayer = true;
+				e->getComponent<CSight>().rememberDuration = asight.rememberDuration;
+			}
+		}
+	}
+	if (asight.seesPlayer) {
+		enemyAwareMovement(entity);
+	}
+	else {
+		enemyUnawareMovement(entity);
+	}
+}
+
 std::vector<Vec2> Scene_CubeLeft::getAvailableNodes(Vec2 pos, std::shared_ptr<Entity> entity)
 {
 	std::vector<Vec2> availableNodes;
@@ -291,7 +324,7 @@ std::vector<Vec2> Scene_CubeLeft::getAvailableNodes(Vec2 pos, std::shared_ptr<En
 
 			auto grid = midPixelToGrid(ePos.x, ePos.y - 40, entity);
 			bool alreadyVisited = alreadyTraveled(pathfinding.visitedNodes, grid);
-			if (!alreadyVisited) {
+			if (!alreadyVisited && (ePos.y - 40) >= 0) {
 				availableNodes.push_back(grid);
 			}
 		}
@@ -302,7 +335,7 @@ std::vector<Vec2> Scene_CubeLeft::getAvailableNodes(Vec2 pos, std::shared_ptr<En
 
 			auto grid = midPixelToGrid(ePos.x - 40, ePos.y, entity);
 			bool alreadyVisited = alreadyTraveled(pathfinding.visitedNodes, grid);
-			if (!alreadyVisited) {
+			if (!alreadyVisited && (ePos.x - 40) >= 0) {
 				availableNodes.push_back(grid);
 			}
 		}
@@ -313,7 +346,7 @@ std::vector<Vec2> Scene_CubeLeft::getAvailableNodes(Vec2 pos, std::shared_ptr<En
 
 			auto grid = midPixelToGrid(ePos.x, ePos.y + 40, entity);
 			bool alreadyVisited = alreadyTraveled(pathfinding.visitedNodes, grid);
-			if (!alreadyVisited) {
+			if (!alreadyVisited && (ePos.y + 40) <= 440) {
 				availableNodes.push_back(grid);
 			}
 		}
@@ -324,7 +357,7 @@ std::vector<Vec2> Scene_CubeLeft::getAvailableNodes(Vec2 pos, std::shared_ptr<En
 
 			auto grid = midPixelToGrid(ePos.x + 40, ePos.y, entity);
 			bool alreadyVisited = alreadyTraveled(pathfinding.visitedNodes, grid);
-			if (!alreadyVisited) {
+			if (!alreadyVisited && (ePos.x + 40) <= 440) {
 				availableNodes.push_back(grid);
 			}
 		}
@@ -376,6 +409,13 @@ Vec2 Scene_CubeLeft::pickBestNode(std::vector<Vec2> availableNodes)
 	return closestNode;
 }
 
+Vec2 Scene_CubeLeft::pickRandomNode(std::vector<Vec2> availableNodes)
+{
+	std::uniform_int_distribution<int> pickNode(0, availableNodes.size() - 1);
+	int selectedNode = pickNode(rng);
+	return availableNodes[selectedNode];
+}
+
 void Scene_CubeLeft::enemyAwareMovement(std::shared_ptr<Entity> enemy)
 {
 	auto& tfm = enemy->getComponent<CTransform>();
@@ -397,32 +437,65 @@ void Scene_CubeLeft::enemyAwareMovement(std::shared_ptr<Entity> enemy)
 		auto enemyPos = tfm.pos;
 
 		auto distance = bestNodePix - enemyPos;
-		if (distance.x > 0) {
-			pathFinding.distanceRemainingPos.x = distance.x;
-			tfm.vel.x += 1;
-			pathFinding.right = true;
-			pathFinding.directionFrom = 1;
-		}
-		else if (distance.x < 0) {
-			pathFinding.distanceRemainingNeg.x = distance.x;
-			tfm.vel.x -= 1;
-			pathFinding.left = true;
-			pathFinding.directionFrom = 3;
-		}
-		else if (distance.y > 0) {
-			pathFinding.distanceRemainingPos.y = distance.y;
-			tfm.vel.y += 1;
-			pathFinding.down = true;
-			pathFinding.directionFrom = 0;
-		}
-		else if (distance.y < 0) {
-			pathFinding.distanceRemainingNeg.y = distance.y;
-			tfm.vel.y -= 1;
-			pathFinding.up = true;
-			pathFinding.directionFrom = 2;
-		}
-		tfm.vel = tfm.vel * _config.enemySpeed;
+		enemyMovement(distance, enemy);
 	}
+}
+
+void Scene_CubeLeft::enemyUnawareMovement(std::shared_ptr<Entity> enemy)
+{
+	auto& tfm = enemy->getComponent<CTransform>();
+
+	auto& pathFinding = enemy->getComponent<CPathFinding>();
+
+	std::vector<Vec2> availableNodes;
+
+	if (pathFinding.distanceRemainingPos.x == 0.f && pathFinding.distanceRemainingPos.y == 0.f && pathFinding.distanceRemainingNeg.x == 0.f && pathFinding.distanceRemainingNeg.y == 0.f) {
+		availableNodes = getAvailableNodes(tfm.pos, enemy);
+		Vec2 randomNode = pickRandomNode(availableNodes);
+		pathFinding.targetGrid = randomNode;
+		pathFinding.visitedNodes.push_back(randomNode);
+		if (pathFinding.visitedNodes.size() > 7) {
+			pathFinding.visitedNodes.erase(pathFinding.visitedNodes.begin()); //only tracks the last 7 visited nodes, to prevent going in circles
+		}
+
+		auto randomNodePix = gridToMidPixel(randomNode.x, randomNode.y, enemy);
+		auto enemyPos = tfm.pos;
+
+		auto distance = randomNodePix - enemyPos;
+		enemyMovement(distance, enemy);
+	}
+}
+
+void Scene_CubeLeft::enemyMovement(Vec2 distance, std::shared_ptr<Entity> enemy)
+{
+	auto& pathFinding = enemy->getComponent<CPathFinding>();
+	auto& tfm = enemy->getComponent<CTransform>();
+
+	if (distance.x > 0) {
+		pathFinding.distanceRemainingPos.x = distance.x;
+		tfm.vel.x += 1;
+		pathFinding.right = true;
+		pathFinding.directionFrom = 1;
+	}
+	else if (distance.x < 0) {
+		pathFinding.distanceRemainingNeg.x = distance.x;
+		tfm.vel.x -= 1;
+		pathFinding.left = true;
+		pathFinding.directionFrom = 3;
+	}
+	else if (distance.y > 0) {
+		pathFinding.distanceRemainingPos.y = distance.y;
+		tfm.vel.y += 1;
+		pathFinding.down = true;
+		pathFinding.directionFrom = 0;
+	}
+	else if (distance.y < 0) {
+		pathFinding.distanceRemainingNeg.y = distance.y;
+		tfm.vel.y -= 1;
+		pathFinding.up = true;
+		pathFinding.directionFrom = 2;
+	}
+	tfm.vel = tfm.vel * _config.enemySpeed;
 }
 
 bool Scene_CubeLeft::canSeePlayer(std::shared_ptr<Entity> enemy)
@@ -1253,6 +1326,14 @@ void Scene_CubeLeft::update(sf::Time dt)
 			if (gun.cooldown.asSeconds() <= 0) {
 				gun.cooldown = sf::Time::Zero;
 				gun.onCooldown = false;
+			}
+		}
+		if (enemy->hasComponent<CSight>()) {
+			auto& sight = enemy->getComponent<CSight>();
+			sight.rememberDuration -= dt;
+			if (sight.rememberDuration.asSeconds() <= 0) {
+				sight.rememberDuration = sf::Time::Zero;
+				sight.seesPlayer = false;
 			}
 		}
 	}

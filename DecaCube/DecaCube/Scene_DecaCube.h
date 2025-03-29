@@ -60,8 +60,6 @@ class Scene_DecaCube : public Scene
 
     Vec2 pickRandomNode(std::vector<Vec2> availableNodes);
 
-    Vec2 approachRememberedNode(std::vector<Vec2> availableNodes, Vec2 rememberedNode);
-
     void enemyAwareMovement(std::shared_ptr<Entity> enemy);
 
     void enemyUnawareMovement(std::shared_ptr<Entity> enemy);
