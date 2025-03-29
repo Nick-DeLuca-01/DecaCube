@@ -222,6 +222,9 @@ void Scene_DecaCube::sEnemyBehaviour()
 		else if ((state == "Sun" || state == "Moon") && isVisible) {
 			sunAndMoon(e);
 		}
+		else if (state == "Defender") {
+			defender(e);
+		}
 	}
 }
 
@@ -311,6 +314,35 @@ void Scene_DecaCube::sunAndMoon(std::shared_ptr<Entity> entity)
 	}
 	else {
 		enemyUnawareMovement(entity);
+	}
+}
+
+void Scene_DecaCube::defender(std::shared_ptr<Entity> entity)
+{
+	//defender hangs around items and will try to stay near them unless it sees the player
+	//player can draw the defender away by going to other faces, since the defender wants to protect all items
+
+	auto& tfm = entity->getComponent<CTransform>();
+	auto& sight = entity->getComponent<CSight>();
+	bool seesPlayer = canSeePlayer(entity);
+	if (seesPlayer) {
+		sight.seesPlayer = true;
+		sight.rememberDuration = _config.sunMoonRememberLow;
+	}
+	if (sight.seesPlayer) {
+		enemyAwareMovement(entity);
+	}
+	else {
+		auto items = _entityManager.getEntities("item");
+		if (items.empty()) {
+			enemyUnawareMovement(entity);
+		}
+		else {
+			auto defenceTarget = items[0];
+			auto itemPixelPos = defenceTarget->getComponent<CTransform>().pos;
+			auto itemGridPos = midPixelToGrid(itemPixelPos.x, itemPixelPos.y, defenceTarget);
+			enemyDefenceMovement(entity, itemGridPos);
+		}
 	}
 }
 
@@ -472,6 +504,10 @@ void Scene_DecaCube::enemyUnawareMovement(std::shared_ptr<Entity> enemy)
 		auto distance = randomNodePix - enemyPos;
 		enemyMovement(distance, enemy);
 	}
+}
+
+void Scene_DecaCube::enemyDefenceMovement(std::shared_ptr<Entity> enemy, Vec2 itemLocation)
+{
 }
 
 void Scene_DecaCube::enemyMovement(Vec2 distance, std::shared_ptr<Entity> enemy)
@@ -1340,7 +1376,7 @@ int Scene_DecaCube::changeFace(int currentFace, bool knowsPlayerPos)
 	if (knowsPlayerPos && _player->getComponent<CLocation>().currentFace != currentFace) { //if Flipper isn't on player's face, switch to player's face. otherwise we use the previous calc
 		newFace = _player->getComponent<CLocation>().currentFace;
 	}
-	return newFace;
+	return 1;
 }
 
 bool Scene_DecaCube::alreadyTraveled(std::vector<Vec2> visitedNodes, Vec2 targetNode)
