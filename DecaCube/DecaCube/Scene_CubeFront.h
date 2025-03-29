@@ -48,11 +48,17 @@ class Scene_CubeFront : public Scene
 
     void sunAndMoon(std::shared_ptr<Entity> entity);
 
+    void defender(std::shared_ptr<Entity> entity);
+
+    //general enemy functions
+
     std::vector<Vec2> getAvailableNodes(Vec2 pos, std::shared_ptr<Entity> entity);
     Vec2 pickBestNode(std::vector<Vec2> availableNodes);
+    Vec2 pickBestNode(std::vector<Vec2> availableNodes, Vec2 target);
     Vec2 pickRandomNode(std::vector<Vec2> availableNodes);
     void enemyAwareMovement(std::shared_ptr<Entity> enemy);
     void enemyUnawareMovement(std::shared_ptr<Entity> enemy);
+    void enemyDefenceMovement(std::shared_ptr<Entity> enemy, Vec2 itemLocation);
     void enemyMovement(Vec2 distance, std::shared_ptr<Entity> enemy);
     bool canSeePlayer(std::shared_ptr<Entity> enemy);
     bool touchingPlayer(std::shared_ptr<Entity> entity);
