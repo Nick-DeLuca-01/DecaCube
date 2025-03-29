@@ -1421,6 +1421,7 @@ void Scene_DecaCube::update(sf::Time dt)
 		}
 		if (enemy->hasComponent<CSight>()) {
 			auto& sight = enemy->getComponent<CSight>();
+			sight.rememberDuration -= dt;
 			if (sight.rememberDuration.asSeconds() <= 0) {
 				sight.rememberDuration = sf::Time::Zero;
 				sight.seesPlayer = false;
