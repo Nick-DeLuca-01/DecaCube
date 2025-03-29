@@ -449,6 +449,26 @@ Vec2 Scene_DecaCube::pickBestNode(std::vector<Vec2> availableNodes)
 	return closestNode;
 }
 
+Vec2 Scene_DecaCube::pickBestNode(std::vector<Vec2> availableNodes, Vec2 target)
+{
+	float minDistance = 1000.f;
+	Vec2 closestNode;
+
+	sf::Vector2f tGrid{ target.x, target.y };
+
+
+	for (auto n : availableNodes) {
+		sf::Vector2f vecN{ n.x, n.y };
+		auto distance = dist(tGrid, vecN);
+		if (distance < minDistance) {
+			closestNode = { n.x, n.y };
+			minDistance = distance;
+		}
+	}
+
+	return closestNode;
+}
+
 Vec2 Scene_DecaCube::pickRandomNode(std::vector<Vec2> availableNodes)
 {
 	std::uniform_int_distribution<int> pickNode(0, availableNodes.size() - 1);
@@ -508,6 +528,24 @@ void Scene_DecaCube::enemyUnawareMovement(std::shared_ptr<Entity> enemy)
 
 void Scene_DecaCube::enemyDefenceMovement(std::shared_ptr<Entity> enemy, Vec2 itemLocation)
 {
+	auto& tfm = enemy->getComponent<CTransform>();
+	auto& pathFinding = enemy->getComponent<CPathFinding>();
+	std::vector<Vec2> availableNodes;
+	if (pathFinding.distanceRemainingPos.x == 0.f && pathFinding.distanceRemainingPos.y == 0.f && pathFinding.distanceRemainingNeg.x == 0.f && pathFinding.distanceRemainingNeg.y == 0.f) {
+		availableNodes = getAvailableNodes(tfm.pos, enemy);
+		Vec2 bestNode = pickBestNode(availableNodes, itemLocation);
+		pathFinding.targetGrid = bestNode;
+		pathFinding.visitedNodes.push_back(bestNode);
+		if (pathFinding.visitedNodes.size() > 7) {
+			pathFinding.visitedNodes.erase(pathFinding.visitedNodes.begin()); //only tracks the last 7 visited nodes, to prevent going in circles
+		}
+
+		auto bestNodePix = gridToMidPixel(bestNode.x, bestNode.y, enemy);
+		auto enemyPos = tfm.pos;
+
+		auto distance = bestNodePix - enemyPos;
+		enemyMovement(distance, enemy);
+	}
 }
 
 void Scene_DecaCube::enemyMovement(Vec2 distance, std::shared_ptr<Entity> enemy)
