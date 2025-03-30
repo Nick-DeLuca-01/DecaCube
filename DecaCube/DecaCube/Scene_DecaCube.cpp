@@ -1465,7 +1465,7 @@ int Scene_DecaCube::changeFace(int currentFace, bool knowsPlayerPos)
 	if (knowsPlayerPos && _player->getComponent<CLocation>().currentFace != currentFace) { //if Flipper isn't on player's face, switch to player's face. otherwise we use the previous calc
 		newFace = _player->getComponent<CLocation>().currentFace;
 	}
-	return 1;
+	return newFace;
 }
 
 bool Scene_DecaCube::alreadyTraveled(std::vector<Vec2> visitedNodes, Vec2 targetNode)

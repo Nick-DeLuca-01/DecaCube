@@ -225,6 +225,9 @@ void Scene_CubeRight::sEnemyBehaviour()
 		else if (state == "Defender" && isVisible) {
 			defender(e);
 		}
+		else if (state == "Stalker" && isVisible) {
+			stalker(e);
+		}
 	}
 }
 
@@ -331,6 +334,24 @@ void Scene_CubeRight::defender(std::shared_ptr<Entity> entity)
 			auto itemGridPos = midPixelToGrid(itemPixelPos.x, itemPixelPos.y, defenceTarget);
 			enemyDefenceMovement(entity, itemGridPos);
 		}
+	}
+}
+
+void Scene_CubeRight::stalker(std::shared_ptr<Entity> entity)
+{
+	auto& tfm = entity->getComponent<CTransform>();
+	auto& sight = entity->getComponent<CSight>();
+	bool seesPlayer = canSeePlayer(entity);
+	if (seesPlayer) {
+		sight.seesPlayer = true;
+		sight.rememberDuration = _config.sunMoonRememberLow * 2.f; //remembers player longer than other sight-based enemies (except revenant)
+		entity->getComponent<CPathFinding>().targetGrid = { -1, -1 };
+	}
+	if (sight.seesPlayer) {
+		enemyAwareMovement(entity);
+	}
+	else {
+		findIntersection(entity);
 	}
 }
 
@@ -475,7 +496,6 @@ void Scene_CubeRight::enemyAwareMovement(std::shared_ptr<Entity> enemy)
 	if (pathFinding.distanceRemainingPos.x == 0.f && pathFinding.distanceRemainingPos.y == 0.f && pathFinding.distanceRemainingNeg.x == 0.f && pathFinding.distanceRemainingNeg.y == 0.f) {
 		availableNodes = getAvailableNodes(tfm.pos, enemy);
 		Vec2 bestNode = pickBestNode(availableNodes);
-		pathFinding.targetGrid = bestNode;
 		pathFinding.visitedNodes.push_back(bestNode);
 		if (pathFinding.visitedNodes.size() > 7) {
 			pathFinding.visitedNodes.erase(pathFinding.visitedNodes.begin()); //only tracks the last 7 visited nodes, to prevent going in circles
@@ -500,7 +520,6 @@ void Scene_CubeRight::enemyUnawareMovement(std::shared_ptr<Entity> enemy)
 	if (pathFinding.distanceRemainingPos.x == 0.f && pathFinding.distanceRemainingPos.y == 0.f && pathFinding.distanceRemainingNeg.x == 0.f && pathFinding.distanceRemainingNeg.y == 0.f) {
 		availableNodes = getAvailableNodes(tfm.pos, enemy);
 		Vec2 randomNode = pickRandomNode(availableNodes);
-		pathFinding.targetGrid = randomNode;
 		pathFinding.visitedNodes.push_back(randomNode);
 		if (pathFinding.visitedNodes.size() > 7) {
 			pathFinding.visitedNodes.erase(pathFinding.visitedNodes.begin()); //only tracks the last 7 visited nodes, to prevent going in circles
@@ -522,7 +541,6 @@ void Scene_CubeRight::enemyDefenceMovement(std::shared_ptr<Entity> enemy, Vec2 i
 	if (pathFinding.distanceRemainingPos.x == 0.f && pathFinding.distanceRemainingPos.y == 0.f && pathFinding.distanceRemainingNeg.x == 0.f && pathFinding.distanceRemainingNeg.y == 0.f) {
 		availableNodes = getAvailableNodes(tfm.pos, enemy);
 		Vec2 bestNode = pickBestNode(availableNodes, itemLocation);
-		pathFinding.targetGrid = bestNode;
 		pathFinding.visitedNodes.push_back(bestNode);
 		if (pathFinding.visitedNodes.size() > 7) {
 			pathFinding.visitedNodes.erase(pathFinding.visitedNodes.begin()); //only tracks the last 7 visited nodes, to prevent going in circles
@@ -533,6 +551,33 @@ void Scene_CubeRight::enemyDefenceMovement(std::shared_ptr<Entity> enemy, Vec2 i
 
 		auto distance = bestNodePix - enemyPos;
 		enemyMovement(distance, enemy);
+	}
+}
+
+void Scene_CubeRight::findIntersection(std::shared_ptr<Entity> enemy)
+{
+	auto& pathFinding = enemy->getComponent<CPathFinding>();
+	auto& tfm = enemy->getComponent<CTransform>();
+
+
+
+	if (pathFinding.targetGrid.x == -1 && pathFinding.targetGrid.y == -1) { //manually set when loses track of player
+		std::uniform_int_distribution<int> gridCoord(0, 10);
+		pathFinding.targetGrid.x = gridCoord(rng);
+		pathFinding.targetGrid.y = gridCoord(rng);
+	}
+
+	if (pathFinding.distanceRemainingPos.x == 0.f && pathFinding.distanceRemainingPos.y == 0.f && pathFinding.distanceRemainingNeg.x == 0.f && pathFinding.distanceRemainingNeg.y == 0.f) {
+		auto enemyGrid = midPixelToGrid(tfm.pos.x, tfm.pos.y, enemy);
+		enemyGrid.x = std::roundf(enemyGrid.x);
+		enemyGrid.y = std::roundf(enemyGrid.y);
+		if (enemyGrid != pathFinding.targetGrid) {
+			enemyDefenceMovement(enemy, pathFinding.targetGrid);
+		}
+		else {
+			pathFinding.directionFrom = 4;
+			pathFinding.visitedNodes.clear();
+		}
 	}
 }
 
