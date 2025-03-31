@@ -68,9 +68,11 @@ void Scene_CubeBottom::sMovement(sf::Time dt)
 	for (auto e : _enemyData.enemyManager.getEntities("enemy")) {
 		auto& etfm = e->getComponent<CTransform>();
 		auto& ePathfinding = e->getComponent<CPathFinding>();
-
+		auto eName = e->getComponent<CState>().state;
 		etfm.prevPos = etfm.pos;
-
+		if (eName == "Charger") {
+			etfm.vel = etfm.vel * 1.075;
+		}
 		etfm.pos += etfm.vel * dt.asSeconds();
 
 		auto eDiff = etfm.pos - etfm.prevPos;
@@ -87,24 +89,40 @@ void Scene_CubeBottom::sMovement(sf::Time dt)
 			etfm.vel.x = 0;
 			ePathfinding.right = false;
 			snapToGrid(e);
+			if (eName == "Charger") {
+				auto& movementCD = e->getComponent<CCharge>().movementCooldown;
+				movementCD = _config.chargerCDLow;
+			}
 		}
 		else if (ePathfinding.distanceRemainingPos.y <= 0 && ePathfinding.down) {
 			ePathfinding.distanceRemainingPos.y = 0;
 			etfm.vel.y = 0;
 			ePathfinding.down = false;
 			snapToGrid(e);
+			if (eName == "Charger") {
+				auto& movementCD = e->getComponent<CCharge>().movementCooldown;
+				movementCD = _config.chargerCDLow;
+			}
 		}
 		else if (ePathfinding.distanceRemainingNeg.x >= 0 && ePathfinding.left) {
 			ePathfinding.distanceRemainingNeg.x = 0;
 			etfm.vel.x = 0;
 			ePathfinding.left = false;
 			snapToGrid(e);
+			if (eName == "Charger") {
+				auto& movementCD = e->getComponent<CCharge>().movementCooldown;
+				movementCD = _config.chargerCDLow;
+			}
 		}
 		else if (ePathfinding.distanceRemainingNeg.y >= 0 && ePathfinding.up) {
 			ePathfinding.distanceRemainingNeg.y = 0;
 			etfm.vel.y = 0;
 			ePathfinding.up = false;
 			snapToGrid(e);
+			if (eName == "Charger") {
+				auto& movementCD = e->getComponent<CCharge>().movementCooldown;
+				movementCD = _config.chargerCDLow;
+			}
 		}
 	}
 }
@@ -228,6 +246,9 @@ void Scene_CubeBottom::sEnemyBehaviour()
 		}
 		else if (state == "Stalker" && isVisible) {
 			stalker(e);
+		}
+		else if (state == "Charger" && isVisible) {
+			charger(e);
 		}
 	}
 }
@@ -353,6 +374,18 @@ void Scene_CubeBottom::stalker(std::shared_ptr<Entity> entity)
 	}
 	else {
 		findIntersection(entity);
+	}
+}
+
+void Scene_CubeBottom::charger(std::shared_ptr<Entity> entity)
+{
+	auto& charge = entity->getComponent<CCharge>();
+	auto& tfm = entity->getComponent<CTransform>();
+	int directionFacing = (entity->getComponent<CPathFinding>().directionFrom + 2) % 4;
+	tfm.angle = (-90 * directionFacing);
+
+	if (charge.movementCooldown <= sf::Time::Zero) {
+		enemyChargeMovement(entity);
 	}
 }
 
@@ -554,6 +587,114 @@ void Scene_CubeBottom::enemyDefenceMovement(std::shared_ptr<Entity> enemy, Vec2 
 	}
 }
 
+void Scene_CubeBottom::enemyChargeMovement(std::shared_ptr<Entity> enemy)
+{
+	std::vector<Vec2> availableNodes;
+
+	bool canMove = true;
+
+	auto& pathfinding = enemy->getComponent<CPathFinding>();
+
+	auto pathfinder = _entityManager.getEntities("pathfinder")[0]; //pathfinder entity, not the moving one
+
+	auto& pPos = pathfinder->getComponent<CTransform>().pos;
+
+	auto ePos = enemy->getComponent<CTransform>().pos;
+
+	if (pathfinding.distanceRemainingPos.x == 0.f && pathfinding.distanceRemainingPos.y == 0.f && pathfinding.distanceRemainingNeg.x == 0.f && pathfinding.distanceRemainingNeg.y == 0.f) {
+		for (int i = 0; i < 4; i++) {
+			canMove = true;
+			if (i == pathfinding.directionFrom) {
+				canMove = false;
+			}
+			std::string direction;
+			switch (i) {
+			case 0:
+				direction = "UP";
+				break;
+			case 1:
+				direction = "LEFT";
+				break;
+			case 2:
+				direction = "DOWN";
+				break;
+			case 3:
+				direction = "RIGHT";
+				break;
+			}
+			pPos = ePos;
+			if (canMove) {
+				canMove = canMoveInDirection(direction, pathfinder);
+			}
+			while (canMove) {
+				switch (i) {
+				case 0:
+					pPos.y -= 40;
+					break;
+				case 1:
+					pPos.x -= 40;
+					break;
+				case 2:
+					pPos.y += 40;
+					break;
+				case 3:
+					pPos.x += 40;
+					break;
+				}
+				canMove = canMoveInDirection(direction, pathfinder);
+				if (pPos.x > 440 || pPos.x < 0 || pPos.y > 440 || pPos.y < 0) {
+					canMove = false;
+					switch (i) {
+					case 0:
+						pPos.y += 40;
+						break;
+					case 1:
+						pPos.x += 40;
+						break;
+					case 2:
+						pPos.y -= 40;
+						break;
+					case 3:
+						pPos.x -= 40;
+						break;
+					}
+				}
+			}
+			auto pGrid = midPixelToGrid(pPos.x, pPos.y, pathfinder);
+			if (pPos != ePos && !alreadyTraveled(pathfinding.visitedNodes, pGrid)) {
+				availableNodes.push_back(pGrid);
+			}
+		}
+		pPos = ePos;
+		if (availableNodes.empty()) {
+			switch (pathfinding.directionFrom) {
+			case 0:
+				pPos.y -= 40.f;
+				break;
+			case 1:
+				pPos.x -= 40.f;
+				break;
+			case 2:
+				pPos.y += 40.f;
+				break;
+			case 3:
+				pPos.x += 40.f;
+				break;
+			}
+			availableNodes.push_back(midPixelToGrid(pPos.x, pPos.y, pathfinder));
+		}
+		Vec2 bestNode = pickBestNode(availableNodes);
+		pathfinding.visitedNodes.push_back(bestNode);
+		if (pathfinding.visitedNodes.size() > 1) {
+			pathfinding.visitedNodes.erase(pathfinding.visitedNodes.begin());
+		}
+
+		auto bestNodePix = gridToMidPixel(bestNode.x, bestNode.y, enemy);
+		auto distance = bestNodePix - ePos;
+		enemyMovement(distance, enemy);
+	}
+}
+
 void Scene_CubeBottom::findIntersection(std::shared_ptr<Entity> enemy)
 {
 	auto& pathFinding = enemy->getComponent<CPathFinding>();
@@ -585,6 +726,7 @@ void Scene_CubeBottom::enemyMovement(Vec2 distance, std::shared_ptr<Entity> enem
 {
 	auto& pathFinding = enemy->getComponent<CPathFinding>();
 	auto& tfm = enemy->getComponent<CTransform>();
+	auto eName = enemy->getComponent<CState>().state;
 
 	if (distance.x > 0) {
 		pathFinding.distanceRemainingPos.x = distance.x;
@@ -610,7 +752,12 @@ void Scene_CubeBottom::enemyMovement(Vec2 distance, std::shared_ptr<Entity> enem
 		pathFinding.up = true;
 		pathFinding.directionFrom = 2;
 	}
-	tfm.vel = tfm.vel * _config.enemySpeed;
+	if (eName == "Charger") {
+		tfm.vel = tfm.vel * (_config.enemySpeed / 2.f);
+	}
+	else {
+		tfm.vel = tfm.vel * _config.enemySpeed;
+	}
 }
 
 bool Scene_CubeBottom::canSeePlayer(std::shared_ptr<Entity> enemy)
@@ -1442,6 +1589,13 @@ void Scene_CubeBottom::update(sf::Time dt)
 			if (sight.rememberDuration.asSeconds() <= 0) {
 				sight.rememberDuration = sf::Time::Zero;
 				sight.seesPlayer = false;
+			}
+		}
+		if (enemy->hasComponent<CCharge>()) {
+			auto& charge = enemy->getComponent<CCharge>();
+			charge.movementCooldown -= dt;
+			if (charge.movementCooldown.asSeconds() <= 0) {
+				charge.movementCooldown = sf::Time::Zero;
 			}
 		}
 	}

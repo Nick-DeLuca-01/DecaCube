@@ -72,7 +72,7 @@ void Scene_DecaCube::sMovement(sf::Time dt)
 		auto eName = e->getComponent<CState>().state;
 		etfm.prevPos = etfm.pos;
 		if (eName == "Charger") {
-			etfm.vel = etfm.vel * 1.1;
+			etfm.vel = etfm.vel * 1.075;
 		}
 		etfm.pos += etfm.vel * dt.asSeconds();
 
@@ -700,7 +700,7 @@ void Scene_DecaCube::enemyChargeMovement(std::shared_ptr<Entity> enemy)
 		}
 		Vec2 bestNode = pickBestNode(availableNodes);
 		pathfinding.visitedNodes.push_back(bestNode);
-		if (pathfinding.visitedNodes.size() > 4) {
+		if (pathfinding.visitedNodes.size() > 1) {
 			pathfinding.visitedNodes.erase(pathfinding.visitedNodes.begin());
 		}
 
@@ -1619,7 +1619,7 @@ int Scene_DecaCube::changeFace(int currentFace, bool knowsPlayerPos)
 	if (knowsPlayerPos && _player->getComponent<CLocation>().currentFace != currentFace) { //if Flipper isn't on player's face, switch to player's face. otherwise we use the previous calc
 		newFace = _player->getComponent<CLocation>().currentFace;
 	}
-	return 1; //1
+	return newFace; //1
 }
 
 bool Scene_DecaCube::alreadyTraveled(std::vector<Vec2> visitedNodes, Vec2 targetNode)
