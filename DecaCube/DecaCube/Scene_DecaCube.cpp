@@ -372,7 +372,14 @@ void Scene_DecaCube::stalker(std::shared_ptr<Entity> entity)
 
 void Scene_DecaCube::charger(std::shared_ptr<Entity> entity)
 {
+	auto& charge = entity->getComponent<CCharge>();
+	auto& tfm = entity->getComponent<CTransform>();
+	int directionFacing = (entity->getComponent<CPathFinding>().directionFrom + 2) % 4;
+	tfm.angle = (-90 * directionFacing);
 
+	if (charge.movementCooldown <= sf::Time::Zero) {
+		enemyChargeMovement(entity);
+	}
 }
 
 std::vector<Vec2> Scene_DecaCube::getAvailableNodes(Vec2 pos, std::shared_ptr<Entity> entity) //grid pos passed in, as well as moving entity
@@ -579,6 +586,111 @@ void Scene_DecaCube::enemyDefenceMovement(std::shared_ptr<Entity> enemy, Vec2 it
 
 void Scene_DecaCube::enemyChargeMovement(std::shared_ptr<Entity> enemy)
 {
+	std::vector<Vec2> availableNodes;
+
+	bool canMove = true;
+
+	auto& pathfinding = enemy->getComponent<CPathFinding>();
+
+	auto pathfinder = _entityManager.getEntities("pathfinder")[0]; //pathfinder entity, not the moving one
+
+	auto& pPos = pathfinder->getComponent<CTransform>().pos;
+
+	auto ePos = enemy->getComponent<CTransform>().pos;
+
+	if (pathfinding.distanceRemainingPos.x == 0.f && pathfinding.distanceRemainingPos.y == 0.f && pathfinding.distanceRemainingNeg.x == 0.f && pathfinding.distanceRemainingNeg.y == 0.f) {
+		for (int i = 0; i < 4; i++) {
+			canMove = true;
+			if (i == pathfinding.directionFrom) {
+				canMove = false;
+			}
+			std::string direction;
+			switch (i) {
+			case 0:
+				direction = "UP";
+				break;
+			case 1:
+				direction = "LEFT";
+				break;
+			case 2:
+				direction = "DOWN";
+				break;
+			case 3:
+				direction = "RIGHT";
+				break;
+			}
+			pPos = ePos;
+			if (canMove) {
+				canMove = canMoveInDirection(direction, pathfinder);
+			}
+			while (canMove) {
+				switch (i) {
+				case 0:
+					pPos.y -= 40;
+					break;
+				case 1:
+					pPos.x -= 40;
+					break;
+				case 2:
+					pPos.y += 40;
+					break;
+				case 3:
+					pPos.x += 40;
+					break;
+				}
+				canMove = canMoveInDirection(direction, pathfinder);
+				if (pPos.x > 440 || pPos.x < 0 || pPos.y > 440 || pPos.y < 0) {
+					canMove = false;
+					switch (i) {
+					case 0:
+						pPos.y += 40;
+						break;
+					case 1:
+						pPos.x += 40;
+						break;
+					case 2:
+						pPos.y -= 40;
+						break;
+					case 3:
+						pPos.x -= 40;
+						break;
+					}
+				}
+			}
+			auto pGrid = midPixelToGrid(pPos.x, pPos.y, pathfinder);
+			if (pPos != ePos && !alreadyTraveled(pathfinding.visitedNodes, pGrid)) {
+				availableNodes.push_back(pGrid);
+			}
+		}
+		pPos = ePos;
+		if (availableNodes.empty()) {
+			switch (pathfinding.directionFrom) {
+			case 0:
+				pPos.y -= 40.f;
+				break;
+			case 1:
+				pPos.x -= 40.f;
+				break;
+			case 2:
+				pPos.y += 40.f;
+				break;
+			case 3:
+				pPos.x += 40.f;
+				break;
+			}
+			availableNodes.push_back(midPixelToGrid(pPos.x, pPos.y, pathfinder));
+		}
+		Vec2 bestNode = pickBestNode(availableNodes);
+		pathfinding.visitedNodes.push_back(bestNode);
+		if (pathfinding.visitedNodes.size() > 4) {
+			pathfinding.visitedNodes.erase(pathfinding.visitedNodes.begin());
+		}
+
+		auto bestNodePix = gridToMidPixel(bestNode.x, bestNode.y, enemy);
+		auto distance = bestNodePix - ePos;
+		enemyMovement(distance, enemy);
+	}
+	
 }
 
 void Scene_DecaCube::findIntersection(std::shared_ptr<Entity> enemy)
@@ -1480,7 +1592,7 @@ int Scene_DecaCube::changeFace(int currentFace, bool knowsPlayerPos)
 	if (knowsPlayerPos && _player->getComponent<CLocation>().currentFace != currentFace) { //if Flipper isn't on player's face, switch to player's face. otherwise we use the previous calc
 		newFace = _player->getComponent<CLocation>().currentFace;
 	}
-	return newFace;
+	return 1; //1
 }
 
 bool Scene_DecaCube::alreadyTraveled(std::vector<Vec2> visitedNodes, Vec2 targetNode)
