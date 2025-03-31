@@ -69,9 +69,11 @@ void Scene_DecaCube::sMovement(sf::Time dt)
 	for (auto e : _enemyData.enemyManager.getEntities("enemy")) {
 		auto& etfm = e->getComponent<CTransform>();
 		auto& ePathfinding = e->getComponent<CPathFinding>();
-
+		auto eName = e->getComponent<CState>().state;
 		etfm.prevPos = etfm.pos;
-
+		if (eName == "Charger") {
+			etfm.vel = etfm.vel * 1.1;
+		}
 		etfm.pos += etfm.vel * dt.asSeconds();
 
 		auto eDiff = etfm.pos - etfm.prevPos;
@@ -88,24 +90,40 @@ void Scene_DecaCube::sMovement(sf::Time dt)
 			etfm.vel.x = 0;
 			ePathfinding.right = false;
 			snapToGrid(e);
+			if (eName == "Charger") {
+				auto& movementCD = e->getComponent<CCharge>().movementCooldown;
+				movementCD = _config.chargerCDLow;
+			}
 		}
 		else if (ePathfinding.distanceRemainingPos.y <= 0 && ePathfinding.down) {
 			ePathfinding.distanceRemainingPos.y = 0;
 			etfm.vel.y = 0;
 			ePathfinding.down = false;
 			snapToGrid(e);
+			if (eName == "Charger") {
+				auto& movementCD = e->getComponent<CCharge>().movementCooldown;
+				movementCD = _config.chargerCDLow;
+			}
 		}
 		else if (ePathfinding.distanceRemainingNeg.x >= 0 && ePathfinding.left) {
 			ePathfinding.distanceRemainingNeg.x = 0;
 			etfm.vel.x = 0;
 			ePathfinding.left = false;
 			snapToGrid(e);
+			if (eName == "Charger") {
+				auto& movementCD = e->getComponent<CCharge>().movementCooldown;
+				movementCD = _config.chargerCDLow;
+			}
 		}
 		else if (ePathfinding.distanceRemainingNeg.y >= 0 && ePathfinding.up) {
 			ePathfinding.distanceRemainingNeg.y = 0;
 			etfm.vel.y = 0;
 			ePathfinding.up = false;
 			snapToGrid(e);
+			if (eName == "Charger") {
+				auto& movementCD = e->getComponent<CCharge>().movementCooldown;
+				movementCD = _config.chargerCDLow;
+			}
 		}
 	}
 }
@@ -724,6 +742,7 @@ void Scene_DecaCube::enemyMovement(Vec2 distance, std::shared_ptr<Entity> enemy)
 {
 	auto& pathFinding = enemy->getComponent<CPathFinding>();
 	auto& tfm = enemy->getComponent<CTransform>();
+	auto eName = enemy->getComponent<CState>().state;
 
 	if (distance.x > 0) {
 		pathFinding.distanceRemainingPos.x = distance.x;
@@ -749,7 +768,12 @@ void Scene_DecaCube::enemyMovement(Vec2 distance, std::shared_ptr<Entity> enemy)
 		pathFinding.up = true;
 		pathFinding.directionFrom = 2;
 	}
-	tfm.vel = tfm.vel * _config.enemySpeed;
+	if (eName == "Charger") {
+		tfm.vel = tfm.vel * (_config.enemySpeed / 2.f);
+	}
+	else {
+		tfm.vel = tfm.vel * _config.enemySpeed;
+	}
 }
 
 bool Scene_DecaCube::canSeePlayer(std::shared_ptr<Entity> enemy)
@@ -1675,6 +1699,13 @@ void Scene_DecaCube::update(sf::Time dt)
 			if (sight.rememberDuration.asSeconds() <= 0) {
 				sight.rememberDuration = sf::Time::Zero;
 				sight.seesPlayer = false;
+			}
+		}
+		if (enemy->hasComponent<CCharge>()) {
+			auto& charge = enemy->getComponent<CCharge>();
+			charge.movementCooldown -= dt;
+			if (charge.movementCooldown.asSeconds() <= 0) {
+				charge.movementCooldown = sf::Time::Zero;
 			}
 		}
 	}
