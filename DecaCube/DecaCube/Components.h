@@ -62,6 +62,12 @@ struct CTransform : public Component
 
 };
 
+struct CCharge : public Component
+{
+    sf::Time movementCooldown = sf::seconds(0.f);
+    CCharge() = default;
+};
+
 struct CLocation : public Component
 {
     int currentFace{ 1 };

@@ -13,7 +13,7 @@
 // forward declarations
 class EntityManager;
 
-using ComponentTuple = std::tuple<CSprite, CState, CAnimation, CTransform, CBoundingBox, CInput, CScore, CLocation, CSight, COffScreen, CPathFinding, CGun>;
+using ComponentTuple = std::tuple<CSprite, CState, CAnimation, CTransform, CCharge, CBoundingBox, CInput, CScore, CLocation, CSight, COffScreen, CPathFinding, CGun>;
 
 class Entity {
 private:

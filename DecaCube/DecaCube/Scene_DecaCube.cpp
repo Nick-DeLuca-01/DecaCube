@@ -228,6 +228,9 @@ void Scene_DecaCube::sEnemyBehaviour()
 		else if (state == "Stalker" && isVisible) {
 			stalker(e);
 		}
+		else if (state == "Charger" && isVisible) {
+			charger(e);
+		}
 	}
 }
 
@@ -365,6 +368,11 @@ void Scene_DecaCube::stalker(std::shared_ptr<Entity> entity)
 	else {
 		findIntersection(entity);
 	}
+}
+
+void Scene_DecaCube::charger(std::shared_ptr<Entity> entity)
+{
+
 }
 
 std::vector<Vec2> Scene_DecaCube::getAvailableNodes(Vec2 pos, std::shared_ptr<Entity> entity) //grid pos passed in, as well as moving entity
@@ -567,6 +575,10 @@ void Scene_DecaCube::enemyDefenceMovement(std::shared_ptr<Entity> enemy, Vec2 it
 		auto distance = bestNodePix - enemyPos;
 		enemyMovement(distance, enemy);
 	}
+}
+
+void Scene_DecaCube::enemyChargeMovement(std::shared_ptr<Entity> enemy)
+{
 }
 
 void Scene_DecaCube::findIntersection(std::shared_ptr<Entity> enemy)
@@ -902,6 +914,9 @@ void Scene_DecaCube::loadFromFile(const std::string& path)
 			}
 			if (name == "Stalker") {
 				e->getComponent<CPathFinding>().targetGrid = { -1, -1 };
+			}
+			if (name == "Charger") {
+				e->addComponent<CCharge>();
 			}
 		}
 		else if (token == "EnemyConfig") {
