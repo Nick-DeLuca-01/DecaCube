@@ -1032,10 +1032,10 @@ void Scene_DecaCube::loadFromFile(const std::string& path)
 			}
 		}
 		else if (token == "EnemyConfig") {
-			float sceneChangeLower, sceneChangeUpper, midDifficultyTime, highDifficultyTime, sunMoonRememberLow, sunMoonRememberMid, sunMoonRememberHigh;
+			float sceneChangeLower, sceneChangeUpper, midDifficultyTime, highDifficultyTime, sunMoonRememberLow, sunMoonRememberMid, sunMoonRememberHigh, chargerCDLow, chargerCDMid, chargerCDHigh;
 			int enemySpeed, midDifficultyItems, highDifficultyItems, gunnerCDLow, gunnerCDMid, gunnerCDHigh;
 
-			config >> sceneChangeLower >> sceneChangeUpper >> enemySpeed >> midDifficultyTime >> midDifficultyItems >> highDifficultyTime >> highDifficultyItems >> gunnerCDLow >> gunnerCDMid >> gunnerCDHigh >> sunMoonRememberLow >> sunMoonRememberMid >> sunMoonRememberHigh;
+			config >> sceneChangeLower >> sceneChangeUpper >> enemySpeed >> midDifficultyTime >> midDifficultyItems >> highDifficultyTime >> highDifficultyItems >> gunnerCDLow >> gunnerCDMid >> gunnerCDHigh >> sunMoonRememberLow >> sunMoonRememberMid >> sunMoonRememberHigh >> chargerCDLow >> chargerCDMid >> chargerCDHigh;
 
 			_config.sceneChangeLower = sceneChangeLower;
 			_config.sceneChangeUpper = sceneChangeUpper;
@@ -1050,6 +1050,9 @@ void Scene_DecaCube::loadFromFile(const std::string& path)
 			_config.sunMoonRememberLow = sf::seconds(sunMoonRememberLow);
 			_config.sunMoonRememberMid = sf::seconds(sunMoonRememberMid);
 			_config.sunMoonRememberHigh = sf::seconds(sunMoonRememberHigh);
+			_config.chargerCDLow = sf::seconds(chargerCDLow);
+			_config.chargerCDMid = sf::seconds(chargerCDMid);
+			_config.chargerCDHigh = sf::seconds(chargerCDHigh);
 		}
 		else
 		{
