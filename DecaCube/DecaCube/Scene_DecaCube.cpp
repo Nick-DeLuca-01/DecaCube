@@ -158,7 +158,7 @@ void Scene_DecaCube::sEnemyFaceChange(sf::Time dt)
 			offScreen.secondsOffScreen += dt; 
 			if (offScreen.secondsOffScreen >= offScreen.sceneChangeThreshold) {
 				//code to switch scene
-				int newFace = changeFace(e->getComponent<CLocation>().currentFace, (e->getComponent<CState>().state == "Flipper") || (e->getComponent<CSight>().seesPlayer));
+				int newFace = changeFace(e->getComponent<CLocation>().currentFace, (e->getComponent<CState>().state == "Flipper") || (e->getComponent<CState>().state == "Revenant") || (e->getComponent<CSight>().seesPlayer));
 				
 				offScreen.secondsOffScreen = sf::Time::Zero;
 				e->getComponent<CLocation>().currentFace = newFace;
@@ -1079,7 +1079,7 @@ void Scene_DecaCube::loadFromFile(const std::string& path)
 				sec = sf::seconds(15.f);
 			}
 			if (name == "Revenant") {
-				sec = sf::seconds(7.5f);
+				sec = sf::seconds(300.f);
 			}
 			else {
 				std::uniform_real_distribution<float> sceneChangeThreshold(_config.sceneChangeLower, _config.sceneChangeUpper);

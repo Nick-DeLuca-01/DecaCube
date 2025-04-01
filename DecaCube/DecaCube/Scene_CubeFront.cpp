@@ -154,7 +154,7 @@ void Scene_CubeFront::sEnemyFaceChange(sf::Time dt)
 	for (auto e : _enemyData.enemyManager.getEntities()) {
 		auto& offScreen = e->getComponent<COffScreen>();
 		auto& pathfinding = e->getComponent<CPathFinding>();
-		if ((_player->getComponent<CLocation>().currentFace != e->getComponent<CLocation>().currentFace) || e->getComponent<CState>().state == "Flipper") {
+		if ((_player->getComponent<CLocation>().currentFace != e->getComponent<CLocation>().currentFace) || (e->getComponent<CState>().state == "Revenant") || e->getComponent<CState>().state == "Flipper") {
 			offScreen.secondsOffScreen += dt;
 			if (offScreen.secondsOffScreen >= offScreen.sceneChangeThreshold) {
 				//code to switch scene

@@ -159,7 +159,7 @@ void Scene_CubeBottom::sEnemyFaceChange(sf::Time dt)
 			offScreen.secondsOffScreen += dt;
 			if (offScreen.secondsOffScreen >= offScreen.sceneChangeThreshold) {
 				//code to switch scene
-				int newFace = changeFace(e->getComponent<CLocation>().currentFace, (e->getComponent<CState>().state == "Flipper") || (e->getComponent<CSight>().seesPlayer));
+				int newFace = changeFace(e->getComponent<CLocation>().currentFace, (e->getComponent<CState>().state == "Flipper") || (e->getComponent<CState>().state == "Revenant") || (e->getComponent<CSight>().seesPlayer));
 
 				offScreen.secondsOffScreen = sf::Time::Zero;
 				e->getComponent<CLocation>().currentFace = newFace;
