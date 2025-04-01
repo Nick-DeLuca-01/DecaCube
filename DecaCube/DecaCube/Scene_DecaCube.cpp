@@ -70,59 +70,64 @@ void Scene_DecaCube::sMovement(sf::Time dt)
 		auto& etfm = e->getComponent<CTransform>();
 		auto& ePathfinding = e->getComponent<CPathFinding>();
 		auto eName = e->getComponent<CState>().state;
-		etfm.prevPos = etfm.pos;
-		if (eName == "Charger") {
-			etfm.vel = etfm.vel * 1.075;
+		if (eName == "Revenant") {
+			etfm.pos += etfm.vel * dt.asSeconds();
 		}
-		etfm.pos += etfm.vel * dt.asSeconds();
-
-		auto eDiff = etfm.pos - etfm.prevPos;
-
-		if (eDiff.x > 0 || eDiff.y > 0) {
-			ePathfinding.distanceRemainingPos -= eDiff;
-		}
-		else if (eDiff.x < 0 || eDiff.y < 0) {
-			ePathfinding.distanceRemainingNeg -= eDiff;
-		}
-
-		if (ePathfinding.distanceRemainingPos.x <= 0 && ePathfinding.right) {
-			ePathfinding.distanceRemainingPos.x = 0;
-			etfm.vel.x = 0;
-			ePathfinding.right = false;
-			snapToGrid(e);
+		else {
+			etfm.prevPos = etfm.pos;
 			if (eName == "Charger") {
-				auto& movementCD = e->getComponent<CCharge>().movementCooldown;
-				movementCD = _config.chargerCDLow;
+				etfm.vel = etfm.vel * 1.075;
 			}
-		}
-		else if (ePathfinding.distanceRemainingPos.y <= 0 && ePathfinding.down) {
-			ePathfinding.distanceRemainingPos.y = 0;
-			etfm.vel.y = 0;
-			ePathfinding.down = false;
-			snapToGrid(e);
-			if (eName == "Charger") {
-				auto& movementCD = e->getComponent<CCharge>().movementCooldown;
-				movementCD = _config.chargerCDLow;
+			etfm.pos += etfm.vel * dt.asSeconds();
+
+			auto eDiff = etfm.pos - etfm.prevPos;
+
+			if (eDiff.x > 0 || eDiff.y > 0) {
+				ePathfinding.distanceRemainingPos -= eDiff;
 			}
-		}
-		else if (ePathfinding.distanceRemainingNeg.x >= 0 && ePathfinding.left) {
-			ePathfinding.distanceRemainingNeg.x = 0;
-			etfm.vel.x = 0;
-			ePathfinding.left = false;
-			snapToGrid(e);
-			if (eName == "Charger") {
-				auto& movementCD = e->getComponent<CCharge>().movementCooldown;
-				movementCD = _config.chargerCDLow;
+			else if (eDiff.x < 0 || eDiff.y < 0) {
+				ePathfinding.distanceRemainingNeg -= eDiff;
 			}
-		}
-		else if (ePathfinding.distanceRemainingNeg.y >= 0 && ePathfinding.up) {
-			ePathfinding.distanceRemainingNeg.y = 0;
-			etfm.vel.y = 0;
-			ePathfinding.up = false;
-			snapToGrid(e);
-			if (eName == "Charger") {
-				auto& movementCD = e->getComponent<CCharge>().movementCooldown;
-				movementCD = _config.chargerCDLow;
+
+			if (ePathfinding.distanceRemainingPos.x <= 0 && ePathfinding.right) {
+				ePathfinding.distanceRemainingPos.x = 0;
+				etfm.vel.x = 0;
+				ePathfinding.right = false;
+				snapToGrid(e);
+				if (eName == "Charger") {
+					auto& movementCD = e->getComponent<CCharge>().movementCooldown;
+					movementCD = _config.chargerCDLow;
+				}
+			}
+			else if (ePathfinding.distanceRemainingPos.y <= 0 && ePathfinding.down) {
+				ePathfinding.distanceRemainingPos.y = 0;
+				etfm.vel.y = 0;
+				ePathfinding.down = false;
+				snapToGrid(e);
+				if (eName == "Charger") {
+					auto& movementCD = e->getComponent<CCharge>().movementCooldown;
+					movementCD = _config.chargerCDLow;
+				}
+			}
+			else if (ePathfinding.distanceRemainingNeg.x >= 0 && ePathfinding.left) {
+				ePathfinding.distanceRemainingNeg.x = 0;
+				etfm.vel.x = 0;
+				ePathfinding.left = false;
+				snapToGrid(e);
+				if (eName == "Charger") {
+					auto& movementCD = e->getComponent<CCharge>().movementCooldown;
+					movementCD = _config.chargerCDLow;
+				}
+			}
+			else if (ePathfinding.distanceRemainingNeg.y >= 0 && ePathfinding.up) {
+				ePathfinding.distanceRemainingNeg.y = 0;
+				etfm.vel.y = 0;
+				ePathfinding.up = false;
+				snapToGrid(e);
+				if (eName == "Charger") {
+					auto& movementCD = e->getComponent<CCharge>().movementCooldown;
+					movementCD = _config.chargerCDLow;
+				}
 			}
 		}
 	}
@@ -248,6 +253,9 @@ void Scene_DecaCube::sEnemyBehaviour()
 		}
 		else if (state == "Charger" && isVisible) {
 			charger(e);
+		}
+		else if (state == "Revenant" && isVisible) {
+			revenant(e);
 		}
 	}
 }
@@ -398,6 +406,26 @@ void Scene_DecaCube::charger(std::shared_ptr<Entity> entity)
 	if (charge.movementCooldown <= sf::Time::Zero) {
 		enemyChargeMovement(entity);
 	}
+}
+
+void Scene_DecaCube::revenant(std::shared_ptr<Entity> entity)
+{
+	auto& sight = entity->getComponent<CSight>();
+	auto& current = entity->getComponent<CLocation>().currentFace;
+
+	sight.seesPlayer = true;
+
+	sight.rememberDuration = _config.sunMoonRememberHigh;
+	for (auto e : _enemyData.enemyManager.getEntities()) {
+		auto eName = e->getComponent<CState>().state;
+		if (eName == "Sun" || eName == "Moon" || eName == "Stalker") {
+			e->getComponent<CSight>().seesPlayer = true;
+			e->getComponent<CSight>().rememberDuration = sight.rememberDuration;
+		}
+	}
+	
+	enemySmoothMovement(entity);
+
 }
 
 std::vector<Vec2> Scene_DecaCube::getAvailableNodes(Vec2 pos, std::shared_ptr<Entity> entity) //grid pos passed in, as well as moving entity
@@ -709,6 +737,19 @@ void Scene_DecaCube::enemyChargeMovement(std::shared_ptr<Entity> enemy)
 		enemyMovement(distance, enemy);
 	}
 	
+}
+
+void Scene_DecaCube::enemySmoothMovement(std::shared_ptr<Entity> enemy)
+{
+	auto& tfm = enemy->getComponent<CTransform>();
+	auto pPos = _player->getComponent<CTransform>().pos;
+
+	sf::Vector2f vPPos = { pPos.x, pPos.y };
+	sf::Vector2f vEPos = { tfm.pos.x, tfm.pos.y };
+
+	sf::Vector2f vVel = 0.7f * _config.enemySpeed * normalize(uVecBearing(bearing(vPPos - vEPos)));
+	tfm.vel.x = vVel.x;
+	tfm.vel.y = vVel.y;
 }
 
 void Scene_DecaCube::findIntersection(std::shared_ptr<Entity> enemy)
@@ -1042,7 +1083,7 @@ void Scene_DecaCube::loadFromFile(const std::string& path)
 			e->addComponent<CLocation>(face);
 			bool onOtherFace = (face != 1);
 			e->addComponent<COffScreen>(onOtherFace, sec);
-			bool seesPlayer = (name == "Charger" || name == "Gunner" || name == "Flipper" || name == "Revenant");
+			bool seesPlayer = (name == "Revenant");
 			e->addComponent<CSight>(seesPlayer);
 
 			if (name == "Gunner") {
