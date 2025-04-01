@@ -48,6 +48,7 @@ class Scene_CubeRight : public Scene
     void defender(std::shared_ptr<Entity> entity);
     void stalker(std::shared_ptr<Entity> entity);
     void charger(std::shared_ptr<Entity> entity);
+    void revenant(std::shared_ptr<Entity> entity);
 
     //general enemy functions
 
@@ -66,6 +67,8 @@ class Scene_CubeRight : public Scene
     void enemyDefenceMovement(std::shared_ptr<Entity> enemy, Vec2 itemLocation);
 
     void enemyChargeMovement(std::shared_ptr<Entity> enemy);
+
+    void enemySmoothMovement(std::shared_ptr<Entity> enemy);
 
     void findIntersection(std::shared_ptr<Entity> enemy);
 

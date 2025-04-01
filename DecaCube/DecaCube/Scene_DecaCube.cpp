@@ -221,6 +221,9 @@ void Scene_DecaCube::sEnemyFaceChange(sf::Time dt)
 				if (e->getComponent<CState>().state == "Flipper") {
 					sec = sf::seconds(15.f);
 				}
+				else if (e->getComponent<CState>().state == "Revenant") {
+					sec = sf::seconds(7.5f);
+				}
 				else {
 					std::uniform_real_distribution<float> sceneChangeThreshold(_config.sceneChangeLower, _config.sceneChangeUpper);
 					sec = sf::seconds(sceneChangeThreshold(rng));
@@ -1074,6 +1077,9 @@ void Scene_DecaCube::loadFromFile(const std::string& path)
 			sf::Time sec;
 			if (name == "Flipper") {
 				sec = sf::seconds(15.f);
+			}
+			if (name == "Revenant") {
+				sec = sf::seconds(7.5f);
 			}
 			else {
 				std::uniform_real_distribution<float> sceneChangeThreshold(_config.sceneChangeLower, _config.sceneChangeUpper);
