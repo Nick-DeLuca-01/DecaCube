@@ -220,7 +220,15 @@ void Scene_CubeBack::sEnemyFaceChange(sf::Time dt)
 				}
 				sf::Time sec;
 				if (e->getComponent<CState>().state == "Flipper") {
-					sec = sf::seconds(15.f);
+					if (_playerData.elapsedTime >= _config.highDiffTime || _playerData.collectedItems.size() >= _config.highDiffItems) {
+						sec = sf::seconds(5.f);
+					}
+					else if (_playerData.elapsedTime >= _config.midDiffTime || _playerData.collectedItems.size() >= _config.midDiffItems) {
+						sec = sf::seconds(10.f);
+					}
+					else {
+						sec = sf::seconds(15.f);
+					}
 				}
 				else if (e->getComponent<CState>().state == "Revenant") {
 					sec = sf::seconds(7.5f);
