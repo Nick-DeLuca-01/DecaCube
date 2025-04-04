@@ -358,7 +358,15 @@ void Scene_CubeFront::defender(std::shared_ptr<Entity> entity)
 	bool seesPlayer = canSeePlayer(entity);
 	if (seesPlayer) {
 		sight.seesPlayer = true;
-		sight.rememberDuration = _config.sunMoonRememberLow;
+		if (_playerData.elapsedTime >= _config.highDiffTime || _playerData.collectedItems.size() >= _config.highDiffItems) {
+			sight.rememberDuration = _config.sunMoonRememberHigh;
+		}
+		else if (_playerData.elapsedTime >= _config.midDiffTime || _playerData.collectedItems.size() >= _config.midDiffItems) {
+			sight.rememberDuration = _config.sunMoonRememberMid;
+		}
+		else {
+			sight.rememberDuration = _config.sunMoonRememberLow;
+		}
 	}
 	if (sight.seesPlayer) {
 		enemyAwareMovement(entity);
