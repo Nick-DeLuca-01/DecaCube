@@ -409,7 +409,15 @@ void Scene_CubeBottom::stalker(std::shared_ptr<Entity> entity)
 	bool seesPlayer = canSeePlayer(entity);
 	if (seesPlayer) {
 		sight.seesPlayer = true;
-		sight.rememberDuration = _config.sunMoonRememberLow * 2.f; //remembers player longer than other sight-based enemies (except revenant)
+		if (_playerData.elapsedTime >= _config.highDiffTime || _playerData.collectedItems.size() >= _config.highDiffItems) {
+			sight.rememberDuration = _config.sunMoonRememberHigh * 2.f;
+		}
+		else if (_playerData.elapsedTime >= _config.midDiffTime || _playerData.collectedItems.size() >= _config.midDiffItems) {
+			sight.rememberDuration = _config.sunMoonRememberMid * 2.f;
+		}
+		else {
+			sight.rememberDuration = _config.sunMoonRememberLow * 2.f;
+		}
 		entity->getComponent<CPathFinding>().targetGrid = { -1, -1 };
 	}
 	if (sight.seesPlayer) {
