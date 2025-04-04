@@ -285,7 +285,15 @@ void Scene_CubeBottom::gunner(std::shared_ptr<Entity> entity)
 	enemyAwareMovement(entity);
 
 	if (seesPlayer && !gun.onCooldown) {
-		gun.cooldown = _config.gunnerCDLow;
+		if (_playerData.elapsedTime >= _config.highDiffTime || _playerData.collectedItems.size() >= _config.highDiffItems) {
+			gun.cooldown = _config.gunnerCDHigh;
+		}
+		else if (_playerData.elapsedTime >= _config.midDiffTime || _playerData.collectedItems.size() >= _config.midDiffItems) {
+			gun.cooldown = _config.gunnerCDMid;
+		}
+		else {
+			gun.cooldown = _config.gunnerCDLow;
+		}
 	}
 
 	int directionFacing = (entity->getComponent<CPathFinding>().directionFrom + 2) % 4;
