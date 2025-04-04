@@ -76,7 +76,7 @@ void Scene_DecaCube::sMovement(sf::Time dt)
 		else {
 			etfm.prevPos = etfm.pos;
 			if (eName == "Charger") {
-				etfm.vel = etfm.vel * 1.075;
+				etfm.vel = etfm.vel * 1.065;
 			}
 			etfm.pos += etfm.vel * dt.asSeconds();
 
@@ -96,7 +96,15 @@ void Scene_DecaCube::sMovement(sf::Time dt)
 				snapToGrid(e);
 				if (eName == "Charger") {
 					auto& movementCD = e->getComponent<CCharge>().movementCooldown;
-					movementCD = _config.chargerCDLow;
+					if (_playerData.elapsedTime >= _config.highDiffTime || _playerData.collectedItems.size() >= _config.highDiffItems) {
+						movementCD = _config.chargerCDHigh;
+					}
+					else if (_playerData.elapsedTime >= _config.midDiffTime || _playerData.collectedItems.size() >= _config.midDiffItems) {
+						movementCD = _config.chargerCDMid;
+					}
+					else {
+						movementCD = _config.chargerCDLow;
+					}
 				}
 			}
 			else if (ePathfinding.distanceRemainingPos.y <= 0 && ePathfinding.down) {
@@ -106,7 +114,15 @@ void Scene_DecaCube::sMovement(sf::Time dt)
 				snapToGrid(e);
 				if (eName == "Charger") {
 					auto& movementCD = e->getComponent<CCharge>().movementCooldown;
-					movementCD = _config.chargerCDLow;
+					if (_playerData.elapsedTime >= _config.highDiffTime || _playerData.collectedItems.size() >= _config.highDiffItems) {
+						movementCD = _config.chargerCDHigh;
+					}
+					else if (_playerData.elapsedTime >= _config.midDiffTime || _playerData.collectedItems.size() >= _config.midDiffItems) {
+						movementCD = _config.chargerCDMid;
+					}
+					else {
+						movementCD = _config.chargerCDLow;
+					}
 				}
 			}
 			else if (ePathfinding.distanceRemainingNeg.x >= 0 && ePathfinding.left) {
@@ -116,7 +132,15 @@ void Scene_DecaCube::sMovement(sf::Time dt)
 				snapToGrid(e);
 				if (eName == "Charger") {
 					auto& movementCD = e->getComponent<CCharge>().movementCooldown;
-					movementCD = _config.chargerCDLow;
+					if (_playerData.elapsedTime >= _config.highDiffTime || _playerData.collectedItems.size() >= _config.highDiffItems) {
+						movementCD = _config.chargerCDHigh;
+					}
+					else if (_playerData.elapsedTime >= _config.midDiffTime || _playerData.collectedItems.size() >= _config.midDiffItems) {
+						movementCD = _config.chargerCDMid;
+					}
+					else {
+						movementCD = _config.chargerCDLow;
+					}
 				}
 			}
 			else if (ePathfinding.distanceRemainingNeg.y >= 0 && ePathfinding.up) {
@@ -126,7 +150,15 @@ void Scene_DecaCube::sMovement(sf::Time dt)
 				snapToGrid(e);
 				if (eName == "Charger") {
 					auto& movementCD = e->getComponent<CCharge>().movementCooldown;
-					movementCD = _config.chargerCDLow;
+					if (_playerData.elapsedTime >= _config.highDiffTime || _playerData.collectedItems.size() >= _config.highDiffItems) {
+						movementCD = _config.chargerCDHigh;
+					}
+					else if (_playerData.elapsedTime >= _config.midDiffTime || _playerData.collectedItems.size() >= _config.midDiffItems) {
+						movementCD = _config.chargerCDMid;
+					}
+					else {
+						movementCD = _config.chargerCDLow;
+					}
 				}
 			}
 		}
