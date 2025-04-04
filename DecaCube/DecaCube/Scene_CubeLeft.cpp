@@ -902,6 +902,7 @@ void Scene_CubeLeft::registerActions()
 	registerAction(sf::Keyboard::Right, "RIGHT");
 	registerAction(sf::Keyboard::S, "DOWN");
 	registerAction(sf::Keyboard::Down, "DOWN");
+	registerAction(sf::Keyboard::Escape, "PAUSE");
 }
 
 void Scene_CubeLeft::spawnPlayer(sf::Vector2f pos)
@@ -1604,43 +1605,46 @@ void Scene_CubeLeft::update(sf::Time dt)
 	if (_playerData.sceneChanged) {
 		fixPlayerPos();
 	}
-	playerMovement();
-	sEnemyFaceChange(dt);
-	sEnemyBehaviour();
-	sMovement(dt);
-	if (_nextControl != "") {
-		sDoAction(Command{ _nextControl, "START" });
-	}
 	sRender();
-	sCollision();
-	checkIfPlayerInBounds();
-
-	_playerData.elapsedTime += dt;
-
-	for (auto enemy : _enemyData.enemyManager.getEntities()) {
-		if (enemy->hasComponent<CGun>()) {
-			auto& gun = enemy->getComponent<CGun>();
-			if (gun.onCooldown) {
-				gun.cooldown -= dt;
-			}
-			if (gun.cooldown.asSeconds() <= 0) {
-				gun.cooldown = sf::Time::Zero;
-				gun.onCooldown = false;
-			}
+	if (!_isPaused) {
+		playerMovement();
+		sEnemyFaceChange(dt);
+		sEnemyBehaviour();
+		sMovement(dt);
+		if (_nextControl != "") {
+			sDoAction(Command{ _nextControl, "START" });
 		}
-		if (enemy->hasComponent<CSight>()) {
-			auto& sight = enemy->getComponent<CSight>();
-			sight.rememberDuration -= dt;
-			if (sight.rememberDuration.asSeconds() <= 0) {
-				sight.rememberDuration = sf::Time::Zero;
-				sight.seesPlayer = false;
+
+		sCollision();
+		checkIfPlayerInBounds();
+
+		_playerData.elapsedTime += dt;
+
+		for (auto enemy : _enemyData.enemyManager.getEntities()) {
+			if (enemy->hasComponent<CGun>()) {
+				auto& gun = enemy->getComponent<CGun>();
+				if (gun.onCooldown) {
+					gun.cooldown -= dt;
+				}
+				if (gun.cooldown.asSeconds() <= 0) {
+					gun.cooldown = sf::Time::Zero;
+					gun.onCooldown = false;
+				}
 			}
-		}
-		if (enemy->hasComponent<CCharge>()) {
-			auto& charge = enemy->getComponent<CCharge>();
-			charge.movementCooldown -= dt;
-			if (charge.movementCooldown.asSeconds() <= 0) {
-				charge.movementCooldown = sf::Time::Zero;
+			if (enemy->hasComponent<CSight>()) {
+				auto& sight = enemy->getComponent<CSight>();
+				sight.rememberDuration -= dt;
+				if (sight.rememberDuration.asSeconds() <= 0) {
+					sight.rememberDuration = sf::Time::Zero;
+					sight.seesPlayer = false;
+				}
+			}
+			if (enemy->hasComponent<CCharge>()) {
+				auto& charge = enemy->getComponent<CCharge>();
+				charge.movementCooldown -= dt;
+				if (charge.movementCooldown.asSeconds() <= 0) {
+					charge.movementCooldown = sf::Time::Zero;
+				}
 			}
 		}
 	}
@@ -1661,7 +1665,13 @@ void Scene_CubeLeft::update(sf::Time dt)
 void Scene_CubeLeft::sDoAction(const Command& command)
 {
 	if (command.type() == "START") {
-		_nextControl = command.name();
+		if (command.name() == "PAUSE") {
+			_isPaused = !_isPaused;
+		}
+		else {
+			_nextControl = command.name();
+		}
+
 	}
 
 	//code template from Dave Burchill, NBCC
@@ -1694,54 +1704,63 @@ void Scene_CubeLeft::sDoAction(const Command& command)
 
 void Scene_CubeLeft::sRender()
 {
-	for (auto e : _entityManager.getEntities("tile")) {
-		//render all tiles first
-		auto& tfm = e->getComponent<CTransform>();
-		auto& anim = e->getComponent<CAnimation>().animation;
+	if (!_isPaused) {
+		for (auto e : _entityManager.getEntities("tile")) {
+			//render all tiles first
+			auto& tfm = e->getComponent<CTransform>();
+			auto& anim = e->getComponent<CAnimation>().animation;
 
-		anim.getSprite().setRotation(tfm.angle);
-		anim.getSprite().setPosition(tfm.pos.x, tfm.pos.y);
-		_game->window().draw(anim.getSprite());
+			anim.getSprite().setRotation(tfm.angle);
+			anim.getSprite().setPosition(tfm.pos.x, tfm.pos.y);
+			_game->window().draw(anim.getSprite());
 
-	}
-	for (auto e : _entityManager.getEntities("item")) {
-		//render items on top of tiles but below other entities
-		auto& tfm = e->getComponent<CTransform>();
-		auto& anim = e->getComponent<CAnimation>().animation;
+		}
+		for (auto e : _entityManager.getEntities("item")) {
+			//render items on top of tiles but below other entities
+			auto& tfm = e->getComponent<CTransform>();
+			auto& anim = e->getComponent<CAnimation>().animation;
 
-		anim.getSprite().setRotation(tfm.angle);
-		anim.getSprite().setPosition(tfm.pos.x, tfm.pos.y);
-		_game->window().draw(anim.getSprite());
-	}
-	for (auto e : _entityManager.getEntities("bullet")) {
-		auto& tfm = e->getComponent<CTransform>();
-		auto& anim = e->getComponent<CAnimation>().animation;
+			anim.getSprite().setRotation(tfm.angle);
+			anim.getSprite().setPosition(tfm.pos.x, tfm.pos.y);
+			_game->window().draw(anim.getSprite());
+		}
+		for (auto e : _entityManager.getEntities("bullet")) {
+			auto& tfm = e->getComponent<CTransform>();
+			auto& anim = e->getComponent<CAnimation>().animation;
 
-		anim.getSprite().setRotation(tfm.angle);
-		anim.getSprite().setPosition(tfm.pos.x, tfm.pos.y);
-		_game->window().draw(anim.getSprite());
-	}
-	for (auto e : _entityManager.getEntities("robert")) {
-		//render player
-		auto& tfm = e->getComponent<CTransform>();
-		auto& anim = e->getComponent<CAnimation>().animation;
-
-		anim.getSprite().setRotation(tfm.angle);
-		anim.getSprite().setPosition(tfm.pos.x, tfm.pos.y);
-
-		//std::cout << tfm.pos.x << " " << tfm.pos.y << "\n";
-		_game->window().draw(anim.getSprite());
-	}
-	for (auto e : _enemyData.enemyManager.getEntities("enemy")) {
-		if (_player->getComponent<CLocation>().currentFace == e->getComponent<CLocation>().currentFace) {
+			anim.getSprite().setRotation(tfm.angle);
+			anim.getSprite().setPosition(tfm.pos.x, tfm.pos.y);
+			_game->window().draw(anim.getSprite());
+		}
+		for (auto e : _entityManager.getEntities("robert")) {
+			//render player
 			auto& tfm = e->getComponent<CTransform>();
 			auto& anim = e->getComponent<CAnimation>().animation;
 
 			anim.getSprite().setRotation(tfm.angle);
 			anim.getSprite().setPosition(tfm.pos.x, tfm.pos.y);
 
+			//std::cout << tfm.pos.x << " " << tfm.pos.y << "\n";
 			_game->window().draw(anim.getSprite());
 		}
+		for (auto e : _enemyData.enemyManager.getEntities("enemy")) {
+			if (_player->getComponent<CLocation>().currentFace == e->getComponent<CLocation>().currentFace) {
+				auto& tfm = e->getComponent<CTransform>();
+				auto& anim = e->getComponent<CAnimation>().animation;
+
+				anim.getSprite().setRotation(tfm.angle);
+				anim.getSprite().setPosition(tfm.pos.x, tfm.pos.y);
+
+				_game->window().draw(anim.getSprite());
+			}
+		}
+	}
+	else {
+		sf::Text paused("Game paused! \nPress ESC to resume", Assets::getInstance().getFont("main"), 32);
+		paused.setFillColor(sf::Color(0, 0, 0));
+		paused.setPosition(10, 220);
+
+		_game->window().draw(paused);
 	}
 	sf::Text score("Score: " + std::to_string(_playerData.score), Assets::getInstance().getFont("main"), 32);
 	score.setFillColor(sf::Color(0, 0, 0));
