@@ -345,7 +345,15 @@ void Scene_DecaCube::sunAndMoon(std::shared_ptr<Entity> entity)
 	bool seesPlayer = canSeePlayer(entity);
 	if (seesPlayer) {
 		asight.seesPlayer = true;
-		asight.rememberDuration = _config.sunMoonRememberLow;
+		if (_playerData.elapsedTime >= _config.highDiffTime || _playerData.collectedItems.size() >= _config.highDiffItems) {
+			asight.rememberDuration = _config.sunMoonRememberHigh;
+		}
+		else if (_playerData.elapsedTime >= _config.midDiffTime || _playerData.collectedItems.size() >= _config.midDiffItems) {
+			asight.rememberDuration = _config.sunMoonRememberMid;
+		}
+		else {
+			asight.rememberDuration = _config.sunMoonRememberLow;
+		}
 		std::string other;
 		if (entity->getComponent<CState>().state == "Sun") {
 			other = "Moon";
