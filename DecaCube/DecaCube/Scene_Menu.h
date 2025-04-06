@@ -11,8 +11,14 @@ private:
 	int							m_menuIndex{ 0 };
 	std::string					m_title;
 
+	std::string tip = "Collect all 10 items and return to the beginning!";
+	std::vector<std::string> tips;
+
+	std::string tipsPath = "../tips.txt";
 
 	void init();
+	void getTips();
+	void pickRandomTip();
 	void onEnd() override;
 public:
 

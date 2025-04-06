@@ -3,7 +3,7 @@
 #include "Scene_Scoreboard.h"
 #include "MusicPlayer.h"
 #include <memory>
-
+#include <random>
 void Scene_Menu::onEnd()
 {
 	_game->window().close();
@@ -15,7 +15,10 @@ Scene_Menu::Scene_Menu(GameEngine* gameEngine)
 	init();
 }
 
-
+namespace {
+	std::random_device rd;
+	std::mt19937 rng(rd());
+}
 
 void Scene_Menu::init()
 {
@@ -28,6 +31,8 @@ void Scene_Menu::init()
 	registerAction(sf::Keyboard::Down, "DOWN");
 	registerAction(sf::Keyboard::D, "PLAY");
 	registerAction(sf::Keyboard::Right, "PLAY");
+	registerAction(sf::Keyboard::A, "CYCLE");
+	registerAction(sf::Keyboard::Left, "CYCLE");
 	registerAction(sf::Keyboard::Escape, "QUIT");
 
 	m_title = "Deca-Cube";
@@ -41,9 +46,32 @@ void Scene_Menu::init()
 
 	m_menuText.setFont(Assets::getInstance().getFont("main"));
 
-	const size_t CHAR_SIZE{ 64 };
+	const size_t CHAR_SIZE{ 48 };
 	m_menuText.setCharacterSize(CHAR_SIZE);
 
+	getTips();
+}
+
+void Scene_Menu::getTips()
+{
+	std::ifstream tipsFile(tipsPath);
+	if (tipsFile.fail()) {
+		std::cerr << "Failed to open file " << tipsPath << "\n";
+		tipsFile.close();
+		exit(1);
+	}
+	while (tipsFile) {
+		std::string newTip;
+		std::getline(tipsFile, newTip);
+		tips.push_back(newTip);
+	}
+	tipsFile.close();
+}
+
+void Scene_Menu::pickRandomTip()
+{
+	std::uniform_int_distribution<int> tipIndex(0, tips.size() - 1);
+	tip = tips[tipIndex(rng)];
 }
 
 void Scene_Menu::update(sf::Time dt)
@@ -64,10 +92,10 @@ void Scene_Menu::sRender()
 
 	static const sf::Color backgroundColor(255, 0, 0);
 
-	sf::Text footer("UP: W   DOWN: S   PLAY: D   QUIT: ESC",
-		Assets::getInstance().getFont("main"), 20);
+	sf::Text footer("UP: W   DOWN: S   PLAY: D   CYCLE TIPS: A   QUIT: ESC",
+		Assets::getInstance().getFont("main"), 16);
 	footer.setFillColor(normalColor);
-	footer.setPosition(32, 455);
+	footer.setPosition(20, 455);
 
 
 	m_menuText.setFillColor(normalColor);
@@ -79,10 +107,15 @@ void Scene_Menu::sRender()
 	for (size_t i{ 0 }; i < m_menuStrings.size(); ++i)
 	{
 		m_menuText.setFillColor((i == m_menuIndex ? selectedColor : normalColor));
-		m_menuText.setPosition(32, 32 + (i + 1) * 96);
+		m_menuText.setPosition(32, 32 + (i + 1) * 64);
 		m_menuText.setString(m_menuStrings.at(i));
 		_game->window().draw(m_menuText);
 	}
+
+	sf::Text currentTip(tip, Assets::getInstance().getFont("main"), 20);
+	currentTip.setFillColor(normalColor);
+	currentTip.setPosition(10, 360);
+	_game->window().draw(currentTip);
 
 	_game->window().draw(footer);
 }
@@ -112,6 +145,9 @@ void Scene_Menu::sDoAction(const Command& action)
 				onEnd();
 			}
 			
+		}
+		else if (action.name() == "CYCLE") {
+			pickRandomTip();
 		}
 		else if (action.name() == "QUIT")
 		{

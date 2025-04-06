@@ -42,6 +42,7 @@ void Scene_Scoreboard::loadFromFile(std::string levelPath)
 	//for (int i = 0; i < scores.size(); i++) {
 	//	std::cout << scores[i].first << " " << scores[i].second << "\n";
 	//}
+	scoreboard.close();
 }
 
 Scene_Scoreboard::Scene_Scoreboard(GameEngine* gameEngine, const std::string& levelPath)
