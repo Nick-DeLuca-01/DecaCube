@@ -1859,19 +1859,26 @@ void Scene_CubeBack::sRender()
 
 		_game->window().draw(paused);
 	}
-	sf::Text score("Score: " + std::to_string(_playerData.score), Assets::getInstance().getFont("main"), 32);
+	sf::Text score("Score: " + std::to_string(_playerData.score), Assets::getInstance().getFont("main"), 24);
 	score.setFillColor(sf::Color(0, 0, 0));
 	score.setPosition(10, 440);
 
 	_game->window().draw(score);
+
 	auto curTime = _playerData.elapsedTime.asSeconds();
 
 	int curTimeInt = std::trunc(std::round(curTime * 10) / 10);
 
-	sf::Text time("Time: " + std::to_string(curTimeInt), Assets::getInstance().getFont("main"), 32);
+	sf::Text time("Time: " + std::to_string(curTimeInt), Assets::getInstance().getFont("main"), 24);
 	time.setFillColor(sf::Color(0, 0, 0));
-	time.setPosition(300, 440);
+	time.setPosition(330, 440);
 
 	_game->window().draw(time);
+
+	sf::Text lives("Lives: " + std::to_string(_playerData.lives), Assets::getInstance().getFont("main"), 24);
+	lives.setFillColor(sf::Color(0, 0, 0));
+	lives.setPosition(180, 440);
+
+	_game->window().draw(lives);
 	_game->window().display();
 }

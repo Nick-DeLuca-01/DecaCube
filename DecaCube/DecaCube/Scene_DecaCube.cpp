@@ -1966,7 +1966,7 @@ void Scene_DecaCube::sRender()
 	}
 	
 
-	sf::Text score("Score: " + std::to_string(_playerData.score), Assets::getInstance().getFont("main"), 32);
+	sf::Text score("Score: " + std::to_string(_playerData.score), Assets::getInstance().getFont("main"), 24);
 	score.setFillColor(sf::Color(0, 0, 0));
 	score.setPosition(10, 440);
 
@@ -1976,27 +1976,16 @@ void Scene_DecaCube::sRender()
 
 	int curTimeInt = std::trunc(std::round(curTime * 10) / 10);
 
-	sf::Text time("Time: " + std::to_string(curTimeInt), Assets::getInstance().getFont("main"), 32);
+	sf::Text time("Time: " + std::to_string(curTimeInt), Assets::getInstance().getFont("main"), 24);
 	time.setFillColor(sf::Color(0, 0, 0));
-	time.setPosition(300, 440);
+	time.setPosition(330, 440);
 
 	_game->window().draw(time);
-	
 
-	//for (auto e : _entityManager.getEntities()) {
-	//	if (e->hasComponent<CBoundingBox>()) {
-	//		auto& box = e->getComponent<CBoundingBox>();
-	//		auto& transform = e->getComponent<CTransform>();
-	//		sf::RectangleShape rect;
-	//		rect.setSize(sf::Vector2f(box.size.x, box.size.y));
-	//		rect.setOrigin(sf::Vector2f(box.halfSize.x, box.halfSize.y));
-	//		rect.setPosition(transform.pos.x, transform.pos.y);
-	//		rect.setFillColor(sf::Color(0, 0, 0, 0));
-	//		rect.setOutlineColor(sf::Color(0, 255, 0));
-	//		rect.setOutlineThickness(1.f);
-	//		_game->window().draw(rect);
-	//	}
-	//}
+	sf::Text lives("Lives: " + std::to_string(_playerData.lives), Assets::getInstance().getFont("main"), 24);
+	lives.setFillColor(sf::Color(0, 0, 0));
+	lives.setPosition(180, 440);
 
+	_game->window().draw(lives);
 	_game->window().display();
 }
