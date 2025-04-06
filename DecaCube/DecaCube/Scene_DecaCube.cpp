@@ -1871,7 +1871,10 @@ void Scene_DecaCube::update(sf::Time dt)
 	}
 
 	if ((_playerData.collectedItems.size() >= 10 && _player->getComponent<CTransform>().pos.x == 220 && _player->getComponent<CTransform>().pos.y == 220) || _playerData.lives == 0) {
-		
+		float multiplier = 300.f / _playerData.elapsedTime.asSeconds();
+		if (multiplier > 1) {
+			_playerData.score = _playerData.score * multiplier;
+		}
 		onEnd();
 	}
 }
