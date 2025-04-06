@@ -49,6 +49,7 @@ void Scene_GameEnd::onEnd()
 	_playerData.faceRotation = 0;
 	_playerData.elapsedTime = sf::Time::Zero;
 	_enemyData.enemiesLoaded = false;
+	_enemyData.flip = false;
 	_game->changeScene("MENU", nullptr, false);
 }
 

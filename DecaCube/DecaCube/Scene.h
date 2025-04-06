@@ -21,6 +21,7 @@ struct PlayerData {
 struct EnemyData {
 	EntityManager enemyManager;
 	bool enemiesLoaded = false;
+	bool flip = false;
 };
 
 struct LevelConfig {

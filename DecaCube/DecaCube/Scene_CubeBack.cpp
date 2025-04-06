@@ -248,6 +248,13 @@ void Scene_CubeBack::sEnemyFaceChange(sf::Time dt)
 					e->getComponent<CTransform>().pos = newPos;
 					pathfinding.directionFrom = 4; //can move any direction after appearing
 					offScreen.offScreen = false;
+					if (_enemyData.flip) {
+						e->getComponent<CAnimation>().animation = Assets::getInstance().getAnimation("FlipperLeft");
+					}
+					else {
+						e->getComponent<CAnimation>().animation = Assets::getInstance().getAnimation("FlipperRight");
+					}
+					_enemyData.flip = !_enemyData.flip;
 
 				}
 				else { //if switching to not player's scene, pick random location (in case player switches to that side)
