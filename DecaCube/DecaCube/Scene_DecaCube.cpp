@@ -1836,7 +1836,7 @@ void Scene_DecaCube::update(sf::Time dt)
 		}
 	}
 
-	if ((_playerData.collectedItems.size() >= 10 && _player->getComponent<CTransform>().pos.x == 220 && _player->getComponent<CTransform>().pos.y == 220) || _playerData.lives == 0) {
+	if ((_playerData.collectedItems.size() >= 1 && _player->getComponent<CTransform>().pos.x == 220 && _player->getComponent<CTransform>().pos.y == 220) || _playerData.lives == 0) {
 		
 		onEnd();
 	}

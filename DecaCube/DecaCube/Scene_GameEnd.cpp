@@ -6,13 +6,13 @@ void Scene_GameEnd::init()
 	registerAction(sf::Keyboard::Up, "UP");
 	registerAction(sf::Keyboard::A, "LEFT");
 	registerAction(sf::Keyboard::Left, "LEFT");
-	registerAction(sf::Keyboard::S, "DONW");
+	registerAction(sf::Keyboard::S, "DOWN");
 	registerAction(sf::Keyboard::Down, "DOWN");
 	registerAction(sf::Keyboard::D, "RIGHT");
 	registerAction(sf::Keyboard::Right, "RIGHT");
 	registerAction(sf::Keyboard::Space, "SUBMIT");
 
-	std::string alphabet = "abcdefghijklmnopqrstuvwxyz";
+	std::string alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 	for (int i = 0; i < 26; i++) {
 		initialsA.push_back(alphabet[i]);
 		initialsB.push_back(alphabet[i]);
@@ -133,7 +133,7 @@ void Scene_GameEnd::sRender()
 		footerText = "RETURN TO MAIN MENU: SPACE";
 	}
 	else {
-		headerText = "You win! Final score: " + _playerData.score;
+		headerText = "Final score: " + std::to_string(_playerData.score);
 		headerText = headerText + "\nEnter your initials!";
 
 		footerText = "UP: W   LEFT: A   DOWN: S   RIGHT: D   SUBMIT SCORE: SPACE";
@@ -178,12 +178,12 @@ void Scene_GameEnd::sRender()
 		_game->window().draw(initialC);
 	}
 	sf::Text header(headerText,
-		Assets::getInstance().getFont("main"), 48);
+		Assets::getInstance().getFont("main"), 40);
 	header.setFillColor(normalColor);
 	header.setPosition(10, 10);
 
 	sf::Text footer(footerText,
-		Assets::getInstance().getFont("main"), 20);
+		Assets::getInstance().getFont("main"), 12);
 	footer.setFillColor(normalColor);
 	footer.setPosition(32, 460);
 
