@@ -973,6 +973,10 @@ void Scene_CubeBottom::killPlayer()
 	_playerData.lives -= 1;
 	_playerData.invincibility = sf::seconds(3.f);
 	_player->getComponent<CTransform>().pos = { 220, 220 };
+	auto& pinput = _player->getComponent<CInput>();
+	pinput.distanceRemainingNeg = { 0, 0 };
+	pinput.distanceRemainingPos = { 0, 0 };
+	_nextControl = "";
 }
 
 void Scene_CubeBottom::onEnd()
