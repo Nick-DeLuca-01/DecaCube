@@ -1,5 +1,6 @@
 #include "Scene_Menu.h"
 #include "Scene_DecaCube.h"
+#include "Scene_Scoreboard.h"
 #include "MusicPlayer.h"
 #include <memory>
 
@@ -35,7 +36,7 @@ void Scene_Menu::init()
 	m_menuStrings.push_back("Exit Game");
 
 	m_levelPaths.push_back("../assets/cubetop.txt");
-	m_levelPaths.push_back("../assers/scoreboard.txt");
+	m_levelPaths.push_back("../assets/scoreboard.txt");
 	m_levelPaths.push_back("../exit.txt");
 
 	m_menuText.setFont(Assets::getInstance().getFont("main"));
@@ -66,7 +67,7 @@ void Scene_Menu::sRender()
 	sf::Text footer("UP: W   DOWN: S   PLAY: D   QUIT: ESC",
 		Assets::getInstance().getFont("main"), 20);
 	footer.setFillColor(normalColor);
-	footer.setPosition(32, 460);
+	footer.setPosition(32, 455);
 
 
 	m_menuText.setFillColor(normalColor);
@@ -105,7 +106,7 @@ void Scene_Menu::sDoAction(const Command& action)
 				_game->changeScene("PLAY", std::make_shared<Scene_DecaCube>(_game, m_levelPaths[m_menuIndex]));
 			}
 			else if (m_menuIndex == 1) {
-				std::cout << "Nothing here yet!";
+				_game->changeScene("SCOREBOARD", std::make_shared<Scene_Scoreboard>(_game, m_levelPaths[m_menuIndex]));
 			}
 			else if (m_menuIndex == 2) {
 				onEnd();

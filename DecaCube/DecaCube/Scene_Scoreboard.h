@@ -10,16 +10,11 @@ private:
 
 	std::string _levelPath;
 
-	sf::Text scoreA;
-	sf::Text scoreB;
-	sf::Text scoreC;
-	sf::Text scoreD;
-	sf::Text scoreE;
-
-	std::map<int, std::string> scores;
+	std::vector<std::pair<int, std::string>> scores;
 
 	void init(std::string levelPath);
 	void onEnd() override;
+	void loadFromFile(std::string levelPath);
 
 public:
 	Scene_Scoreboard(GameEngine* gameEngine, const std::string& levelPath);
