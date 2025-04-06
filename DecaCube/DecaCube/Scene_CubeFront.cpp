@@ -463,9 +463,11 @@ void Scene_CubeFront::stalker(std::shared_ptr<Entity> entity)
 		entity->getComponent<CPathFinding>().targetGrid = { -1, -1 };
 	}
 	if (sight.seesPlayer) {
+		entity->getComponent<CAnimation>().animation = Assets::getInstance().getAnimation("StalkerVisible");
 		enemyAwareMovement(entity);
 	}
 	else {
+		entity->getComponent<CAnimation>().animation = Assets::getInstance().getAnimation("StalkerHiding");
 		findIntersection(entity);
 	}
 }
