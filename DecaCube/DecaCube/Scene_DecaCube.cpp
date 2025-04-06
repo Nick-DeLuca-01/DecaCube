@@ -179,6 +179,18 @@ void Scene_DecaCube::sCollision()
 			e->destroy();
 		}
 	}
+	for (auto e : _entityManager.getEntities("bullet")) {
+		auto overlap = Physics::getOverlap(e, _player);
+		if (overlap.x > 0 && overlap.y > 0 && _playerData.invincibility <= sf::Time::Zero) {
+			killPlayer();
+		}
+	}
+	for (auto e : _enemyData.enemyManager.getEntities()) {
+		auto overlap = Physics::getOverlap(e, _player);
+		if (overlap.x > 0 && overlap.y > 0 && _playerData.invincibility <= sf::Time::Zero) {
+			killPlayer();
+		}
+	}
 }
 
 void Scene_DecaCube::sEnemyFaceChange(sf::Time dt)
@@ -973,6 +985,14 @@ void Scene_DecaCube::clearBullets()
 			bullet->destroy();
 		}
 	}
+}
+
+void Scene_DecaCube::killPlayer()
+{
+	_playerData.score -= 500;
+	_playerData.lives -= 1;
+	_playerData.invincibility = sf::seconds(3.f);
+	_player->getComponent<CTransform>().pos = { 220, 220 };
 }
 
 void Scene_DecaCube::onEnd()
@@ -1806,6 +1826,7 @@ void Scene_DecaCube::update(sf::Time dt)
 		checkIfPlayerInBounds();
 
 		_playerData.elapsedTime += dt;
+		_playerData.invincibility -= dt;
 
 		for (auto enemy : _enemyData.enemyManager.getEntities()) {
 			if (enemy->hasComponent<CGun>()) {
@@ -1836,7 +1857,7 @@ void Scene_DecaCube::update(sf::Time dt)
 		}
 	}
 
-	if ((_playerData.collectedItems.size() >= 1 && _player->getComponent<CTransform>().pos.x == 220 && _player->getComponent<CTransform>().pos.y == 220) || _playerData.lives == 0) {
+	if ((_playerData.collectedItems.size() >= 10 && _player->getComponent<CTransform>().pos.x == 220 && _player->getComponent<CTransform>().pos.y == 220) || _playerData.lives == 0) {
 		
 		onEnd();
 	}

@@ -84,6 +84,7 @@ class Scene_CubeFront : public Scene
     void clearBullets();
 
     //helper functions
+    void killPlayer();
     void	                onEnd() override;
     void registerActions();
     void spawnPlayer(sf::Vector2f pos);

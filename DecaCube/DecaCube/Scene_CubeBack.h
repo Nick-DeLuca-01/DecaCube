@@ -81,6 +81,7 @@ class Scene_CubeBack : public Scene
     void clearBullets();
 
     // helper functions
+    void killPlayer();
     void	                onEnd() override;
     void init(const std::string& path);
     void registerActions();

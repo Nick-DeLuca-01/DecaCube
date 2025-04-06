@@ -15,6 +15,7 @@ struct PlayerData {
 	std::vector<std::string> collectedItems;
 	int faceRotation = 0; //up = up: 0, left = up: 1, down = up: 2, right = up: 3
 	sf::Time elapsedTime = sf::Time::Zero;
+	sf::Time invincibility = sf::Time::Zero;
 };
 
 struct EnemyData {

@@ -176,8 +176,18 @@ void Scene_CubeBottom::sCollision()
 			_playerData.score += e->getComponent<CScore>().score;
 			_playerData.collectedItems.push_back(e->getComponent<CState>().state);
 			e->destroy();
-			std::cout << _playerData.score << " points\n"; //temporary debug line
-
+		}
+	}
+	for (auto e : _entityManager.getEntities("bullet")) {
+		auto overlap = Physics::getOverlap(e, _player);
+		if (overlap.x > 0 && overlap.y > 0 && _playerData.invincibility <= sf::Time::Zero) {
+			killPlayer();
+		}
+	}
+	for (auto e : _enemyData.enemyManager.getEntities()) {
+		auto overlap = Physics::getOverlap(e, _player);
+		if (overlap.x > 0 && overlap.y > 0 && _playerData.invincibility <= sf::Time::Zero) {
+			killPlayer();
 		}
 	}
 }
@@ -957,6 +967,14 @@ void Scene_CubeBottom::clearBullets()
 	}
 }
 
+void Scene_CubeBottom::killPlayer()
+{
+	_playerData.score -= 500;
+	_playerData.lives -= 1;
+	_playerData.invincibility = sf::seconds(3.f);
+	_player->getComponent<CTransform>().pos = { 220, 220 };
+}
+
 void Scene_CubeBottom::onEnd()
 {
 	for (auto e : _enemyData.enemyManager.getEntities()) {
@@ -1693,6 +1711,7 @@ void Scene_CubeBottom::update(sf::Time dt)
 		checkIfPlayerInBounds();
 
 		_playerData.elapsedTime += dt;
+		_playerData.invincibility -= dt;
 
 		for (auto enemy : _enemyData.enemyManager.getEntities()) {
 			if (enemy->hasComponent<CGun>()) {
