@@ -26,6 +26,7 @@ void Scene_Menu::init()
 	registerAction(sf::Keyboard::S, "DOWN");
 	registerAction(sf::Keyboard::Down, "DOWN");
 	registerAction(sf::Keyboard::D, "PLAY");
+	registerAction(sf::Keyboard::Right, "PLAY");
 	registerAction(sf::Keyboard::Escape, "QUIT");
 
 	m_title = "Deca-Cube";
@@ -34,8 +35,8 @@ void Scene_Menu::init()
 	m_menuStrings.push_back("Exit Game");
 
 	m_levelPaths.push_back("../assets/cubetop.txt");
-	m_levelPaths.push_back("../level1.txt");
-	m_levelPaths.push_back("../level1.txt");
+	m_levelPaths.push_back("../assers/scoreboard.txt");
+	m_levelPaths.push_back("../exit.txt");
 
 	m_menuText.setFont(Assets::getInstance().getFont("main"));
 
@@ -62,7 +63,7 @@ void Scene_Menu::sRender()
 
 	static const sf::Color backgroundColor(255, 0, 0);
 
-	sf::Text footer("UP: W    DOWN: S   PLAY:D    QUIT: ESC",
+	sf::Text footer("UP: W   DOWN: S   PLAY: D   QUIT: ESC",
 		Assets::getInstance().getFont("main"), 20);
 	footer.setFillColor(normalColor);
 	footer.setPosition(32, 460);
@@ -100,7 +101,16 @@ void Scene_Menu::sDoAction(const Command& action)
 		}
 		else if (action.name() == "PLAY")
 		{
-			_game->changeScene("PLAY", std::make_shared<Scene_DecaCube>(_game, m_levelPaths[m_menuIndex]));
+			if (m_menuIndex == 0) {
+				_game->changeScene("PLAY", std::make_shared<Scene_DecaCube>(_game, m_levelPaths[m_menuIndex]));
+			}
+			else if (m_menuIndex == 1) {
+				std::cout << "Nothing here yet!";
+			}
+			else if (m_menuIndex == 2) {
+				onEnd();
+			}
+			
 		}
 		else if (action.name() == "QUIT")
 		{
