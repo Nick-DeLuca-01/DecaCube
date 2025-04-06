@@ -78,6 +78,9 @@
     <ClInclude Include="Scene_CubeBottom.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Scene_GameEnd.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Animation.cpp">
@@ -138,6 +141,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Scene_CubeBottom.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene_GameEnd.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

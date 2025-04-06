@@ -36,6 +36,7 @@
     <ClInclude Include="Scene_CubeLeft.h" />
     <ClInclude Include="Scene_CubeRight.h" />
     <ClInclude Include="Scene_DecaCube.h" />
+    <ClInclude Include="Scene_GameEnd.h" />
     <ClInclude Include="Scene_Menu.h" />
     <ClInclude Include="SoundPlayer.h" />
     <ClInclude Include="Utilities.h" />
@@ -58,6 +59,7 @@
     <ClCompile Include="Scene_CubeLeft.cpp" />
     <ClCompile Include="Scene_CubeRight.cpp" />
     <ClCompile Include="Scene_DecaCube.cpp" />
+    <ClCompile Include="Scene_GameEnd.cpp" />
     <ClCompile Include="Scene_Menu.cpp" />
     <ClCompile Include="SoundPlayer.cpp" />
     <ClCompile Include="Utilities.cpp" />

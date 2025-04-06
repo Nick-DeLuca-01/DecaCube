@@ -141,7 +141,7 @@ void GameEngine::run()
 			timeSinceLastUpdate -= SPF;
 		}
 
-		window().clear(sf::Color::Cyan);
+		window().clear(sf::Color::Red);
 		currentScene()->sRender();					// render world
 		window().display();
 	}
