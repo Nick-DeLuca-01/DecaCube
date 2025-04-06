@@ -960,6 +960,9 @@ void Scene_CubeBack::clearBullets()
 
 void Scene_CubeBack::onEnd()
 {
+	for (auto e : _enemyData.enemyManager.getEntities()) {
+		e->destroy();
+	}
 	_game->changeScene("MENU", nullptr, false);
 	_game->reset();
 }
@@ -1732,15 +1735,7 @@ void Scene_CubeBack::update(sf::Time dt)
 		}
 	}
 
-	if (_playerData.collectedItems.size() >= 10) {
-		std::cout << "You win! Final score: " << _playerData.score;
-		_playerData.lives = 3;
-		_playerData.sceneChanged = false;
-		_playerData.score = 0;
-		_playerData.collectedItems.clear();
-		_playerData.spawnPos = { 5, 5 };
-		_playerData.faceRotation = 0;
-		_playerData.elapsedTime = sf::Time::Zero;
+	if (_playerData.lives == 0) {
 		onEnd();
 	}
 }

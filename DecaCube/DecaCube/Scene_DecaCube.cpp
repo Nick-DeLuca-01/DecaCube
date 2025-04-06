@@ -1836,15 +1836,7 @@ void Scene_DecaCube::update(sf::Time dt)
 		}
 	}
 
-	if (_playerData.collectedItems.size() >= 10) {
-		std::cout << "You win! Final score: " << _playerData.score;
-		_playerData.lives = 3;
-		_playerData.sceneChanged = false;
-		_playerData.score = 0;
-		_playerData.collectedItems.clear();
-		_playerData.spawnPos = { 5, 5 };
-		_playerData.faceRotation = 0;
-		_playerData.elapsedTime = sf::Time::Zero;
+	if ((_playerData.collectedItems.size() >= 10 && _player->getComponent<CTransform>().pos.x == 220 && _player->getComponent<CTransform>().pos.y == 220) || _playerData.lives == 0) {
 		
 		onEnd();
 	}

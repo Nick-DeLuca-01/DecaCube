@@ -173,6 +173,9 @@ void Scene_GameEnd::sRender()
 		initialB.setPosition(220, 220);
 		initialC.setPosition(260, 220);
 
+		_game->window().draw(initialA);
+		_game->window().draw(initialB);
+		_game->window().draw(initialC);
 	}
 	sf::Text header(headerText,
 		Assets::getInstance().getFont("main"), 48);
@@ -183,4 +186,7 @@ void Scene_GameEnd::sRender()
 		Assets::getInstance().getFont("main"), 20);
 	footer.setFillColor(normalColor);
 	footer.setPosition(32, 460);
+
+	_game->window().draw(header);
+	_game->window().draw(footer);
 }
