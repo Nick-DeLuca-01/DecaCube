@@ -41,7 +41,15 @@ void Scene_GameEnd::addScoreToScoreboard()
 
 void Scene_GameEnd::onEnd()
 {
-	_game->changeScene("MENU", nullptr, true);
+	_playerData.lives = 3;
+	_playerData.sceneChanged = false;
+	_playerData.score = 0;
+	_playerData.collectedItems.clear();
+	_playerData.spawnPos = { 5, 5 };
+	_playerData.faceRotation = 0;
+	_playerData.elapsedTime = sf::Time::Zero;
+	_enemyData.enemiesLoaded = false;
+	_game->changeScene("MENU", nullptr, false);
 }
 
 Scene_GameEnd::Scene_GameEnd(GameEngine* gameEngine)

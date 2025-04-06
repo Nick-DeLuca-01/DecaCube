@@ -977,6 +977,9 @@ void Scene_DecaCube::clearBullets()
 
 void Scene_DecaCube::onEnd()
 {
+	for (auto e : _enemyData.enemyManager.getEntities()) {
+		e->destroy();
+	}
 	_game->changeScene("MENU", nullptr, false);
 	_game->reset();
 }
@@ -1842,6 +1845,7 @@ void Scene_DecaCube::update(sf::Time dt)
 		_playerData.spawnPos = { 5, 5 };
 		_playerData.faceRotation = 0;
 		_playerData.elapsedTime = sf::Time::Zero;
+		
 		onEnd();
 	}
 }

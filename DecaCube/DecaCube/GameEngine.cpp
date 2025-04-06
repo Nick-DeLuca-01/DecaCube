@@ -2,6 +2,7 @@
 #include "Assets.h"
 #include "Scene_Menu.h"
 #include "Scene_DecaCube.h"
+#include "Scene_GameEnd.h"
 #include "Command.h"
 #include <fstream>
 #include <memory>
@@ -149,7 +150,7 @@ void GameEngine::run()
 
 void GameEngine::quitLevel()
 {
-	changeScene("MENU", nullptr, true);
+	changeScene("GAMEEND", std::make_shared<Scene_GameEnd>(this));
 }
 
 void GameEngine::backLevel()
