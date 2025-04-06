@@ -186,7 +186,7 @@ void Scene_CubeLeft::sCollision()
 	}
 	for (auto e : _enemyData.enemyManager.getEntities()) {
 		auto overlap = Physics::getOverlap(e, _player);
-		if (overlap.x > 0 && overlap.y > 0 && _playerData.invincibility <= sf::Time::Zero) {
+		if (overlap.x > 0 && overlap.y > 0 && _playerData.invincibility <= sf::Time::Zero && !e->getComponent<COffScreen>().offScreen) {
 			killPlayer();
 		}
 	}
