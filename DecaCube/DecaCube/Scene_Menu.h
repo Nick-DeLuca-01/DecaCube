@@ -11,6 +11,8 @@ private:
 	int							m_menuIndex{ 0 };
 	std::string					m_title;
 
+	int currentTip = 0;
+
 	std::string tip = "Collect all 10 items and return to the beginning!";
 	std::vector<std::string> tips;
 

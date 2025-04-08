@@ -80,7 +80,12 @@ void Scene_Menu::getTips()
 void Scene_Menu::pickRandomTip()
 {
 	std::uniform_int_distribution<int> tipIndex(0, tips.size() - 1);
-	tip = tips[tipIndex(rng)];
+	int newTip = tipIndex(rng);
+	while (newTip == currentTip) {
+		newTip = tipIndex(rng);
+	}
+	tip = tips[newTip];
+	currentTip = newTip;
 }
 
 void Scene_Menu::update(sf::Time dt)
