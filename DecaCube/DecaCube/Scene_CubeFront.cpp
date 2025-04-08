@@ -1882,7 +1882,13 @@ void Scene_CubeFront::sRender()
 		paused.setFillColor(sf::Color(0, 0, 0));
 		paused.setPosition(10, 220);
 
+		std::string itemsCollected = "You've collected " + std::to_string(_playerData.collectedItems.size()) + "/10 items";
+		sf::Text items(itemsCollected, Assets::getInstance().getFont("main"), 24);
+		items.setFillColor(sf::Color(0, 0, 0));
+		items.setPosition(10, 300);
+
 		_game->window().draw(paused);
+		_game->window().draw(items);
 	}
 	sf::Text score("Score: " + std::to_string(_playerData.score), Assets::getInstance().getFont("main"), 24);
 	score.setFillColor(sf::Color(0, 0, 0));
