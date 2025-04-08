@@ -150,7 +150,7 @@ void GameEngine::run()
 
 void GameEngine::quitLevel()
 {
-	changeScene("GAMEEND", std::make_shared<Scene_GameEnd>(this));
+	changeScene("GAMEEND", std::make_shared<Scene_GameEnd>(this), true);
 }
 
 void GameEngine::backLevel()
