@@ -1,23 +1,24 @@
-Collect all 10 items and return to the beginning!
-Avoid the enemies, or you will lose a life!
-Faster times get a bigger point multiplier!
-Enemy in your way? Leave and come back later!
-The Charger always goes to the end of a hall.
-The Gunner only fires when it sees you.
-The Flipper will always flip to your face.
-The Sun can communicate with the Moon.
-The Moon can communicate with the Sun.
-The Stalker hides until it sees you.
-The Defender tries to hang around items.
-The Revenant always knows where you are.
-There is no time limit, but try to be fast...
-Stay attentive!
-Try to beat the high score!
-Dying will remove 500 points from you.
-Items are spread around the cube.
-There are only 6 faces. It's a cube.
-Be mindful of face rotations!
-You are invincible for 3 seconds after death.
-The Revenant only appears after 5 minutes.
-The best way to stay alive is to not die.
-Avoid the gunner's bullets!
+TIP Collect all 10 items and return to the beginning!
+TIP Avoid the enemies, or you will lose a life!
+TIP Faster times get a bigger point multiplier!
+TIP Enemy in your way? Leave and come back later!
+TIP The Charger always goes to the end of a hall.
+TIP The Gunner only fires when it sees you.
+TIP The Flipper will always flip to your face.
+TIP The Sun can communicate with the Moon.
+TIP The Moon can communicate with the Sun.
+TIP The Stalker hides until it sees you.
+TIP The Defender tries to hang around items.
+TIP The Revenant always knows where you are.
+TIP There is no time limit, but try to be fast...
+TIP Stay attentive!
+TIP Try to beat the high score!
+TIP Dying will remove 500 points from you.
+TIP Items are spread around the cube.
+TIP There are only 6 faces. It's a cube.
+TIP Be mindful of face rotations!
+TIP You are invincible for 3 seconds after death.
+TIP The Revenant only appears after 5 minutes.
+TIP The best way to stay alive is to not die.
+TIP Avoid the gunner's bullets!
+TIP The pause menu shows how many items you have!

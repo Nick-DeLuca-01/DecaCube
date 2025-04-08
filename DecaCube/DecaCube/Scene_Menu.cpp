@@ -60,10 +60,19 @@ void Scene_Menu::getTips()
 		tipsFile.close();
 		exit(1);
 	}
+	std::string token = "";
+	tipsFile >> token;
 	while (tipsFile) {
-		std::string newTip;
-		std::getline(tipsFile, newTip);
-		tips.push_back(newTip);
+		if (token == "TIP") {
+			std::string newTip;
+			std::getline(tipsFile, newTip);
+			tips.push_back(newTip);
+		}
+		else {
+			std::string buffer;
+			std::getline(tipsFile, buffer);
+		}
+		tipsFile >> token;
 	}
 	tipsFile.close();
 }
@@ -112,7 +121,7 @@ void Scene_Menu::sRender()
 		_game->window().draw(m_menuText);
 	}
 
-	sf::Text currentTip(tip, Assets::getInstance().getFont("main"), 20);
+	sf::Text currentTip(tip, Assets::getInstance().getFont("main"), 18);
 	currentTip.setFillColor(normalColor);
 	currentTip.setPosition(10, 360);
 	_game->window().draw(currentTip);
