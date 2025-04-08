@@ -22,3 +22,4 @@ TIP The Revenant only appears after 5 minutes.
 TIP The best way to stay alive is to not die.
 TIP Avoid the gunner's bullets!
 TIP The pause menu shows how many items you have!
+TIP This game is hard. You can do it!
