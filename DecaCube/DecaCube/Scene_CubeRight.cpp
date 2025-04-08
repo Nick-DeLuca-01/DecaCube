@@ -207,26 +207,29 @@ void Scene_CubeRight::sEnemyFaceChange(sf::Time dt)
 				e->getComponent<CLocation>().currentFace = newFace;
 				if (newFace == _player->getComponent<CLocation>().currentFace && e->getComponent<CState>().state != "Flipper") { //if switching to player's scene, pick random direction to come from
 					std::uniform_int_distribution<int> incomingDirection(1, 4);
-					int selectedSide = incomingDirection(rng);
+					auto pPos = _player->getComponent<CTransform>().pos;
 					Vec2 newPos{ 0, 0 };
-					switch (selectedSide) {
-					case 1:
-						newPos = { 5, 10 };
+					while (((newPos.x - pPos.x) <= 80 && (newPos.x - pPos.x) >= -80) && ((newPos.y - pPos.y <= 80) && (newPos.y - pPos.y >= -80))) {
+						int selectedSide = incomingDirection(rng);
+						switch (selectedSide) {
+						case 1:
+							newPos = { 5, 10 };
 
-						break;
-					case 2:
-						newPos = { 0, 5 };
+							break;
+						case 2:
+							newPos = { 0, 5 };
 
-						break;
-					case 3:
-						newPos = { 5, 0 };
-						break;
-					case 4:
-						newPos = { 10, 5 };
-						break;
+							break;
+						case 3:
+							newPos = { 5, 0 };
+							break;
+						case 4:
+							newPos = { 10, 5 };
+							break;
+						}
+						pathfinding.directionFrom = (selectedSide - 1);
+						newPos = gridToMidPixel(newPos.x, newPos.y, e);
 					}
-					pathfinding.directionFrom = (selectedSide - 1);
-					newPos = gridToMidPixel(newPos.x, newPos.y, e);
 					e->getComponent<CTransform>().pos = newPos;
 					offScreen.offScreen = false;
 
@@ -260,8 +263,12 @@ void Scene_CubeRight::sEnemyFaceChange(sf::Time dt)
 				else { //if switching to not player's scene, pick random location (in case player switches to that side)
 					std::uniform_int_distribution<int> gridCoord(0, 10);
 					Vec2 newPos{ 0, 0 };
-					newPos.x = gridCoord(rng);
-					newPos.y = gridCoord(rng);
+					while (newPos.x != 5) {
+						newPos.x = gridCoord(rng);
+					}
+					while (newPos.y != 5) {
+						newPos.y = gridCoord(rng);
+					}
 					newPos = gridToMidPixel(newPos.x, newPos.y, e);
 					e->getComponent<CTransform>().pos = newPos;
 					pathfinding.directionFrom = 4; //can move any direction
