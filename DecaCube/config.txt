@@ -23,6 +23,7 @@ Texture TexUpRightCorner ../assets/textures/tiles/UpRightCorner.png
 Texture TexUpWall ../assets/textures/tiles/UpWall.png
 
 Texture TexRobert ../assets/textures/characters/Robert.png
+Texture TexRobert_Invincible ../assets/textures/characters/Robert_Invincible.png
 
 Texture TexCharger ../assets/textures/characters/Charger.png
 Texture TexDefender ../assets/textures/characters/Defender.png
@@ -68,6 +69,7 @@ Animation UpRightCorner TexUpRightCorner 1 0
 Animation UpWall TexUpWall 1 0
 
 Animation Robert TexRobert 1 0
+Animation Robert_IFrame TexRobert_Invincible 1 0
 
 Animation Charger TexCharger 1 0
 Animation Defender TexDefender 1 0

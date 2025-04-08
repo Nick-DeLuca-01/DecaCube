@@ -48,6 +48,7 @@ void Scene_GameEnd::onEnd()
 	_playerData.spawnPos = { 5, 5 };
 	_playerData.faceRotation = 0;
 	_playerData.elapsedTime = sf::Time::Zero;
+	_playerData.invincibility = sf::Time::Zero;
 	_enemyData.enemiesLoaded = false;
 	_enemyData.flip = false;
 	_game->changeScene("MENU", nullptr, false);

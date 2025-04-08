@@ -1734,6 +1734,13 @@ void Scene_CubeRight::update(sf::Time dt)
 		_playerData.elapsedTime += dt;
 		_playerData.invincibility -= dt;
 
+		if (_playerData.invincibility.asSeconds() > 0.f) {
+			_player->getComponent<CAnimation>().animation = Assets::getInstance().getAnimation("Robert_IFrame");
+		}
+		else {
+			_player->getComponent<CAnimation>().animation = Assets::getInstance().getAnimation("Robert");
+		}
+
 		for (auto enemy : _enemyData.enemyManager.getEntities()) {
 			if (enemy->hasComponent<CGun>()) {
 				auto& gun = enemy->getComponent<CGun>();
