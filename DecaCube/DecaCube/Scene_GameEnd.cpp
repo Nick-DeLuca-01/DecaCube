@@ -34,14 +34,14 @@ void Scene_GameEnd::addScoreToScoreboard()
 	else {
 		ifs.close();
 		ofs.open(scoreBoardPath, std::ios::app);
-		ofs << _playerData.score << "\t" << initialsA[optionIndexA] << initialsB[optionIndexB] << initialsC[optionIndexC] << "\n";
+		ofs << "\n" << _playerData.score << "\t" << initialsA[optionIndexA] << initialsB[optionIndexB] << initialsC[optionIndexC];
 		ofs.close();
 	}
 }
 
 void Scene_GameEnd::onEnd()
 {
-	_playerData.lives = 3;
+	_playerData.lives = 5;
 	_playerData.sceneChanged = false;
 	_playerData.score = 0;
 	_playerData.collectedItems.clear();

@@ -10,7 +10,7 @@
 struct PlayerData {
 	int score = 0;
 	Vec2 spawnPos{ 5, 5 };
-	int lives = 3;
+	int lives = 5;
 	bool sceneChanged = false;
 	std::vector<std::string> collectedItems;
 	int faceRotation = 0; //up = up: 0, left = up: 1, down = up: 2, right = up: 3
@@ -27,8 +27,8 @@ struct EnemyData {
 struct LevelConfig {
 	float       playerSpeed{ 80.f };
 	float       enemySpeed{ 60.f };
-	float		sceneChangeLower{ 12.f };
-	float		sceneChangeUpper{ 22.f };
+	float		sceneChangeLower{ 15.f };
+	float		sceneChangeUpper{ 30.f };
 	sf::Time	midDiffTime{ sf::seconds(150.f) };
 	sf::Time	highDiffTime{ sf::seconds(300.f) };
 	int			midDiffItems{ 5 };

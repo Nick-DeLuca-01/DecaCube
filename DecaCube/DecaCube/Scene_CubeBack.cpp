@@ -208,7 +208,7 @@ void Scene_CubeBack::sEnemyFaceChange(sf::Time dt)
 				if (newFace == _player->getComponent<CLocation>().currentFace && e->getComponent<CState>().state != "Flipper") { //if switching to player's scene, pick random direction to come from
 					std::uniform_int_distribution<int> incomingDirection(1, 4);
 					auto pPos = _player->getComponent<CTransform>().pos;
-					Vec2 newPos{ 0, 0 };
+					Vec2 newPos = pPos;
 					while (((newPos.x - pPos.x) <= 80 && (newPos.x - pPos.x) >= -80) && ((newPos.y - pPos.y <= 80) && (newPos.y - pPos.y >= -80))) {
 						int selectedSide = incomingDirection(rng);
 						switch (selectedSide) {
