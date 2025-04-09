@@ -995,6 +995,7 @@ void Scene_CubeBottom::killPlayer()
 	pinput.distanceRemainingNeg = { 0, 0 };
 	pinput.distanceRemainingPos = { 0, 0 };
 	_nextControl = "";
+	SoundPlayer::getInstance().play("death");
 }
 
 void Scene_CubeBottom::onEnd()
