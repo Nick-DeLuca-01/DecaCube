@@ -176,6 +176,7 @@ void Scene_CubeRight::sCollision()
 			_playerData.score += e->getComponent<CScore>().score;
 			_playerData.collectedItems.push_back(e->getComponent<CState>().state);
 			e->destroy();
+			changeMusic();
 		}
 	}
 	for (auto e : _entityManager.getEntities("bullet")) {

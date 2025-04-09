@@ -151,6 +151,8 @@ void Scene_Menu::sDoAction(const Command& action)
 		{
 			if (m_menuIndex == 0) {
 				_game->changeScene("PLAY", std::make_shared<Scene_DecaCube>(_game, m_levelPaths[m_menuIndex]));
+				MusicPlayer::getInstance().play("danger0");
+				MusicPlayer::getInstance().setVolume(80);
 			}
 			else if (m_menuIndex == 1) {
 				_game->changeScene("SCOREBOARD", std::make_shared<Scene_Scoreboard>(_game, m_levelPaths[m_menuIndex]));
