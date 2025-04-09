@@ -94,3 +94,8 @@ Animation Envelope TexEnvelope 1 0
 Animation Key TexKey 1 0
 
 Animation Bullet TexBullet 1 0
+
+Sound collect ../assets/sounds/collect.wav
+Sound flip ../assets/sounds/flip.wav
+Sound shoot ../assets/sounds/shoot.wav
+Sound wallhit ../assets/sounds/wallhit.wav
