@@ -55,3 +55,13 @@ void MusicPlayer::setVolume(float volume) {
     m_volume = volume;
     m_music.setVolume(m_volume);
 }
+
+sf::Time MusicPlayer::getPlayingOffset()
+{
+    return m_music.getPlayingOffset();
+}
+
+void MusicPlayer::setPlayingOffset(sf::Time playingOffset)
+{
+    m_music.setPlayingOffset(playingOffset);
+}

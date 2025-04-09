@@ -31,6 +31,8 @@ public:
     void							stop();
     void							setPaused(bool paused);
     void							setVolume(float volume);
+    sf::Time                        getPlayingOffset();
+    void                            setPlayingOffset(sf::Time playingOffset);
 
 
 private:
