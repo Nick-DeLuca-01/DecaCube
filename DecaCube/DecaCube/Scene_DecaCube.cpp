@@ -1521,6 +1521,10 @@ void Scene_DecaCube::fixPlayerPos()
 
 	_player->getComponent<CTransform>().pos = pixelPos;
 	_player->getComponent<CLocation>().currentFace = 1;
+	_player->getComponent<CInput>().up = false;
+	_player->getComponent<CInput>().right = false;
+	_player->getComponent<CInput>().left = false;
+	_player->getComponent<CInput>().down = false;
 	_nextControl = "";
 	snapToGrid(_player);
 

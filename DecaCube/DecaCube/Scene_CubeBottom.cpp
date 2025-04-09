@@ -1437,6 +1437,10 @@ void Scene_CubeBottom::fixPlayerPos()
 	_prevRotation = _playerData.faceRotation;
 	_player->getComponent<CTransform>().pos = pixelPos;
 	_player->getComponent<CLocation>().currentFace = 6;
+	_player->getComponent<CInput>().up = false;
+	_player->getComponent<CInput>().right = false;
+	_player->getComponent<CInput>().left = false;
+	_player->getComponent<CInput>().down = false;
 	_nextControl = "";
 	snapToGrid(_player);
 
