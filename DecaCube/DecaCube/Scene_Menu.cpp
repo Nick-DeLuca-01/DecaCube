@@ -22,8 +22,8 @@ namespace {
 
 void Scene_Menu::init()
 {
-	//MusicPlayer::getInstance().play("menuTheme");
-	//MusicPlayer::getInstance().setVolume(5);
+	MusicPlayer::getInstance().play("menuTheme");
+	MusicPlayer::getInstance().setVolume(80);
 
 	registerAction(sf::Keyboard::W, "UP");
 	registerAction(sf::Keyboard::Up, "UP");
