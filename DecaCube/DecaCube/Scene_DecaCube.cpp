@@ -392,6 +392,8 @@ void Scene_DecaCube::gunner(std::shared_ptr<Entity> entity)
 		speed.y *= _config.enemySpeed * 2;
 		e->getComponent<CTransform>().vel = speed;
 
+		SoundPlayer::getInstance().play("shoot");
+
 		gun.onCooldown = true;
 	}
 	

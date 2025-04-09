@@ -383,7 +383,7 @@ void Scene_CubeBottom::gunner(std::shared_ptr<Entity> entity)
 		speed.x *= _config.enemySpeed * 2;
 		speed.y *= _config.enemySpeed * 2;
 		e->getComponent<CTransform>().vel = speed;
-
+		SoundPlayer::getInstance().play("shoot");
 		gun.onCooldown = true;
 	}
 
