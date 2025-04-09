@@ -262,6 +262,7 @@ void Scene_DecaCube::sEnemyFaceChange(sf::Time dt)
 					}
 					_enemyData.flip = !_enemyData.flip;
 					
+					
 				}
 				else { //if switching to not player's scene, pick random location (in case player switches to that side)
 					std::uniform_int_distribution<int> gridCoord(0, 10);
@@ -288,6 +289,7 @@ void Scene_DecaCube::sEnemyFaceChange(sf::Time dt)
 					else {
 						sec = sf::seconds(15.f);
 					}
+					SoundPlayer::getInstance().play("flip");
 				}
 				else if (e->getComponent<CState>().state == "Revenant") {
 					sec = sf::seconds(7.5f);
