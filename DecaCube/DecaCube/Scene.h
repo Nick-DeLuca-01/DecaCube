@@ -78,6 +78,8 @@ public:
 	void				simulate(int);
 	void				doAction(Command);
 	void				registerAction(int, std::string);
+	void				changeMusic();
+	void				changeMusic(std::string songName);
 	const CommandMap	getActionMap() const;
 };
 
