@@ -18,6 +18,13 @@ void Scene_GameEnd::init()
 		initialsB.push_back(alphabet[i]);
 		initialsC.push_back(alphabet[i]);
 	}
+
+	if (_playerData.lives == 0) {
+		startMusic("loseTheme");
+	}
+	else {
+		startMusic("winTheme");
+	}
 }
 
 void Scene_GameEnd::addScoreToScoreboard()
@@ -51,6 +58,7 @@ void Scene_GameEnd::onEnd()
 	_playerData.invincibility = sf::Time::Zero;
 	_enemyData.enemiesLoaded = false;
 	_enemyData.flip = false;
+	startMusic("menuTheme");
 	_game->changeScene("MENU", nullptr, false);
 }
 

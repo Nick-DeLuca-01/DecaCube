@@ -80,6 +80,7 @@ public:
 	void				registerAction(int, std::string);
 	void				changeMusic();
 	void				changeMusic(std::string songName);
+	void				startMusic(std::string songName);
 	const CommandMap	getActionMap() const;
 };
 

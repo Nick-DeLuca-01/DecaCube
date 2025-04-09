@@ -71,3 +71,10 @@ void Scene::changeMusic(std::string songName)
 	MusicPlayer::getInstance().setPlayingOffset(playingOffset);
 	MusicPlayer::getInstance().setVolume(80);
 }
+
+void Scene::startMusic(std::string songName)
+{
+	MusicPlayer::getInstance().stop();
+	MusicPlayer::getInstance().play(songName);
+	MusicPlayer::getInstance().setVolume(80);
+}
