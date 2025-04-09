@@ -1442,6 +1442,7 @@ void Scene_CubeFront::fixPlayerPos()
 	_player->getComponent<CTransform>().pos = pixelPos;
 	_player->getComponent<CLocation>().currentFace = 4;
 	_nextControl = "";
+	snapToGrid(_player);
 	for (auto enemy : _enemyData.enemyManager.getEntities()) {
 		if (enemy->getComponent<CLocation>().currentFace == _player->getComponent<CLocation>().currentFace) {
 			enemy->getComponent<COffScreen>().offScreen = false;

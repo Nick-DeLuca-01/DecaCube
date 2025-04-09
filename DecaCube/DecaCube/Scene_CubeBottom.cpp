@@ -1438,6 +1438,7 @@ void Scene_CubeBottom::fixPlayerPos()
 	_player->getComponent<CTransform>().pos = pixelPos;
 	_player->getComponent<CLocation>().currentFace = 6;
 	_nextControl = "";
+	snapToGrid(_player);
 
 	for (auto enemy : _enemyData.enemyManager.getEntities()) {
 		if (enemy->getComponent<CLocation>().currentFace == _player->getComponent<CLocation>().currentFace) {

@@ -1512,7 +1512,7 @@ void Scene_DecaCube::fixPlayerPos()
 	_playerData.sceneChanged = false;
 
 	auto pixelPos = gridToMidPixel(_playerData.spawnPos.x, _playerData.spawnPos.y, _player);
-
+	
 	if (_prevRotation != _playerData.faceRotation && _initialized) {
 		rotateEntireFace();
 		
@@ -1522,6 +1522,7 @@ void Scene_DecaCube::fixPlayerPos()
 	_player->getComponent<CTransform>().pos = pixelPos;
 	_player->getComponent<CLocation>().currentFace = 1;
 	_nextControl = "";
+	snapToGrid(_player);
 
 	for (auto enemy : _enemyData.enemyManager.getEntities()) {
 		if (enemy->getComponent<CLocation>().currentFace == _player->getComponent<CLocation>().currentFace) {
