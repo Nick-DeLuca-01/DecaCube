@@ -177,6 +177,7 @@ void Scene_CubeLeft::sCollision()
 			_playerData.collectedItems.push_back(e->getComponent<CState>().state);
 			e->destroy();
 			changeMusic();
+			SoundPlayer::getInstance().play("collect");
 		}
 	}
 	for (auto e : _entityManager.getEntities("bullet")) {

@@ -99,3 +99,4 @@ Sound collect ../assets/sounds/collect.wav
 Sound flip ../assets/sounds/flip.wav
 Sound shoot ../assets/sounds/shoot.wav
 Sound wallhit ../assets/sounds/wallhit.wav
+Sound death ../assets/sounds/death.wav
